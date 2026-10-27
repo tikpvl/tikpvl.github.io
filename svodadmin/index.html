@@ -1,10 +1,14 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0b3c68">
-  <meta name="app-version" content="v1.2">
+  <meta name="app-version" content="v1.3">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22110%22%20fill%3D%22%230f4c81%22/%3E%0A%20%20%3Crect%20x%3D%2240%22%20y%3D%2240%22%20width%3D%22432%22%20height%3D%22432%22%20rx%3D%2290%22%20fill%3D%22%230b3c68%22%20stroke%3D%22%230284c7%22%20stroke-width%3D%2210%22/%3E%0A%20%20%3Crect%20x%3D%22136%22%20y%3D%22180%22%20width%3D%22240%22%20height%3D%22190%22%20rx%3D%2224%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23f59e0b%22%20stroke-width%3D%2212%22/%3E%0A%20%20%3Cline%20x1%3D%22180%22%20y1%3D%22230%22%20x2%3D%22332%22%20y2%3D%22230%22%20stroke%3D%22%23f59e0b%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22/%3E%0A%20%20%3Cpath%20d%3D%22M200%20300%20L240%20340%20L315%20260%22%20fill%3D%22none%22%20stroke%3D%22%2310b981%22%20stroke-width%3D%2220%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22140%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-weight%3D%22900%22%20font-size%3D%2264%22%20fill%3D%22%23f59e0b%22%20text-anchor%3D%22middle%22%3E%D0%9E%D0%98%D0%9A%3C/text%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22430%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2232%22%20fill%3D%22%23bae6fd%22%20text-anchor%3D%22middle%22%3E%D0%9F%D0%90%D0%92%D0%9B%D0%9E%D0%94%D0%90%D0%A0%3C/text%3E%0A%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22110%22%20fill%3D%22%230f4c81%22/%3E%0A%20%20%3Crect%20x%3D%2240%22%20y%3D%2240%22%20width%3D%22432%22%20height%3D%22432%22%20rx%3D%2290%22%20fill%3D%22%230b3c68%22%20stroke%3D%22%230284c7%22%20stroke-width%3D%2210%22/%3E%0A%20%20%3Crect%20x%3D%22136%22%20y%3D%22180%22%20width%3D%22240%22%20height%3D%22190%22%20rx%3D%2224%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23f59e0b%22%20stroke-width%3D%2212%22/%3E%0A%20%20%3Cline%20x1%3D%22180%22%20y1%3D%22230%22%20x2%3D%22332%22%20y2%3D%22230%22%20stroke%3D%22%23f59e0b%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22/%3E%0A%20%20%3Cpath%20d%3D%22M200%20300%20L240%20340%20L315%20260%22%20fill%3D%22none%22%20stroke%3D%22%2310b981%22%20stroke-width%3D%2220%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22140%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-weight%3D%22900%22%20font-size%3D%2264%22%20fill%3D%22%23f59e0b%22%20text-anchor%3D%22middle%22%3E%D0%9E%D0%98%D0%9A%3C/text%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22430%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2232%22%20fill%3D%22%23bae6fd%22%20text-anchor%3D%22middle%22%3E%D0%9F%D0%90%D0%92%D0%9B%D0%9E%D0%94%D0%90%D0%A0%3C/text%3E%0A%3C/svg%3E">
   <title>Панель мониторинга ТИК Павлодарской области — Сводка и фильтрация ОИК</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +52,7 @@
   </div>
 
   <!-- Шапка Сайта №2 (Панель ТИК) -->
-  <header class="tik-header text-white shadow-lg sticky top-0 z-40">
+  <header class="tik-header text-white shadow-lg relative z-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center shrink-0">
@@ -61,7 +65,7 @@
             <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-400/20 border border-amber-300/30 text-amber-200">Панель ТИК Павлодарской области</span>
             <span id="appVersionBadge" class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-200 border border-emerald-400/30 flex items-center gap-1.5 cursor-pointer hover:bg-emerald-500/40 transition" title="Текущая версия интерфейса. Нажмите для проверки обновления">
               <span id="versionDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              <span id="versionLabel">v1.2 • Актуально</span>
+              <span id="versionLabel">v1.3 • Актуально</span>
             </span>
             <span id="liveSyncStatus" class="text-xs font-mono text-sky-200">● Синхронизация активна</span>
           </div>
@@ -73,21 +77,14 @@
 
       <!-- Кнопки управления для ТИК -->
       <div class="flex flex-wrap items-center gap-2">
-        <button id="copySummaryReportBtn" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow transition flex items-center gap-1.5">
-          <span>📋 Сводка для WhatsApp / Отчета</span>
-        </button>
         <button id="downloadExcelCsvBtn" type="button" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 font-semibold text-xs transition flex items-center gap-1.5">
           <span>📥 Скачать Excel (CSV)</span>
         </button>
-        <button id="syncFromGoogleSheetsBtn" type="button" class="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow transition flex items-center gap-1.5" title="Загрузить актуальные данные из Google Таблицы (удалить исключенные строки)">
+        <button id="syncFromGoogleSheetsBtn" type="button" class="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow transition flex items-center gap-1.5" title="Загрузить актуальные данные (удалить исключенные строки)">
           <span id="syncSpinner" class="hidden animate-spin">🔄</span>
           <span id="syncIcon">🔄</span>
-          <span>Обновить из Google Таблицы</span>
+          <span>Обновить данные</span>
         </button>
-        <button id="openCloudSyncModalBtn" type="button" class="px-3 py-2 rounded-xl bg-slate-900/40 hover:bg-slate-900/60 text-amber-300 border border-amber-400/30 font-semibold text-xs transition">
-          ⚙️ База Google Sheets
-        </button>
-        
       </div>
     </div>
   </header>
@@ -378,6 +375,9 @@
           <button id="tabByDistrictBtn" type="button" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition">
             Итоги по городам и районам (Сводка ТИК)
           </button>
+          <button id="tabByOblastBtn" type="button" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition">
+            Итоги областных ОИК
+          </button>
         </div>
         <span class="text-xs text-slate-500">Обновляется автоматически при отправке формы секретарями</span>
       </div>
@@ -429,6 +429,33 @@
             </tr>
           </thead>
           <tbody id="districtRowsBody" class="divide-y divide-slate-200 text-xs"></tbody>
+        </table>
+      </div>
+
+      <!-- Таблица 3: Итоги областных ОИК (Округа №1 – №30) -->
+      <div id="oblastOikTableWrap" class="hidden overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[980px]">
+          <thead>
+            <tr class="bg-slate-100 text-[11px] font-bold uppercase text-slate-600 border-b border-slate-200">
+              <th class="py-3 px-3">Округ</th>
+              <th class="py-3 px-3">Город / Район</th>
+              <th class="py-3 px-3 text-center bg-sky-50 text-sky-900">Всего</th>
+              <th class="py-3 px-3 text-center bg-amber-50 text-amber-900">Самовыдв.</th>
+              <th class="py-3 px-2 text-center">AMANAT</th>
+              <th class="py-3 px-2 text-center">Ақ жол</th>
+              <th class="py-3 px-2 text-center">Ауыл</th>
+              <th class="py-3 px-2 text-center">НПК</th>
+              <th class="py-3 px-2 text-center">Respublica</th>
+              <th class="py-3 px-2 text-center">ОСДП</th>
+              <th class="py-3 px-2 text-center">Байтақ</th>
+              <th class="py-3 px-3 text-center bg-emerald-50 text-emerald-900">Соответствуют</th>
+              <th class="py-3 px-3 text-center">На проверке</th>
+              <th class="py-3 px-3 text-center">Не соотв.</th>
+              <th class="py-3 px-3">Секретарь / Статус</th>
+            </tr>
+          </thead>
+          <tbody id="oblastRowsBody" class="divide-y divide-slate-200 text-xs"></tbody>
+          <tfoot id="oblastRowsFoot" class="bg-slate-100 font-extrabold text-xs border-t-2 border-slate-300"></tfoot>
         </table>
       </div>
     </section>
@@ -641,7 +668,7 @@ function getOrCreateSheet() {
       }
 
 
-      const APP_VERSION = 'v1.2';
+      const APP_VERSION = 'v1.3';
 
       function checkAppVersion(isManualClick) {
         if (!window.location.protocol.startsWith('http')) {
@@ -779,6 +806,7 @@ function getOrCreateSheet() {
         renderCharts(totalSelf, pMap, filtered);
         renderOikRows(filtered);
         renderDistrictRows(filtered);
+        renderOblastRows(filtered);
       }
 
       function renderCharts(totalSelf, pMap, filtered) {
@@ -858,7 +886,74 @@ function getOrCreateSheet() {
         }).join('');
       }
 
-      function renderDistrictRows(filtered) {
+            function renderOblastRows(filtered) {
+        const tbody = document.getElementById('oblastRowsBody');
+        const tfoot = document.getElementById('oblastRowsFoot');
+        if (!tbody || !tfoot) return;
+
+        const oblastRecords = filtered.filter(function (r) {
+          return r.level === 'Областной маслихат';
+        }).sort(function (a, b) {
+          return (a.oikNumber || 0) - (b.oikNumber || 0);
+        });
+
+        if (oblastRecords.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="15" class="py-8 text-center text-slate-400 font-medium">Нет данных по областным ОИК (сводки областного маслихата пока не поступили)</td></tr>';
+          tfoot.innerHTML = '';
+          return;
+        }
+
+        let tot = 0, selfTot = 0, compTot = 0, pendTot = 0, nonCompTot = 0;
+        const pTotals = { 'AMANAT': 0, 'Ақ жол': 0, 'Ауыл': 0, 'НПК': 0, 'Respublica': 0, 'ОСДП': 0, 'Байтақ': 0 };
+
+        tbody.innerHTML = oblastRecords.map(function (r) {
+          tot += r.totalCandidates || 0;
+          selfTot += r.selfNominated || 0;
+          compTot += r.compliantCount || 0;
+          pendTot += r.pendingCount || 0;
+          nonCompTot += r.nonCompliantCount || 0;
+          PARTY_KEYS.forEach(function (k) {
+            pTotals[k] += (r.parties && r.parties[k]) ? r.parties[k] : 0;
+          });
+
+          return '<tr class="hover:bg-slate-50 transition">' +
+            '<td class="py-2.5 px-3 font-extrabold text-sky-900 whitespace-nowrap">ОИК №' + r.oikNumber + '</td>' +
+            '<td class="py-2.5 px-3 font-semibold text-slate-800">' + (r.district || 'Павлодар') + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-black bg-sky-50/60 text-sky-950">' + r.totalCandidates + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-bold bg-amber-50/60 text-amber-950">' + r.selfNominated + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['AMANAT']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Ақ жол']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Ауыл']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['НПК']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Respublica']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['ОСДП']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Байтақ']) || 0) + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-bold text-emerald-800 bg-emerald-50/60">' + r.compliantCount + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-semibold text-amber-800 bg-amber-50/40">' + (r.pendingCount || 0) + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-semibold text-rose-800 bg-rose-50/40">' + (r.nonCompliantCount || 0) + '</td>' +
+            '<td class="py-2.5 px-3 text-slate-600">' + (r.secretary ? ('<span class="font-medium text-slate-800">' + r.secretary + '</span> • ') : '') + (r.submittedAt || 'Сегодня') + '</td>' +
+          '</tr>';
+        }).join('');
+
+        tfoot.innerHTML = '<tr>' +
+          '<td class="py-3 px-3 uppercase text-slate-800" colspan="2">ИТОГО ОБЛАСТНЫХ ОИК (' + oblastRecords.length + '):</td>' +
+          '<td class="py-3 px-3 text-center font-black bg-sky-100 text-sky-950">' + tot + '</td>' +
+          '<td class="py-3 px-3 text-center font-black bg-amber-100 text-amber-950">' + selfTot + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['AMANAT'] + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['Ақ жол'] + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['Ауыл'] + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['НПК'] + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['Respublica'] + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['ОСДП'] + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['Байтақ'] + '</td>' +
+          '<td class="py-3 px-3 text-center font-black text-emerald-900 bg-emerald-100">' + compTot + '</td>' +
+          '<td class="py-3 px-3 text-center font-black text-amber-900 bg-amber-100">' + pendTot + '</td>' +
+          '<td class="py-3 px-3 text-center font-black text-rose-900 bg-rose-100">' + nonCompTot + '</td>' +
+          '<td class="py-3 px-3 text-slate-500 font-semibold">Сдано: ' + oblastRecords.length + ' из 30</td>' +
+        '</tr>';
+      }
+
+function renderDistrictRows(filtered) {
         const tbody = document.getElementById('districtRowsBody');
         const map = {};
         ALL_TERRITORIES.forEach(function (t) {
@@ -1087,19 +1182,29 @@ function getOrCreateSheet() {
           showToast('Все фильтры сброшены');
         });
 
-        document.getElementById('tabByOikBtn').addEventListener('click', function () {
-          document.getElementById('oikTableWrap').classList.remove('hidden');
-          document.getElementById('districtTableWrap').classList.add('hidden');
-          document.getElementById('tabByOikBtn').className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-sky-800 text-white shadow-sm transition';
-          document.getElementById('tabByDistrictBtn').className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition';
-        });
+        function switchTableTab(activeTab) {
+          const oikWrap = document.getElementById('oikTableWrap');
+          const distWrap = document.getElementById('districtTableWrap');
+          const oblWrap = document.getElementById('oblastOikTableWrap');
+          const bOik = document.getElementById('tabByOikBtn');
+          const bDist = document.getElementById('tabByDistrictBtn');
+          const bObl = document.getElementById('tabByOblastBtn');
 
-        document.getElementById('tabByDistrictBtn').addEventListener('click', function () {
-          document.getElementById('districtTableWrap').classList.remove('hidden');
-          document.getElementById('oikTableWrap').classList.add('hidden');
-          document.getElementById('tabByDistrictBtn').className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-sky-800 text-white shadow-sm transition';
-          document.getElementById('tabByOikBtn').className = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition';
-        });
+          oikWrap.classList.toggle('hidden', activeTab !== 'oik');
+          distWrap.classList.toggle('hidden', activeTab !== 'district');
+          oblWrap.classList.toggle('hidden', activeTab !== 'oblast');
+
+          const activeCls = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-sky-800 text-white shadow-sm transition';
+          const inactiveCls = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition';
+
+          bOik.className = activeTab === 'oik' ? activeCls : inactiveCls;
+          bDist.className = activeTab === 'district' ? activeCls : inactiveCls;
+          bObl.className = activeTab === 'oblast' ? activeCls : inactiveCls;
+        }
+
+        document.getElementById('tabByOikBtn').addEventListener('click', function () { switchTableTab('oik'); });
+        document.getElementById('tabByDistrictBtn').addEventListener('click', function () { switchTableTab('district'); });
+        document.getElementById('tabByOblastBtn').addEventListener('click', function () { switchTableTab('oblast'); });
 
         document.getElementById('oikRowsBody').addEventListener('click', function (e) {
           const btn = e.target.closest('.del-btn');
@@ -1124,7 +1229,7 @@ function getOrCreateSheet() {
           }
         });
 
-        document.getElementById('copySummaryReportBtn').addEventListener('click', function () {
+        const copySumBtn = document.getElementById('copySummaryReportBtn'); if (copySumBtn) copySumBtn.addEventListener('click', function () {
           const filtered = getFiltered();
           let tCand = 0, tSelf = 0, tComp = 0, tPend = 0, tNon = 0;
           const p = {};
@@ -1190,7 +1295,7 @@ function getOrCreateSheet() {
           showToast('Таблица Excel (CSV) скачана');
         });
 
-        document.getElementById('openCloudSyncModalBtn').addEventListener('click', function () {
+        const cloudSyncBtn = document.getElementById('openCloudSyncModalBtn'); if (cloudSyncBtn) cloudSyncBtn.addEventListener('click', function () {
           document.getElementById('cloudModal').classList.remove('hidden');
         });
         document.getElementById('closeCloudModalBtn').addEventListener('click', function () {
@@ -1254,3 +1359,4 @@ function getOrCreateSheet() {
   </script>
 </body>
 </html>
+```
