@@ -1,23 +1,22 @@
 <!DOCTYPE html>
-<html lang="kk">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Павлодар облыстық аумақтық сайлау комиссиясы | Портал</title>
+  <title>Территориальная избирательная комиссия Павлодарской области | Портал сервисов</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --kz-blue-dark: #002b49;
-      --kz-blue-deep: #06192a;
-      --kz-blue-primary: #007799;
+      --kz-blue-deep: #051929;
       --kz-gold: #e5a93b;
       --kz-gold-light: #ffd275;
-      --kz-gold-glow: rgba(229, 169, 59, 0.25);
-      --card-bg: rgba(9, 32, 54, 0.7);
-      --card-border: rgba(229, 169, 59, 0.2);
-      --card-hover-border: rgba(229, 169, 59, 0.65);
+      --kz-gold-glow: rgba(229, 169, 59, 0.28);
+      --card-bg: rgba(9, 32, 54, 0.75);
+      --card-border: rgba(229, 169, 59, 0.22);
+      --card-hover-border: rgba(229, 169, 59, 0.7);
       --text-main: #f4f8fb;
       --text-muted: #94abbd;
     }
@@ -30,7 +29,7 @@
     }
 
     body {
-      background: radial-gradient(circle at 50% 10%, #0a3a60 0%, var(--kz-blue-deep) 65%, #020b13 100%);
+      background: radial-gradient(circle at 50% 8%, #093c66 0%, var(--kz-blue-deep) 65%, #020a12 100%);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -40,27 +39,26 @@
       overflow-x: hidden;
     }
 
-    /* Фоновый казахский орнамент */
+    /* Фоновый декоративный орнамент */
     body::before {
       content: "";
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 480px;
-      background-image: radial-gradient(circle at center, transparent 30%, var(--kz-blue-deep) 90%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath fill='%23e5a93b' fill-opacity='0.04' d='M60 0 C45 20 15 20 0 0 L0 10 C15 30 45 30 60 10 C75 30 105 30 120 10 L120 0 C105 20 75 20 60 0 Z M60 30 C45 50 15 50 0 30 L0 40 C15 60 45 60 60 40 C75 60 105 60 120 40 L120 30 C105 50 75 50 60 30 Z'/%3E%3C/svg%3E");
+      height: 520px;
+      background-image: radial-gradient(circle at center, transparent 35%, var(--kz-blue-deep) 90%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath fill='%23e5a93b' fill-opacity='0.035' d='M60 0 C45 20 15 20 0 0 L0 10 C15 30 45 30 60 10 C75 30 105 30 120 10 L120 0 C105 20 75 20 60 0 Z M60 30 C45 50 15 50 0 30 L0 40 C15 60 45 60 60 40 C75 60 105 60 120 40 L120 30 C105 50 75 50 60 30 Z'/%3E%3C/svg%3E");
       background-repeat: repeat;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* Верхняя декоративная плашка с орнаментом */
     .top-ornament-bar {
       width: 100%;
-      height: 7px;
+      height: 6px;
       background: linear-gradient(90deg, #002b49 0%, var(--kz-gold) 50%, #002b49 100%);
-      box-shadow: 0 0 16px var(--kz-gold-glow);
+      box-shadow: 0 0 18px var(--kz-gold-glow);
       position: relative;
       z-index: 2;
     }
@@ -68,7 +66,7 @@
     header {
       width: 100%;
       max-width: 960px;
-      padding: 40px 20px 24px;
+      padding: 40px 20px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -77,24 +75,29 @@
       z-index: 1;
     }
 
-    /* Логотип комиссии */
     .logo-container {
-      width: 94px;
-      height: 94px;
-      margin-bottom: 20px;
-      background: radial-gradient(circle, #0e4471 0%, #031e36 90%);
+      width: 110px;
+      height: 110px;
+      margin-bottom: 22px;
       border-radius: 50%;
-      padding: 5px;
-      border: 2px solid var(--kz-gold);
-      box-shadow: 0 0 25px var(--kz-gold-glow), inset 0 0 15px rgba(0,0,0,0.5);
+      box-shadow: 0 0 30px var(--kz-gold-glow), 0 8px 20px rgba(0,0,0,0.4);
       display: flex;
       align-items: center;
       justify-content: center;
       transition: transform 0.3s ease;
+      background: #000;
+      overflow: hidden;
     }
 
     .logo-container:hover {
-      transform: scale(1.05) rotate(2deg);
+      transform: scale(1.05);
+    }
+
+    .logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .header-titles h1 {
@@ -105,25 +108,17 @@
       letter-spacing: 0.8px;
       line-height: 1.35;
       margin-bottom: 8px;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    }
-
-    .header-titles h2 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: var(--kz-gold-light);
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
 
     .header-titles p {
-      font-size: 0.88rem;
-      color: var(--text-muted);
+      font-size: 0.95rem;
+      color: var(--kz-gold-light);
       letter-spacing: 1.5px;
       text-transform: uppercase;
+      font-weight: 600;
     }
 
-    /* Разделитель с элементом казахского орнамента */
     .divider-ornament {
       display: flex;
       align-items: center;
@@ -131,7 +126,7 @@
       gap: 16px;
       width: 100%;
       max-width: 440px;
-      margin: 22px auto 0;
+      margin: 20px auto 0;
     }
 
     .divider-line {
@@ -149,7 +144,7 @@
     .container {
       width: 100%;
       max-width: 960px;
-      padding: 0 20px 40px;
+      padding: 10px 20px 40px;
       display: flex;
       flex-direction: column;
       gap: 36px;
@@ -182,7 +177,6 @@
       gap: 18px;
     }
 
-    /* Карточки */
     .card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -236,13 +230,6 @@
       font-weight: 700;
       color: #ffffff;
       line-height: 1.3;
-    }
-
-    .card .subtitle-kk {
-      font-size: 0.8rem;
-      color: var(--kz-gold-light);
-      margin-top: 2px;
-      font-weight: 500;
     }
 
     .badge {
@@ -315,8 +302,8 @@
       padding: 24px 20px;
       border-top: 1px solid rgba(229, 169, 59, 0.15);
       color: var(--text-muted);
-      font-size: 0.8rem;
-      background: rgba(2, 11, 19, 0.7);
+      font-size: 0.82rem;
+      background: rgba(2, 10, 18, 0.7);
       position: relative;
       z-index: 1;
     }
@@ -331,42 +318,17 @@
   <div class="top-ornament-bar"></div>
 
   <header>
-    <!-- Геральдический логотип комиссии -->
+    <!-- Логотип комиссии -->
     <div class="logo-container">
-      <svg viewBox="0 0 100 100" width="80" height="80">
-        <!-- Внешний золотой кант с кругом -->
-        <circle cx="50" cy="50" r="46" fill="none" stroke="#e5a93b" stroke-width="2" stroke-dasharray="2, 4"/>
-        <circle cx="50" cy="50" r="42" fill="#003554" stroke="#e5a93b" stroke-width="1.5"/>
-        
-        <!-- Солнце с лучами в центре (Казахстан) -->
-        <circle cx="50" cy="40" r="10" fill="#e5a93b" />
-        <g stroke="#e5a93b" stroke-width="2" stroke-linecap="round">
-          <line x1="50" y1="23" x2="50" y2="27" />
-          <line x1="50" y1="53" x2="50" y2="57" />
-          <line x1="33" y1="40" x2="37" y2="40" />
-          <line x1="63" y1="40" x2="67" y2="40" />
-          <line x1="38" y1="28" x2="41" y2="31" />
-          <line x1="59" y1="49" x2="62" y2="52" />
-          <line x1="38" y1="52" x2="41" y2="49" />
-          <line x1="59" y1="31" x2="62" y2="28" />
-        </g>
-        
-        <!-- Парящий беркут -->
-        <path d="M30 49 Q 50 44, 70 49 Q 62 55, 50 63 Q 38 55, 30 49 Z" fill="#e5a93b"/>
-        
-        <!-- Символ урны/бюллетеня (выборная тематика) -->
-        <path d="M34 67 L66 67 L62 82 L38 82 Z" fill="none" stroke="#e5a93b" stroke-width="2"/>
-        <line x1="42" y1="72" x2="58" y2="72" stroke="#ffd275" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+      <img src="logo.png" alt="Эмблема избирательной комиссии" class="logo-img" onerror="this.src='logo.jpg'">
     </div>
 
     <div class="header-titles">
-      <h1>Павлодар облыстық аумақтық сайлау комиссиясы</h1>
-      <h2>Территориальная избирательная комиссия Павлодарской области</h2>
-      <p>Цифрлық сервистер порталы • Портал цифровых сервисов</p>
+      <h1>Территориальная избирательная комиссия Павлодарской области</h1>
+      <p>Портал цифровых сервисов</p>
     </div>
 
-    <!-- Традиционный элемент «Қошқар мүйіз» -->
+    <!-- Декоративный казахский орнамент -->
     <div class="divider-ornament">
       <div class="divider-line"></div>
       <svg class="ornament-icon" viewBox="0 0 24 24">
@@ -380,112 +342,94 @@
 
     <!-- 1. Действующие сервисы -->
     <section>
-      <div class="section-title">Қолданыстағы сервистер / Активные сервисы</div>
+      <div class="section-title">Действующие сервисы</div>
       <div class="grid">
 
         <!-- Карта -->
-        <a href="/map" class="card">
+        <a href="/map" target="_blank" rel="noopener noreferrer" class="card">
           <div>
             <div class="card-top">
-              <div>
-                <h3>Интерактивті карта</h3>
-                <div class="subtitle-kk">Интерактивная карта участков</div>
-              </div>
+              <h3>Интерактивная карта</h3>
               <span class="badge">Сервис</span>
             </div>
-            <p>Павлодар облысының сайлау округтері мен учаскелерінің геоақпараттық жүйесі.</p>
+            <p>Геоинформационная система избирательных округов и участков Павлодарской области.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Өту / Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
         <!-- Тест -->
-        <a href="/test" class="card">
+        <a href="/test" target="_blank" rel="noopener noreferrer" class="card">
           <div>
             <div class="card-top">
-              <div>
-                <h3>Онлайн тестілеу</h3>
-                <div class="subtitle-kk">Онлайн-тестирование</div>
-              </div>
+              <h3>Онлайн-тестирование</h3>
               <span class="badge">Тест</span>
             </div>
-            <p>Сайлау комиссияларының мүшелері мен мамандарына арналған біліктілік тестілері.</p>
+            <p>Тестирование профессиональной квалификации членов избирательных комиссий.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Өту / Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
         <!-- Админка теста -->
-        <a href="/testadmin" class="card">
+        <a href="/testadmin" target="_blank" rel="noopener noreferrer" class="card">
           <div>
             <div class="card-top">
-              <div>
-                <h3>Тест нәтижелері</h3>
-                <div class="subtitle-kk">Статистика тестирования</div>
-              </div>
-              <span class="badge badge-admin">Әкімші / Админ</span>
+              <h3>Статистика тестов</h3>
+              <span class="badge badge-admin">Администратор</span>
             </div>
-            <p>Тестілеу қорытындыларын тексеру және талдау бойынша әкімшілік панель.</p>
+            <p>Панель мониторинга и подробные результаты тестирования сотрудников.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Өту / Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
         <!-- Сводка -->
-        <a href="/svod" class="card">
+        <a href="/svod" target="_blank" rel="noopener noreferrer" class="card">
           <div>
             <div class="card-top">
-              <div>
-                <h3>Жедел жиынтық</h3>
-                <div class="subtitle-kk">Оперативная сводка</div>
-              </div>
-              <span class="badge">Хатшылар / Секретари</span>
+              <h3>Оперативная сводка</h3>
+              <span class="badge">Секретари</span>
             </div>
-            <p>Сайлау күнгі дауыс беру барысы мен қатысу бойынша жедел мәліметтерді енгізу.</p>
+            <p>Форма оперативного сбора данных о ходе голосования и явке избирателей.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Өту / Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
         <!-- Админка сводки -->
-        <a href="/svodadmin" class="card">
+        <a href="/svodadmin" target="_blank" rel="noopener noreferrer" class="card">
           <div>
             <div class="card-top">
-              <div>
-                <h3>Жиынтықты бақылау</h3>
-                <div class="subtitle-kk">Контроль сводок</div>
-              </div>
-              <span class="badge badge-admin">Әкімші / Админ</span>
+              <h3>Контроль сводок</h3>
+              <span class="badge badge-admin">Администратор</span>
             </div>
-            <p>Аудандар мен қалалардан түскен мәліметтерді нақты уақытта мониторингілеу.</p>
+            <p>Сводная аналитическая панель для контроля отчетов из районов и городов.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Өту / Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
       </div>
     </section>
 
-    <!-- 2. Модули выборов (запланированные) -->
+    <!-- 2. Разделы выборов (в разработке) -->
     <section>
-      <div class="section-title">Сайлау кезеңі / В разработке к выборам</div>
+      <div class="section-title">Сервисы избирательного периода (в разработке)</div>
       <div class="grid">
 
         <div class="card disabled">
           <div>
             <div class="card-top">
-              <div>
-                <h3>Байқаушылар: Тіркеу</h3>
-                <div class="subtitle-kk">Наблюдатели: Регистрация</div>
-              </div>
-              <span class="badge badge-soon">Жақында / Скоро</span>
+              <h3>Наблюдатели: Регистрация</h3>
+              <span class="badge badge-soon">Скоро</span>
             </div>
-            <p>Байқаушылар мен сенім білдірілген тұлғаларды тіркеу және аккредиттеу модулі.</p>
+            <p>Модуль аккредитации, учета и распределения наблюдателей по участкам.</p>
           </div>
           <div class="card-footer">
             <span class="card-btn">—</span>
@@ -495,13 +439,10 @@
         <div class="card disabled">
           <div>
             <div class="card-top">
-              <div>
-                <h3>Байқаушылар: Мониторинг</h3>
-                <div class="subtitle-kk">Наблюдатели: Мониторинг</div>
-              </div>
-              <span class="badge badge-soon">Жақында / Скоро</span>
+              <h3>Наблюдатели: Мониторинг</h3>
+              <span class="badge badge-soon">Скоро</span>
             </div>
-            <p>Учаскелердегі байқаушылардың қатысуы мен ахуалын қадағалау жүйесі.</p>
+            <p>Система оперативного контроля присутствия наблюдателей и фиксации данных.</p>
           </div>
           <div class="card-footer">
             <span class="card-btn">—</span>
@@ -511,13 +452,10 @@
         <div class="card disabled">
           <div>
             <div class="card-top">
-              <div>
-                <h3>Дауыстарды санау: Енгізу</h3>
-                <div class="subtitle-kk">Подсчет голосов: Ввод</div>
-              </div>
-              <span class="badge badge-soon">Жақында / Скоро</span>
+              <h3>Подсчет голосов: Ввод</h3>
+              <span class="badge badge-soon">Скоро</span>
             </div>
-            <p>Учаскелік сайлау комиссияларының хаттамаларын цифрлық форматта енгізу.</p>
+            <p>Электронный ввод протоколов голосования участковых избирательных комиссий.</p>
           </div>
           <div class="card-footer">
             <span class="card-btn">—</span>
@@ -527,13 +465,10 @@
         <div class="card disabled">
           <div>
             <div class="card-top">
-              <div>
-                <h3>Дауыстарды санау: Қорытынды</h3>
-                <div class="subtitle-kk">Подсчет голосов: Итоги</div>
-              </div>
-              <span class="badge badge-soon">Жақында / Скоро</span>
+              <h3>Подсчет голосов: Итоги</h3>
+              <span class="badge badge-soon">Скоро</span>
             </div>
-            <p>Нәтижелерді автоматты түрде қорытындылау және ресми есептерді қалыптастыру.</p>
+            <p>Автоматизированное сведение итогов голосования и генерация отчетности.</p>
           </div>
           <div class="card-footer">
             <span class="card-btn">—</span>
@@ -546,8 +481,8 @@
   </main>
 
   <footer>
-    <b>Павлодар облыстық аумақтық сайлау комиссиясы</b> &copy; 2026<br>
-    tikpvl.asia — Барлық құқықтар қорғалған.
+    <b>Территориальная избирательная комиссия Павлодарской области</b><br>
+    tikpvl.asia &copy; Все права защищены.
   </footer>
 
 </body>
