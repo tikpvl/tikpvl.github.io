@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="ОИК Сводка">
+  <meta name="app-version" content="v1.2">
   <title>Ежедневная сводка секретаря ОИК — Павлодарская область</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,6 +59,12 @@
     </div>
   </div>
 
+  <!-- Баннер новой версии -->
+  <div id="updateAvailableBanner" class="hidden fixed top-3 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-slate-950 px-4 py-2 rounded-xl shadow-xl border border-amber-300 text-xs font-bold flex items-center gap-2.5 transition">
+    <span>🚀 Доступна новая версия интерфейса!</span>
+    <button id="reloadAppBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-950 text-white text-[11px] font-extrabold hover:bg-slate-800 transition">Обновить</button>
+  </div>
+
   <!-- Тост-уведомление -->
   <div id="toastBox" class="hidden fixed bottom-5 right-5 left-5 sm:left-auto sm:max-w-sm z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center gap-3">
     <span id="toastIcon" class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0">✓</span>
@@ -74,8 +81,14 @@
           </svg>
         </div>
         <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-sky-200 block">Павлодарская область • Выборы депутатов маслихатов</span>
-          <h1 class="text-base sm:text-lg font-bold leading-tight">Ежедневный отчет секретаря ОИК</h1>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-sky-200 block">Павлодарская область</span>
+            <span id="appVersionBadge" class="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-200 border border-emerald-400/30 flex items-center gap-1.5 cursor-pointer hover:bg-emerald-500/40 transition" title="Нажмите для проверки актуальности версии">
+              <span id="versionDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span id="versionLabel">v1.2 • Актуально</span>
+            </span>
+          </div>
+          <h1 class="text-base sm:text-lg font-bold leading-tight mt-0.5">Ежедневный отчет секретаря ОИК</h1>
         </div>
       </div>
 
@@ -505,6 +518,50 @@
       const MY_HISTORY_KEY = 'pavlodar_oik_my_submissions_prod_v1';
       const WEBHOOK_KEY = 'pavlodar_tik_gas_webhook_v1';
       let lastNotifiedMinute = '';
+
+
+      const APP_VERSION = 'v1.2';
+
+      function checkAppVersion(isManualClick) {
+        if (!window.location.protocol.startsWith('http')) {
+          if (isManualClick) showToast('Локальный файл. Версия: ' + APP_VERSION, false);
+          return;
+        }
+
+        const vUrl = '.' + '/version.json?t=' + Date.now(); fetch(vUrl, { cache: 'no-store' })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            handleVersionResult(data && data.version, isManualClick);
+          })
+          .catch(function () {
+            fetch(window.location.pathname + '?t=' + Date.now(), { cache: 'no-store' })
+              .then(function (r) { return r.text(); })
+              .then(function (html) {
+                const m = html.match(/name=["']app-version["']\s+content=["']([^"']+)["']/);
+                handleVersionResult(m && m[1], isManualClick);
+              }).catch(function () {});
+          });
+      }
+
+      function handleVersionResult(serverVer, isManualClick) {
+        if (serverVer && serverVer !== APP_VERSION) {
+          const badge = document.getElementById('appVersionBadge');
+          const dot = document.getElementById('versionDot');
+          const label = document.getElementById('versionLabel');
+          if (badge && dot && label) {
+            badge.className = 'text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 border border-amber-300 flex items-center gap-1.5 cursor-pointer shadow-sm';
+            dot.className = 'w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping';
+            label.textContent = 'Доступно ' + serverVer + ' • Нажмите обновить';
+          }
+          const banner = document.getElementById('updateAvailableBanner');
+          if (banner) banner.classList.remove('hidden');
+          showToast('Доступно обновление интерфейса (' + serverVer + ')!', true);
+        } else {
+          if (isManualClick) {
+            showToast('У вас установлена актуальная версия (' + APP_VERSION + ')', false);
+          }
+        }
+      }
 
       function showToast(msg, isWarning) {
         const box = document.getElementById('toastBox');
@@ -1065,6 +1122,30 @@
             };
           } catch (e) {}
         }
+
+        document.getElementById('appVersionBadge').addEventListener('click', function () {
+          checkAppVersion(true);
+        });
+
+        const reloadBtn = document.getElementById('reloadAppBtn');
+        if (reloadBtn) {
+          reloadBtn.addEventListener('click', function () {
+            window.location.reload(true);
+          });
+        }
+
+        // Автоматическая проверка при разворачивании свернутого приложения на телефоне
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'visible') {
+            checkAppVersion(false);
+          }
+        });
+        window.addEventListener('focus', function () {
+          checkAppVersion(false);
+        });
+
+        checkAppVersion(false);
+        setInterval(function () { checkAppVersion(false); }, 300000);
 
         recalcTotals();
         renderMyHistory();
