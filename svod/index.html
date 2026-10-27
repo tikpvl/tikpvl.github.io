@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f4c81">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ОИК Сводка">
+  <title>Ежедневная сводка секретаря ОИК — Павлодарская область</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    .kz-header {
+      background: linear-gradient(135deg, #0b3c68 0%, #0f4c81 60%, #0284c7 100%);
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Всплывающее напоминание в 17:30 -->
+  <div id="pushBanner" class="hidden fixed top-4 right-4 left-4 sm:left-auto sm:w-96 z-50 bg-amber-50 border-2 border-amber-500 rounded-2xl shadow-2xl p-4">
+    <div class="flex items-start gap-3">
+      <div class="w-11 h-11 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 font-extrabold text-sm">
+        17:30
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-800">Напоминание секретарю ОИК</span>
+          <button id="closePushBannerBtn" type="button" class="text-amber-700 hover:text-amber-950 font-bold text-sm px-1">✕</button>
+        </div>
+        <p class="text-sm font-bold text-slate-900 mt-0.5">Пожалуйста, отправьте ежедневную сводку ОИК!</p>
+        <p class="text-xs text-slate-600 mt-1">Заполните количество кандидатов, самовыдвижение, партии и соответствие.</p>
+        <div class="mt-3 flex items-center gap-2">
+          <button id="focusFormFromPushBtn" type="button" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg shadow-sm">
+            Заполнить сейчас
+          </button>
+          <button id="dismissPushBtn" type="button" class="px-3 py-1.5 bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-medium rounded-lg">
+            Скрыть
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Тост-уведомление -->
+  <div id="toastBox" class="hidden fixed bottom-5 right-5 left-5 sm:left-auto sm:max-w-sm z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center gap-3">
+    <span id="toastIcon" class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+    <span id="toastText" class="text-sm font-medium">Сводка успешно отправлена</span>
+  </div>
+
+  <!-- Шапка сайта секретаря ОИК (без лишних вкладок) -->
+  <header class="kz-header text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-2xl mx-auto px-4 py-3.5 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-sky-200 block">Павлодарская область • Выборы депутатов маслихатов</span>
+          <h1 class="text-base sm:text-lg font-bold leading-tight">Ежедневный отчет секретаря ОИК</h1>
+        </div>
+      </div>
+
+      <button id="openInstallGuideBtn" type="button" class="px-3 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs shadow transition shrink-0 flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+        <span>На рабочий стол</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Панель напоминания 17:30 -->
+  <div class="bg-white border-b border-slate-200">
+    <div class="max-w-2xl mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-slate-700 font-medium">Уведомление в <strong class="text-slate-900">17:30</strong>:</span>
+        <span id="countdownTimer" class="font-mono font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">активно</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="enableNotifBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold border border-slate-300 transition">
+          Включить пуш на телефон
+        </button>
+        <button id="testPushBtn" type="button" class="px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 font-semibold border border-amber-300 transition">
+          🔔 Проверить
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Основная форма секретаря ОИК -->
+  <main class="flex-1 max-w-2xl w-full mx-auto px-4 py-5 space-y-5">
+
+    <!-- Статус сегодняшней сдачи -->
+    <div id="todayStatusCard" class="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div id="todayStatusIcon" class="w-9 h-9 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center shrink-0">!</div>
+        <div>
+          <p id="todayStatusTitle" class="text-xs sm:text-sm font-bold text-amber-950">Сводка за сегодня еще не отправлена</p>
+          <p id="todayStatusSub" class="text-xs text-amber-800">Заполните форму ниже до 17:30 — писать в группы WhatsApp не нужно</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="editTodayBtn" type="button" class="hidden px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold text-xs shrink-0 shadow-2xs transition flex items-center gap-1">
+          <span>✏️ Изменить</span>
+        </button>
+        <span id="currentClockBadge" class="text-xs font-mono font-bold text-amber-900 bg-amber-100 px-2.5 py-1 rounded-lg shrink-0">17:30</span>
+      </div>
+    </div>
+
+    <!-- Карточка формы -->
+    <form id="secretaryForm" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden divide-y divide-slate-200" novalidate>
+
+      <!-- Баннер режима редактирования показаний ОИК -->
+      <div id="editModeBanner" class="hidden p-4 bg-amber-500 text-white flex items-center justify-between gap-3 shadow-inner">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center shrink-0 font-bold text-lg">
+            ✏️
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-black uppercase tracking-wider bg-white/25 px-2 py-0.5 rounded">Режим редактирования</span>
+              <span class="text-xs font-mono opacity-90">● Изменение ранее отправленных данных</span>
+            </div>
+            <p id="editModeDescription" class="text-xs sm:text-sm font-bold mt-0.5">Редактируются данные по ОИК</p>
+          </div>
+        </div>
+        <button id="cancelEditBtn" type="button" class="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold text-xs border border-white/40 transition shrink-0">
+          ✕ Отменить
+        </button>
+      </div>
+
+      <!-- Шаг 1. Округ и территория -->
+      <div class="p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-sky-700 text-white text-xs flex items-center justify-center font-bold">1</span>
+            <span>Данные вашей окружной комиссии (ОИК)</span>
+          </h2>
+          <button id="saveMyOikBtn" type="button" class="text-xs font-semibold text-sky-700 hover:text-sky-900 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200">
+            Запомнить мой ОИК
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label for="reportDate" class="block text-xs font-semibold text-slate-700 mb-1">Дата сводки</label>
+            <input id="reportDate" type="date" value="2026-10-28" required class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600">
+          </div>
+
+          <div>
+            <label for="regionSelect" class="block text-xs font-semibold text-slate-700 mb-1">Область</label>
+            <select id="regionSelect" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:outline-none">
+              <option value="Павлодарская область">Павлодарская область</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="levelSelect" class="block text-xs font-semibold text-slate-700 mb-1">Уровень избирательной комиссии</label>
+            <select id="levelSelect" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600">
+              <option value="Областной маслихат">Областной маслихат (Областные секретари округов)</option>
+              <option value="Городской / Районный маслихат">Городской / Районный маслихат (Районные и городские ОИК)</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="districtSelect" class="block text-xs font-semibold text-slate-700 mb-1">Город или район</label>
+            <select id="districtSelect" required class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600">
+              <optgroup label="Города областного значения">
+                <option value="г. Павлодар">г. Павлодар</option>
+                <option value="г. Экибастуз">г. Экибастуз</option>
+                <option value="г. Аксу">г. Аксу</option>
+              </optgroup>
+              <optgroup label="Районы Павлодарской области">
+                <option value="Актогайский район">Актогайский район</option>
+                <option value="Баянаульский район">Баянаульский район</option>
+                <option value="Железинский район">Железинский район</option>
+                <option value="Иртышский район">Иртышский район</option>
+                <option value="район Тереңкөл">район Тереңкөл</option>
+                <option value="район Аққулы">район Аққулы</option>
+                <option value="Майский район">Майский район</option>
+                <option value="Павлодарский район">Павлодарский район</option>
+                <option value="Успенский район">Успенский район</option>
+                <option value="Щербактинский район">Щербактинский район</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div>
+            <label for="oikNumberInput" class="block text-xs font-semibold text-slate-700 mb-1">Номер ОИК (Округ №)</label>
+            <div class="flex items-center gap-2">
+              <span class="px-3.5 py-2.5 bg-slate-100 text-slate-700 font-bold text-sm rounded-xl border border-slate-300 shrink-0">ОИК №</span>
+              <input id="oikNumberInput" type="number" min="1" max="150" value="" required placeholder="№ ОИК" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-extrabold text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600">
+            </div>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="secretaryNameInput" class="block text-xs font-semibold text-slate-700 mb-1">ФИО секретаря ОИК</label>
+            <input id="secretaryNameInput" type="text" placeholder="Например: Ахметова А.К." class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600">
+          </div>
+        </div>
+      </div>
+
+      <!-- Шаг 2. Количество кандидатов, самовыдвижение и партии -->
+      <div class="p-5 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 border-b border-slate-100 pb-2">
+          <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-sky-700 text-white text-xs flex items-center justify-center font-bold">2</span>
+            <span>Количество кандидатов (Самовыдвижение и Партии)</span>
+          </h2>
+          <span class="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200 self-start sm:self-auto">
+            ✓ Поле «Всего» считается автоматически
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <!-- Всего кандидатов (автоматический подсчет для удобства) -->
+          <div class="p-3.5 rounded-2xl bg-sky-950 text-white flex items-center justify-between border-2 border-sky-800 shadow-sm">
+            <div>
+              <span class="text-[11px] uppercase tracking-wider text-amber-300 font-extrabold block">Всего кандидатов в ОИК</span>
+              <span class="text-xs text-sky-200">Сумма самовыдвиженцев и партий</span>
+            </div>
+            <input id="totalCandidatesInput" type="number" min="0" value="0" readonly tabindex="-1" class="w-20 text-center font-black text-2xl rounded-xl bg-white text-sky-950 py-1.5 px-2 select-none shadow-inner border border-sky-300 pointer-events-none">
+          </div>
+
+          <!-- Самовыдвижение -->
+          <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between">
+            <div>
+              <span class="text-xs font-bold text-amber-950 block">Самовыдвижение</span>
+              <span class="text-[11px] text-amber-800">Из них самовыдвиженцев</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" data-target="selfNominatedInput" data-delta="-1" class="step-btn w-8 h-9 rounded-lg bg-white border border-amber-300 text-amber-900 font-bold text-base hover:bg-amber-100">-</button>
+              <input id="selfNominatedInput" type="number" min="0" value="0" class="w-14 text-center font-extrabold text-base rounded-lg bg-white border border-amber-300 text-slate-900 py-1.5">
+              <button type="button" data-target="selfNominatedInput" data-delta="1" class="step-btn w-8 h-9 rounded-lg bg-white border border-amber-300 text-amber-900 font-bold text-base hover:bg-amber-100">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Выдвижение по партиям -->
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Укажите количество от каждой партии:</span>
+            <span id="partyTotalBadge" class="text-xs font-bold text-sky-800 bg-sky-100 px-2.5 py-0.5 rounded-full">От партий: 0</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <!-- Партия AMANAT (бирюзовый/голубой бренд) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-cyan-50/80 to-white border-2 border-[#009aa6]/50 shadow-xs">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-black bg-[#00828a] text-white shadow-xs">AMANAT</span>
+                <span class="text-xs font-bold text-slate-800">Партия «AMANAT»</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button type="button" data-target="p_amanat" data-delta="-1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">-</button>
+                <input id="p_amanat" type="number" min="0" value="0" data-party="AMANAT" class="party-input w-12 text-center font-extrabold text-sm rounded-lg border border-slate-300 bg-white py-1 text-slate-900">
+                <button type="button" data-target="p_amanat" data-delta="1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">+</button>
+              </div>
+            </div>
+
+            <!-- ДПК Ақ жол (синий бренд) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-blue-50/80 to-white border-2 border-[#1d4e9d]/50 shadow-xs">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-black bg-[#1d4e9d] text-white shadow-xs">АҚ ЖОЛ</span>
+                <span class="text-xs font-bold text-slate-800">ДПК «Ақ жол»</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button type="button" data-target="p_akzhol" data-delta="-1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">-</button>
+                <input id="p_akzhol" type="number" min="0" value="0" data-party="Ақ жол" class="party-input w-12 text-center font-extrabold text-sm rounded-lg border border-slate-300 bg-white py-1 text-slate-900">
+                <button type="button" data-target="p_akzhol" data-delta="1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">+</button>
+              </div>
+            </div>
+
+            <!-- Партия Ауыл (темно-зеленый бренд) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-emerald-50/80 to-white border-2 border-[#0b5c4b]/50 shadow-xs">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-black bg-[#0b5c4b] text-white shadow-xs">АУЫЛ</span>
+                <span class="text-xs font-bold text-slate-800">Партия «Ауыл»</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button type="button" data-target="p_auyl" data-delta="-1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">-</button>
+                <input id="p_auyl" type="number" min="0" value="0" data-party="Ауыл" class="party-input w-12 text-center font-extrabold text-sm rounded-lg border border-slate-300 bg-white py-1 text-slate-900">
+                <button type="button" data-target="p_auyl" data-delta="1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">+</button>
+              </div>
+            </div>
+
+            <!-- Народная партия Казахстана НПК (красный бренд) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-rose-50/80 to-white border-2 border-[#dd151f]/50 shadow-xs">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-black bg-[#dd151f] text-white shadow-xs">НПК</span>
+                <span class="text-xs font-bold text-slate-800">Народная партия (НПК)</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button type="button" data-target="p_npk" data-delta="-1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">-</button>
+                <input id="p_npk" type="number" min="0" value="0" data-party="НПК" class="party-input w-12 text-center font-extrabold text-sm rounded-lg border border-slate-300 bg-white py-1 text-slate-900">
+                <button type="button" data-target="p_npk" data-delta="1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">+</button>
+              </div>
+            </div>
+
+            <!-- Партия Respublica (темно-синий/navy бренд) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-slate-100/80 to-white border-2 border-[#01114c]/50 shadow-xs">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-black bg-[#01114c] text-white shadow-xs">Respublica</span>
+                <span class="text-xs font-bold text-slate-800">Партия «Respublica»</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button type="button" data-target="p_respublica" data-delta="-1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">-</button>
+                <input id="p_respublica" type="number" min="0" value="0" data-party="Respublica" class="party-input w-12 text-center font-extrabold text-sm rounded-lg border border-slate-300 bg-white py-1 text-slate-900">
+                <button type="button" data-target="p_respublica" data-delta="1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">+</button>
+              </div>
+            </div>
+
+            <!-- Партия ОСДП (фиолетово-синий бренд) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-indigo-50/80 to-white border-2 border-[#3e4796]/50 shadow-xs">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-black bg-[#3e4796] text-white shadow-xs">ОСДП</span>
+                <span class="text-xs font-bold text-slate-800">Партия «ОСДП»</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button type="button" data-target="p_osdp" data-delta="-1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">-</button>
+                <input id="p_osdp" type="number" min="0" value="0" data-party="ОСДП" class="party-input w-12 text-center font-extrabold text-sm rounded-lg border border-slate-300 bg-white py-1 text-slate-900">
+                <button type="button" data-target="p_osdp" data-delta="1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">+</button>
+              </div>
+            </div>
+
+            <!-- Партия Байтақ (зеленый бренд) -->
+            <div class="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-green-50/80 to-white border-2 border-[#236525]/50 shadow-xs sm:col-span-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded text-[11px] font-black bg-[#236525] text-white shadow-xs">БАЙТАҚ</span>
+                <span class="text-xs font-bold text-slate-800">Партия зелёных «Байтақ»</span>
+              </div>
+              <div class="flex items-center gap-1">
+                <button type="button" data-target="p_baytak" data-delta="-1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">-</button>
+                <input id="p_baytak" type="number" min="0" value="0" data-party="Байтақ" class="party-input w-12 text-center font-extrabold text-sm rounded-lg border border-slate-300 bg-white py-1 text-slate-900">
+                <button type="button" data-target="p_baytak" data-delta="1" class="step-btn w-7 h-8 rounded-lg bg-white border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition">+</button>
+              </div>
+            </div>
+          </div>
+
+        <div id="sumCheckBanner" class="px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between">
+          <span>✓ Проверка выдвижения: Самовыдвижение (0) + Партии (0) = Всего (0)</span>
+          <span>Верно</span>
+        </div>
+      </div>
+
+      <!-- Шаг 3. Соответствие кандидатов -->
+      <div class="p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-sky-700 text-white text-xs flex items-center justify-center font-bold">3</span>
+              <span>Сведения о соответствии требованиям</span>
+            </h2>
+            <p class="text-[11px] text-slate-500 mt-0.5">Распределите количество вручную (запросы в МВД, Минюст, УГД, СИОПСО)</p>
+          </div>
+        </div>
+
+        <!-- 3 карточки распределения с кнопками +/- -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <!-- Соответствуют -->
+          <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-300 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <label for="compliantInput" class="block text-xs font-bold text-emerald-950">✓ Соответствуют</label>
+              <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">прошли</span>
+            </div>
+            <div class="flex items-center justify-between gap-1.5">
+              <button type="button" data-target="compliantInput" data-delta="-1" class="step-btn w-8 h-9 rounded-lg bg-white border border-emerald-300 text-emerald-900 font-bold text-base hover:bg-emerald-100 transition">-</button>
+              <input id="compliantInput" type="number" min="0" value="0" class="compliance-input w-full text-center font-extrabold text-lg rounded-lg border border-emerald-300 bg-white text-emerald-950 py-1.5">
+              <button type="button" data-target="compliantInput" data-delta="1" class="step-btn w-8 h-9 rounded-lg bg-white border border-emerald-300 text-emerald-900 font-bold text-base hover:bg-emerald-100 transition">+</button>
+            </div>
+            <span class="text-[10px] text-emerald-800 mt-1.5 block text-center font-medium">Проверка завершена без замечаний</span>
+          </div>
+
+          <!-- На проверке -->
+          <div class="p-3.5 rounded-xl bg-amber-50/80 border border-amber-300 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <label for="pendingInput" class="block text-xs font-bold text-amber-950">⏳ На проверке</label>
+              <span class="text-[10px] font-bold text-amber-800 bg-amber-100 px-1.5 py-0.5 rounded">в госорганах</span>
+            </div>
+            <div class="flex items-center justify-between gap-1.5">
+              <button type="button" data-target="pendingInput" data-delta="-1" class="step-btn w-8 h-9 rounded-lg bg-white border border-amber-300 text-amber-900 font-bold text-base hover:bg-amber-100 transition">-</button>
+              <input id="pendingInput" type="number" min="0" value="0" class="compliance-input w-full text-center font-extrabold text-lg rounded-lg border border-amber-300 bg-white text-amber-950 py-1.5">
+              <button type="button" data-target="pendingInput" data-delta="1" class="step-btn w-8 h-9 rounded-lg bg-white border border-amber-300 text-amber-900 font-bold text-base hover:bg-amber-100 transition">+</button>
+            </div>
+            <span class="text-[10px] text-amber-800 mt-1.5 block text-center font-medium">Только приняли док-ты / ждем ответ</span>
+          </div>
+
+          <!-- Не соответствуют / Снято -->
+          <div class="p-3.5 rounded-xl bg-rose-50/70 border border-rose-300 flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-2">
+              <label for="nonCompliantInput" class="block text-xs font-bold text-rose-950">✕ Не соотв. / Отказ</label>
+              <span class="text-[10px] font-bold text-rose-800 bg-rose-100 px-1.5 py-0.5 rounded">снято</span>
+            </div>
+            <div class="flex items-center justify-between gap-1.5">
+              <button type="button" data-target="nonCompliantInput" data-delta="-1" class="step-btn w-8 h-9 rounded-lg bg-white border border-rose-300 text-rose-900 font-bold text-base hover:bg-rose-100 transition">-</button>
+              <input id="nonCompliantInput" type="number" min="0" value="0" class="compliance-input w-full text-center font-extrabold text-lg rounded-lg border border-rose-300 bg-white text-rose-950 py-1.5">
+              <button type="button" data-target="nonCompliantInput" data-delta="1" class="step-btn w-8 h-9 rounded-lg bg-white border border-rose-300 text-rose-900 font-bold text-base hover:bg-rose-100 transition">+</button>
+            </div>
+            <span class="text-[10px] text-rose-800 mt-1.5 block text-center font-medium">Отказ / возврат документов</span>
+          </div>
+        </div>
+
+        <!-- Индикатор сверки соответствия: Соотв + На пров + Отказ = Всего -->
+        <div id="complianceCheckBanner" class="px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between">
+          <span id="complianceCheckText">✓ Проверка соответствия: Соотв. (0) + На проверке (0) + Не соотв. (0) = 0 из 0</span>
+          <span id="complianceCheckStatus" class="font-bold">Совпадает</span>
+        </div>
+
+        <!-- Автоматически рассчитанный статус ОИК и примечание -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div class="p-3 rounded-xl bg-slate-100 border border-slate-200 flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700">Итоговый статус округа:</span>
+              <span class="text-[10px] text-slate-500 font-medium">рассчитан автоматически</span>
+            </div>
+            <div class="mt-1.5 flex items-center gap-2">
+              <span id="computedStatusBadge" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300">Нет кандидатов</span>
+            </div>
+            <input type="hidden" id="complianceStatusSelect" value="На проверке">
+          </div>
+
+          <div>
+            <label for="notesInput" class="block text-xs font-semibold text-slate-700 mb-1">Примечание секретаря (необязательно)</label>
+            <input id="notesInput" type="text" placeholder="Например: 3 кандидата на проверке в УГД и МВД, 1 отказ" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-600">
+          </div>
+        </div>
+      </div>
+
+      <!-- Отправка -->
+      <div class="p-5 bg-slate-50 flex flex-col sm:flex-row items-center gap-3">
+        <button id="submitFormBtn" type="submit" class="w-full sm:flex-1 py-3.5 px-6 rounded-xl kz-header hover:opacity-95 text-white font-bold text-sm shadow-lg transition flex items-center justify-center gap-2">
+          <svg class="w-5 h-5 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          <span id="submitBtnText">Отправить ежедневную сводку ОИК</span>
+        </button>
+        <button id="resetFormBtn" type="button" class="w-full sm:w-auto py-3.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold text-xs transition">
+          Обнулить числа
+        </button>
+      </div>
+    </form>
+
+    <!-- Мои отправленные сводки с этого телефона/ПК -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 space-y-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Мои отправленные сводки с этого устройства</h3>
+        <span id="mySentCountBadge" class="text-xs font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded">0</span>
+      </div>
+      <div id="myHistoryList" class="space-y-2 text-xs text-slate-600">
+        <p class="text-slate-400 py-2 text-center">Вы еще не отправляли сводку с этого устройства</p>
+      </div>
+    </div>
+
+  </main>
+
+
+  
+
+  <!-- Модальное окно установки ярлыка на телефон / рабочий стол -->
+  <div id="installModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 class="text-sm font-bold text-slate-900">Как установить иконку на рабочий стол</h3>
+        <button id="closeInstallModalBtn" type="button" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-700 leading-relaxed">
+        <div class="p-3 rounded-xl bg-sky-50 border border-sky-200">
+          <p class="font-bold text-sky-950">📱 Android (Chrome) и Компьютер:</p>
+          <p class="mt-1">Нажмите меню браузера <strong>«⋮» → «Добавить на главный экран»</strong> (или «Установить приложение»). Ярлык «ОИК Сводка» появится на рабочем столе.</p>
+        </div>
+        <div class="p-3 rounded-xl bg-amber-50 border border-amber-200">
+          <p class="font-bold text-amber-950">🍏 iPhone (Safari):</p>
+          <p class="mt-1">Нажмите внизу <strong>«Поделиться» → «На экран «Домой»» → «Добавить»</strong>. В 17:30 приложение напомнит заполнить данные.</p>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2">
+        <button id="closeInstallModalBottomBtn" type="button" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold text-xs">Понятно</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'pavlodar_tik_oik_records_prod_v1';
+      const PROFILE_KEY = 'pavlodar_tik_oik_profile_v1';
+      const MY_HISTORY_KEY = 'pavlodar_oik_my_submissions_prod_v1';
+      const WEBHOOK_KEY = 'pavlodar_tik_gas_webhook_v1';
+      let lastNotifiedMinute = '';
+
+      function showToast(msg, isWarning) {
+        const box = document.getElementById('toastBox');
+        const icon = document.getElementById('toastIcon');
+        const txt = document.getElementById('toastText');
+        txt.textContent = msg;
+        if (isWarning) {
+          icon.textContent = '!';
+          icon.className = 'w-6 h-6 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center text-xs font-bold shrink-0';
+        } else {
+          icon.textContent = '✓';
+          icon.className = 'w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0';
+        }
+        box.classList.remove('hidden');
+        setTimeout(function () { box.classList.add('hidden'); }, 3500);
+      }
+
+      function playChime() {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          const ctx = new AudioCtx();
+          const now = ctx.currentTime;
+          [587.33, 880].forEach(function (f, i) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.setValueAtTime(f, now + i * 0.14);
+            gain.gain.setValueAtTime(0.12, now + i * 0.14);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.14 + 0.35);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + i * 0.14);
+            osc.stop(now + i * 0.14 + 0.36);
+          });
+        } catch (e) {}
+      }
+
+      function trigger1730Alert(isTest) {
+        playChime();
+        document.getElementById('pushBanner').classList.remove('hidden');
+        if ('Notification' in window && Notification.permission === 'granted') {
+          try {
+            new Notification('17:30 • Напоминание секретарю ОИК', {
+              body: 'Не забудьте отправить ежедневную сводку по кандидатам и соответствию.',
+              tag: 'oik-1730'
+            });
+          } catch (e) {}
+        }
+        if (isTest) {
+          showToast('Тестовое уведомление 17:30 сработало!', false);
+        }
+      }
+
+      function updateTimer() {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('currentClockBadge').textContent = hh + ':' + mm;
+
+        const target = new Date(now);
+        target.setHours(17, 30, 0, 0);
+        if (now >= target) target.setDate(target.getDate() + 1);
+        const diff = Math.max(0, Math.floor((target - now) / 1000));
+        const rH = String(Math.floor(diff / 3600)).padStart(2, '0');
+        const rM = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+        const rS = String(diff % 60).padStart(2, '0');
+        document.getElementById('countdownTimer').textContent = 'через ' + rH + ':' + rM + ':' + rS;
+
+        const key = hh + ':' + mm;
+        if (key === '17:30' && lastNotifiedMinute !== key) {
+          lastNotifiedMinute = key;
+          trigger1730Alert(false);
+        }
+      }
+
+      function recalcTotals() {
+        const selfVal = Math.max(0, parseInt(document.getElementById('selfNominatedInput').value, 10) || 0);
+        let partySum = 0;
+        document.querySelectorAll('.party-input').forEach(function (el) {
+          partySum += Math.max(0, parseInt(el.value, 10) || 0);
+        });
+        document.getElementById('partyTotalBadge').textContent = 'От партий: ' + partySum;
+
+        const totalEl = document.getElementById('totalCandidatesInput');
+        if (true) {
+          totalEl.value = selfVal + partySum;
+        }
+        const totalVal = Math.max(0, parseInt(totalEl.value, 10) || 0);
+
+        // 1. Проверка баланса выдвижения (Шаг 2)
+        const banner1 = document.getElementById('sumCheckBanner');
+        if (totalVal === selfVal + partySum) {
+          banner1.className = 'px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between';
+          banner1.innerHTML = '<span>✓ Проверка выдвижения: Самовыдвижение (' + selfVal + ') + Партии (' + partySum + ') = Всего (' + totalVal + ')</span><span class="font-bold">Совпадает</span>';
+        } else {
+          banner1.className = 'px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center justify-between';
+          banner1.innerHTML = '<span>⚠ Расхождение: Самовыдвижение (' + selfVal + ') + Партии (' + partySum + ') ≠ Всего (' + totalVal + ')</span><span class="font-bold">Исправьте</span>';
+        }
+
+        // 2. Проверка баланса соответствия (Шаг 3): Соотв + На проверке + Отказ = Всего
+        const compVal = Math.max(0, parseInt(document.getElementById('compliantInput').value, 10) || 0);
+        const pendVal = Math.max(0, parseInt(document.getElementById('pendingInput').value, 10) || 0);
+        const nonVal = Math.max(0, parseInt(document.getElementById('nonCompliantInput').value, 10) || 0);
+        const compSum = compVal + pendVal + nonVal;
+
+        const banner2 = document.getElementById('complianceCheckBanner');
+        const text2 = document.getElementById('complianceCheckText');
+        const status2 = document.getElementById('complianceCheckStatus');
+
+        if (compSum === totalVal) {
+          banner2.className = 'px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between';
+          text2.textContent = '✓ Проверка соответствия: Соотв. (' + compVal + ') + На проверке (' + pendVal + ') + Не соотв. (' + nonVal + ') = ' + totalVal + ' из ' + totalVal;
+          status2.textContent = 'Все распределены ✓';
+        } else if (compSum < totalVal) {
+          banner2.className = 'px-3.5 py-2.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-semibold flex items-center justify-between';
+          text2.textContent = '⚠ Расхождение: распределено ' + compSum + ' из ' + totalVal + ' канд. (Осталось распределить: ' + (totalVal - compSum) + ' чел.)';
+          status2.textContent = 'Не все распределены';
+        } else {
+          banner2.className = 'px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-semibold flex items-center justify-between';
+          text2.textContent = '⚠ Ошибка: сумма по статусам (' + compSum + ') превышает общее число (' + totalVal + ') на ' + (compSum - totalVal) + ' чел.!';
+          status2.textContent = 'Превышение';
+        }
+
+        // 3. Автоматический расчет статуса ОИК (никакого ложного полного соответствия!)
+        let calcStatus = 'Полное соответствие';
+        let badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300';
+        let badgeHtml = '✓ Полное соответствие (' + totalVal + ' из ' + totalVal + ')';
+
+        if (totalVal === 0) {
+          calcStatus = 'Нет кандидатов';
+          badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300';
+          badgeHtml = 'Нет кандидатов';
+        } else if (pendVal === totalVal) {
+          calcStatus = 'На проверке';
+          badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300';
+          badgeHtml = '⏳ Все ' + totalVal + ' канд. на проверке в госорганах';
+        } else if (compVal === totalVal) {
+          calcStatus = 'Полное соответствие';
+          badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300';
+          badgeHtml = '✓ Полное соответствие (' + totalVal + ' из ' + totalVal + ')';
+        } else if (nonVal === totalVal) {
+          calcStatus = 'Выявлено несоответствие';
+          badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-extrabold bg-rose-100 text-rose-900 border border-rose-300';
+          badgeHtml = '✕ Все ' + totalVal + ' канд. сняты / отказ';
+        } else {
+          // Смешанный случай (например: 3 соотв., 3 на проверке, 1 отказ)
+          calcStatus = 'Смешанный статус';
+          badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-extrabold bg-sky-100 text-sky-950 border border-sky-300';
+          const parts = [];
+          if (compVal > 0) parts.push(compVal + ' соотв.');
+          if (pendVal > 0) parts.push(pendVal + ' на пров.');
+          if (nonVal > 0) parts.push(nonVal + ' отказ');
+          badgeHtml = '📊 Смешанный: ' + parts.join(' • ');
+        }
+
+        document.getElementById('complianceStatusSelect').value = calcStatus;
+        const statusBadge = document.getElementById('computedStatusBadge');
+        if (statusBadge) {
+          statusBadge.className = badgeClass;
+          statusBadge.innerHTML = badgeHtml;
+        }
+      }
+
+      let editingRecordId = null;
+
+      function startEditRecord(id) {
+        let list = [];
+        try {
+          list = JSON.parse(localStorage.getItem(MY_HISTORY_KEY) || '[]');
+        } catch (e) {}
+
+        let rec = list.find(function (r) { return r.id === id; });
+        if (!rec) {
+          try {
+            const all = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            rec = all.find(function (r) { return r.id === id; });
+          } catch (e) {}
+        }
+
+        if (!rec) {
+          showToast('Сводка не найдена в памяти устройства', true);
+          return;
+        }
+
+        editingRecordId = rec.id;
+
+        if (rec.date) document.getElementById('reportDate').value = rec.date;
+        if (rec.region) document.getElementById('regionSelect').value = rec.region;
+        if (rec.level) document.getElementById('levelSelect').value = rec.level;
+        if (rec.district) document.getElementById('districtSelect').value = rec.district;
+        if (rec.oikNumber) document.getElementById('oikNumberInput').value = rec.oikNumber;
+        if (rec.secretary) document.getElementById('secretaryNameInput').value = rec.secretary;
+
+        document.getElementById('selfNominatedInput').value = rec.selfNominated || 0;
+
+        const parties = rec.parties || {};
+        document.getElementById('p_amanat').value = parties['AMANAT'] || 0;
+        document.getElementById('p_akzhol').value = parties['Ақ жол'] || 0;
+        document.getElementById('p_auyl').value = parties['Ауыл'] || 0;
+        document.getElementById('p_npk').value = parties['НПК'] || 0;
+        document.getElementById('p_respublica').value = parties['Respublica'] || 0;
+        document.getElementById('p_osdp').value = parties['ОСДП'] || 0;
+        document.getElementById('p_baytak').value = parties['Байтақ'] || 0;
+
+        document.getElementById('compliantInput').value = rec.compliantCount || 0;
+        document.getElementById('pendingInput').value = rec.pendingCount || 0;
+        document.getElementById('nonCompliantInput').value = rec.nonCompliantCount || 0;
+        document.getElementById('notesInput').value = rec.notes || '';
+
+        recalcTotals();
+
+        const banner = document.getElementById('editModeBanner');
+        if (banner) {
+          banner.classList.remove('hidden');
+          document.getElementById('editModeDescription').textContent =
+            rec.district + ' • ОИК №' + rec.oikNumber + ' (' + rec.date + ' в ' + (rec.submittedAt || '') + ')';
+        }
+        const submitText = document.getElementById('submitBtnText');
+        if (submitText) {
+          submitText.textContent = '💾 Сохранить изменения в сводке ОИК';
+        }
+
+        const formEl = document.getElementById('secretaryForm');
+        if (formEl) {
+          formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        showToast('Сводка ОИК №' + rec.oikNumber + ' (' + rec.district + ') загружена для редактирования', false);
+      }
+
+      function cancelEdit() {
+        editingRecordId = null;
+        const banner = document.getElementById('editModeBanner');
+        if (banner) banner.classList.add('hidden');
+        const submitText = document.getElementById('submitBtnText');
+        if (submitText) submitText.textContent = 'Отправить ежедневную сводку ОИК';
+        showToast('Режим редактирования закрыт', false);
+      }
+
+      function renderMyHistory() {
+        let list = [];
+        try {
+          list = JSON.parse(localStorage.getItem(MY_HISTORY_KEY) || '[]');
+        } catch (e) {}
+        document.getElementById('mySentCountBadge').textContent = String(list.length);
+        const container = document.getElementById('myHistoryList');
+        if (!list.length) {
+          container.innerHTML = '<p class="text-slate-400 py-3 text-center">Вы еще не отправляли сводку с этого устройства</p>';
+          const card = document.getElementById('todayStatusCard');
+          if (card) {
+            card.className = 'p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-between gap-3';
+            document.getElementById('todayStatusIcon').className = 'w-9 h-9 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center shrink-0';
+            document.getElementById('todayStatusIcon').textContent = '!';
+            document.getElementById('todayStatusTitle').className = 'text-xs sm:text-sm font-bold text-amber-950';
+            document.getElementById('todayStatusTitle').textContent = 'Сводка за сегодня еще не отправлена';
+            document.getElementById('todayStatusSub').className = 'text-xs text-amber-800';
+            document.getElementById('todayStatusSub').textContent = 'Заполните форму ниже до 17:30 — писать в группы WhatsApp не нужно';
+            const editBtn = document.getElementById('editTodayBtn');
+            if (editBtn) editBtn.classList.add('hidden');
+          }
+          return;
+        }
+
+        // Обновляем карточку статуса сегодня
+        const last = list[list.length - 1];
+        const card = document.getElementById('todayStatusCard');
+        card.className = 'p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-3';
+        document.getElementById('todayStatusIcon').className = 'w-9 h-9 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0';
+        document.getElementById('todayStatusIcon').textContent = '✓';
+        document.getElementById('todayStatusTitle').className = 'text-xs sm:text-sm font-bold text-emerald-950';
+        document.getElementById('todayStatusTitle').textContent = 'Сводка отправлена (' + last.district + ', ОИК №' + last.oikNumber + ')';
+        document.getElementById('todayStatusSub').className = 'text-xs text-emerald-800';
+        document.getElementById('todayStatusSub').textContent = 'Время: ' + last.submittedAt + ' • Кандидатов: ' + last.totalCandidates + ' (Соотв: ' + last.compliantCount + ', На пров: ' + last.pendingCount + (last.nonCompliantCount > 0 ? ', Отказ: ' + last.nonCompliantCount : '') + ')';
+
+        const editBtn = document.getElementById('editTodayBtn');
+        if (editBtn) {
+          editBtn.classList.remove('hidden');
+          editBtn.onclick = function () { startEditRecord(last.id); };
+        }
+
+        container.innerHTML = list.slice().reverse().slice(0, 5).map(function (item) {
+          let badgeHtml = '';
+          if (item.pendingCount === item.totalCandidates && item.totalCandidates > 0) {
+            badgeHtml = '<span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200">⏳ На проверке (' + item.pendingCount + ')</span>';
+          } else if (item.compliantCount === item.totalCandidates && item.totalCandidates > 0) {
+            badgeHtml = '<span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-200">✓ Полное соответствие (' + item.compliantCount + ')</span>';
+          } else if (item.nonCompliantCount === item.totalCandidates && item.totalCandidates > 0) {
+            badgeHtml = '<span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-100 text-rose-900 border border-rose-200">✕ Отказ (' + item.nonCompliantCount + ')</span>';
+          } else {
+            badgeHtml = '<div class="flex items-center gap-1 justify-end flex-wrap">' +
+              (item.compliantCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900">' + item.compliantCount + ' соотв.</span>' : '') +
+              (item.pendingCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900">' + item.pendingCount + ' пров.</span>' : '') +
+              (item.nonCompliantCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-900">' + item.nonCompliantCount + ' отказ</span>' : '') +
+            '</div>';
+          }
+
+          return '<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">' +
+            '<div class="flex-1 min-w-0">' +
+              '<div class="flex items-center gap-2 flex-wrap">' +
+                '<span class="font-bold text-slate-900">' + item.district + ' • ОИК №' + item.oikNumber + '</span>' +
+                '<span class="text-[10px] text-slate-500 font-medium">(' + item.date + ' в ' + item.submittedAt + ')</span>' +
+              '</div>' +
+              '<span class="block text-[11px] text-slate-500 mt-0.5">' + item.level + ' • Секретарь: ' + (item.secretary || '—') + '</span>' +
+              '<div class="mt-1.5 flex items-center gap-1.5 flex-wrap">' +
+                '<span class="px-2 py-0.5 rounded bg-sky-100 text-sky-950 font-extrabold text-[11px]">Всего: ' + item.totalCandidates + '</span>' +
+                badgeHtml +
+              '</div>' +
+            '</div>' +
+            '<div class="flex items-center gap-2 shrink-0 self-end sm:self-center">' +
+              '<button type="button" data-edit-id="' + item.id + '" class="edit-sub-btn px-3 py-1.5 rounded-lg bg-white hover:bg-sky-50 text-sky-800 border border-sky-300 font-bold text-xs shadow-2xs transition flex items-center gap-1">' +
+                '<span>✏️ Редактировать</span>' +
+              '</button>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      function init() {
+        try {
+          const prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+          if (prof) {
+            if (prof.level) document.getElementById('levelSelect').value = prof.level;
+            if (prof.district) document.getElementById('districtSelect').value = prof.district;
+            if (prof.oikNumber) document.getElementById('oikNumberInput').value = prof.oikNumber;
+            if (prof.secretary) document.getElementById('secretaryNameInput').value = prof.secretary;
+          }
+        } catch (e) {}
+
+        document.querySelectorAll('.step-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            const id = btn.getAttribute('data-target');
+            const delta = parseInt(btn.getAttribute('data-delta'), 10) || 0;
+            const inp = document.getElementById(id);
+            if (inp) {
+              inp.value = Math.max(0, (parseInt(inp.value, 10) || 0) + delta);
+              recalcTotals();
+            }
+          });
+        });
+
+        document.getElementById('selfNominatedInput').addEventListener('input', recalcTotals);
+        document.getElementById('totalCandidatesInput').addEventListener('input', recalcTotals);
+        // auto-total always on
+        document.querySelectorAll('.party-input').forEach(function (el) {
+          el.addEventListener('input', recalcTotals);
+        });
+        document.querySelectorAll('.compliance-input').forEach(function (el) {
+          el.addEventListener('input', recalcTotals);
+        });
+
+        document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+
+        document.getElementById('myHistoryList').addEventListener('click', function (e) {
+          const btn = e.target.closest('.edit-sub-btn');
+          if (!btn) return;
+          const id = btn.getAttribute('data-edit-id');
+          startEditRecord(id);
+        });
+
+        document.getElementById('saveMyOikBtn').addEventListener('click', function () {
+          try {
+            const prof = {
+              level: document.getElementById('levelSelect').value,
+              district: document.getElementById('districtSelect').value,
+              oikNumber: document.getElementById('oikNumberInput').value,
+              secretary: document.getElementById('secretaryNameInput').value
+            };
+            localStorage.setItem(PROFILE_KEY, JSON.stringify(prof));
+            showToast('ОИК №' + prof.oikNumber + ' (' + prof.district + ') сохранен!', false);
+          } catch (e) {}
+        });
+
+        document.getElementById('resetFormBtn').addEventListener('click', function () {
+          document.getElementById('selfNominatedInput').value = 0;
+          document.querySelectorAll('.party-input').forEach(function (el) { el.value = 0; });
+          document.getElementById('compliantInput').value = 0;
+          document.getElementById('pendingInput').value = 0;
+          document.getElementById('nonCompliantInput').value = 0;
+          document.getElementById('notesInput').value = '';
+          recalcTotals();
+          showToast('Численные поля обнулены', false);
+        });
+
+        document.getElementById('secretaryForm').addEventListener('submit', function (e) {
+          e.preventDefault();
+          const oikNum = parseInt(document.getElementById('oikNumberInput').value, 10);
+          if (!oikNum || oikNum < 1) {
+            showToast('Укажите номер вашего ОИК!', true);
+            return;
+          }
+
+          const parties = {};
+          let partySum = 0;
+          document.querySelectorAll('.party-input').forEach(function (el) {
+            const p = el.getAttribute('data-party');
+            const v = Math.max(0, parseInt(el.value, 10) || 0);
+            parties[p] = v;
+            partySum += v;
+          });
+
+          const selfVal = Math.max(0, parseInt(document.getElementById('selfNominatedInput').value, 10) || 0);
+          const totalVal = Math.max(0, parseInt(document.getElementById('totalCandidatesInput').value, 10) || 0);
+
+          // Проверка 1: Самовыдвижение + партии = Всего
+          if (totalVal !== selfVal + partySum) {
+            showToast('Ошибка выдвижения: сумма самовыдвижения (' + selfVal + ') и партий (' + partySum + ') не равна общему числу (' + totalVal + ')!', true);
+            const b1 = document.getElementById('sumCheckBanner');
+            if (b1) b1.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+
+          const compVal = Math.max(0, parseInt(document.getElementById('compliantInput').value, 10) || 0);
+          const pendVal = Math.max(0, parseInt(document.getElementById('pendingInput').value, 10) || 0);
+          const nonVal = Math.max(0, parseInt(document.getElementById('nonCompliantInput').value, 10) || 0);
+          const compSum = compVal + pendVal + nonVal;
+
+          // Проверка 2: Соответствуют + На проверке + Отказ = Всего кандидатов
+          if (compSum !== totalVal) {
+            showToast('Ошибка соответствия: распределите всех ' + totalVal + ' кандидатов! Сейчас указано ' + compSum + ' из ' + totalVal + ' (осталось: ' + Math.abs(totalVal - compSum) + ').', true);
+            const b2 = document.getElementById('complianceCheckBanner');
+            if (b2) b2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+
+          const recordId = editingRecordId || ('rec-' + Date.now());
+          const now = new Date();
+          const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+          const record = {
+            id: recordId,
+            date: document.getElementById('reportDate').value || '2026-10-28',
+            region: document.getElementById('regionSelect').value,
+            level: document.getElementById('levelSelect').value,
+            district: document.getElementById('districtSelect').value,
+            oikNumber: oikNum,
+            secretary: document.getElementById('secretaryNameInput').value.trim() || 'Секретарь ОИК',
+            totalCandidates: totalVal,
+            selfNominated: selfVal,
+            parties: parties,
+            compliantCount: compVal,
+            pendingCount: pendVal,
+            nonCompliantCount: nonVal,
+            complianceStatus: document.getElementById('complianceStatusSelect').value,
+            notes: document.getElementById('notesInput').value.trim(),
+            submittedAt: timeStr
+          };
+
+          try {
+            const allRecords = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const idx = allRecords.findIndex(function (r) {
+              return r.id === recordId || (r.district === record.district && r.oikNumber === record.oikNumber && r.level === record.level);
+            });
+            if (idx !== -1) allRecords[idx] = record;
+            else allRecords.push(record);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(allRecords));
+
+            const myHistory = JSON.parse(localStorage.getItem(MY_HISTORY_KEY) || '[]');
+            const hIdx = myHistory.findIndex(function (r) {
+              return r.id === recordId || (r.district === record.district && r.oikNumber === record.oikNumber && r.level === record.level);
+            });
+            if (hIdx !== -1) myHistory[hIdx] = record;
+            else myHistory.push(record);
+            localStorage.setItem(MY_HISTORY_KEY, JSON.stringify(myHistory));
+
+            if ('BroadcastChannel' in window) {
+              const bc = new BroadcastChannel('pavlodar_tik_sync');
+              bc.postMessage({ type: 'NEW_RECORD', record: record });
+              bc.close();
+            }
+
+            const wh = localStorage.getItem(WEBHOOK_KEY);
+            if (wh && wh.startsWith('https://')) {
+              fetch(wh, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(record)
+              });
+            }
+          } catch (err) {}
+
+          const wasEditing = Boolean(editingRecordId);
+          if (editingRecordId) {
+            cancelEdit();
+            showToast('Изменения в сводке ОИК №' + record.oikNumber + ' (' + record.district + ') сохранены!', false);
+          } else {
+            showToast('Сводка ОИК №' + record.oikNumber + ' (' + record.district + ') успешно отправлена в ТИК!', false);
+          }
+          renderMyHistory();
+        });
+
+        document.getElementById('testPushBtn').addEventListener('click', function () { trigger1730Alert(true); });
+        document.getElementById('closePushBannerBtn').addEventListener('click', function () {
+          document.getElementById('pushBanner').classList.add('hidden');
+        });
+        document.getElementById('dismissPushBtn').addEventListener('click', function () {
+          document.getElementById('pushBanner').classList.add('hidden');
+        });
+        document.getElementById('focusFormFromPushBtn').addEventListener('click', function () {
+          document.getElementById('pushBanner').classList.add('hidden');
+          document.getElementById('totalCandidatesInput').focus();
+        });
+
+        document.getElementById('enableNotifBtn').addEventListener('click', function () {
+          if (!('Notification' in window)) {
+            showToast('Звуковое напоминание в 17:30 активно', false);
+            return;
+          }
+          Notification.requestPermission().then(function (p) {
+            if (p === 'granted') {
+              document.getElementById('enableNotifBtn').textContent = '✓ Пуши 17:30 включены';
+              showToast('Уведомления на 17:30 включены!', false);
+            } else {
+              showToast('Включено звуковое напоминание в 17:30', false);
+            }
+          }).catch(function () {
+            showToast('Включено звуковое напоминание в 17:30', false);
+          });
+        });
+
+        document.getElementById('openInstallGuideBtn').addEventListener('click', function () {
+          document.getElementById('installModal').classList.remove('hidden');
+        });
+        document.getElementById('closeInstallModalBtn').addEventListener('click', function () {
+          document.getElementById('installModal').classList.add('hidden');
+        });
+        document.getElementById('closeInstallModalBottomBtn').addEventListener('click', function () {
+          document.getElementById('installModal').classList.add('hidden');
+        });
+
+        
+
+        
+
+        
+
+        if ('BroadcastChannel' in window) {
+          try {
+            const bcSync = new BroadcastChannel('pavlodar_tik_sync');
+            bcSync.onmessage = function (ev) {
+              if (ev && ev.data) {
+                if (ev.data.type === 'CLEAR_DATA') {
+                  localStorage.removeItem(MY_HISTORY_KEY);
+                  renderMyHistory();
+                  showToast('База данных обнулена администратором ТИК', false);
+                } else if (ev.data.type === 'SYNC_FROM_SHEETS') {
+                  const activeIds = (ev.data.records || []).map(function (r) { return r.id; });
+                  let myHistory = [];
+                  try {
+                    myHistory = JSON.parse(localStorage.getItem(MY_HISTORY_KEY) || '[]');
+                  } catch (e) {}
+                  myHistory = myHistory.filter(function (r) { return activeIds.indexOf(r.id) !== -1; });
+                  localStorage.setItem(MY_HISTORY_KEY, JSON.stringify(myHistory));
+                  renderMyHistory();
+                }
+              }
+            };
+          } catch (e) {}
+        }
+
+        recalcTotals();
+        renderMyHistory();
+        updateTimer();
+        setInterval(updateTimer, 1000);
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
