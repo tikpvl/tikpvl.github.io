@@ -14,7 +14,7 @@
   --pri-dark: #0B3C68;
   --gold: #F59E0B;
   --gold-dark: #D97706;
-  --bg: #E2E8F0; /* Более темный, контрастный и глубокий фон */
+  --bg: #E2E8F0;
   --card: #FFFFFF;
   --ink: #0F172A;
   --ink-sec: #475569;
@@ -274,6 +274,31 @@ th {
 .g { background: var(--ok-bg); color: var(--ok); }
 .y { background: var(--warn-bg); color: var(--warn); }
 .r { background: var(--bad-bg); color: var(--bad); }
+
+/* Кнопка крестика для удаления */
+.btn-del {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  border-radius: 6px;
+  border: 1px solid #FECACA;
+  background: #FFF;
+  color: #DC2626;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+.btn-del:hover {
+  background: #DC2626;
+  color: #FFF;
+  border-color: #DC2626;
+  box-shadow: 0 2px 5px rgba(220, 38, 38, 0.25);
+}
+
 .hard li {
   margin-bottom: 10px;
   font-size: 13.5px;
@@ -443,7 +468,18 @@ const QT={"1":"В ТИК поступила жалоба на решение У�
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 let ALL=[],sortK="ts",sortD=-1;
-const COLS=[["ts","Дата"],["district","Район / город"],["kind","Тип"],["num","№"],["fio","ФИО"],["ok","Верно"],["bad","Неверно"],["pct","%"],["wrong","Неверные вопросы (№ в базе)"]];
+const COLS=[
+  ["ts","Дата"],
+  ["district","Район / город"],
+  ["kind","Тип"],
+  ["num","№"],
+  ["fio","ФИО"],
+  ["ok","Верно"],
+  ["bad","Неверно"],
+  ["pct","%"],
+  ["wrong","Неверные вопросы (№ в базе)"],
+  ["del","Удалить"]
+];
 function pctClass(p){return p>=80?"g":p>=60?"y":"r"}
 
 let pctTimer = null;
@@ -491,6 +527,39 @@ async function load(keyOverride){
   $("upd").textContent="Обновлено: "+new Date().toLocaleString("ru-RU");
   draw();
 }
+
+// Функция удаления строки из таблицы и Google Sheets
+async function deleteRow(ts, fio) {
+  if (!confirm(`Вы действительно хотите безвозвратно удалить запись тестируемого:\n\n${fio}\nДата: ${ts}?`)) {
+    return;
+  }
+  startLoaderAnim();
+  const key = localStorage.getItem("ak") || "";
+  try {
+    const res = await new Promise((resolve, reject) => {
+      const cb = "cb_del_" + Date.now();
+      const s = document.createElement("script");
+      const t = setTimeout(() => { cleanup(); reject(new Error("Таймаут соединения")); }, 15000);
+      function cleanup() { clearTimeout(t); delete window[cb]; s.remove(); }
+      window[cb] = x => { cleanup(); resolve(x); };
+      s.onerror = () => { cleanup(); reject(new Error("Ошибка вызова удаления")); };
+      s.src = SCRIPT_URL + "?action=delete&key=" + encodeURIComponent(key) + "&ts=" + encodeURIComponent(ts) + "&fio=" + encodeURIComponent(fio) + "&callback=" + cb;
+      document.head.appendChild(s);
+    });
+
+    if (res && res.ok) {
+      await load();
+      finishLoaderAnim();
+    } else {
+      stopLoaderAnim();
+      alert("Не удалось удалить: " + (res.error || "ошибка"));
+    }
+  } catch(e) {
+    stopLoaderAnim();
+    alert("Ошибка удаления: " + e.message);
+  }
+}
+
 function filtered(){
   const d=$("fd").value,k=$("fk").value,mn=$("fmin").value,mx=$("fmax").value,q=$("fq").value.trim().toLowerCase();
   return ALL.filter(r=>(!d||r.district===d)&&(!k||r.kind===k)&&(mn===""||r.pct>=+mn)&&(mx===""||r.pct<=+mx)&&(!q||(r.fio+" "+r.num).toLowerCase().includes(q)));
@@ -513,11 +582,34 @@ function draw(){
   const cnt={};rows.forEach(r=>r.wrong.split(",").map(s=>s.trim()).filter(Boolean).forEach(x=>cnt[x]=(cnt[x]||0)+1));
   $("hard").innerHTML=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([q,c])=>`<li><b>№${q}</b> — ошибок: ${c}. ${esc(QT[q]||"")}</li>`).join("")||'<li class="m">Нет данных</li>';
   $("cnt").textContent="("+n+")";
+  
   $("th").innerHTML=COLS.map(([k,l])=>`<th data-k="${k}">${l}${sortK===k?(sortD>0?" ▲":" ▼"):""}</th>`).join("");
-  $("th").querySelectorAll("th").forEach(t=>t.onclick=()=>{const k=t.dataset.k;sortD=sortK===k?-sortD:1;sortK=k;draw()});
+  $("th").querySelectorAll("th").forEach(t=>{
+    t.onclick=()=>{
+      const k=t.dataset.k;
+      if (k === "del") return;
+      sortD=sortK===k?-sortD:1;
+      sortK=k;
+      draw();
+    };
+  });
+
   const s=[...rows].sort((a,b)=>{const x=a[sortK],y=b[sortK];return (typeof x==="number"&&typeof y==="number"?x-y:String(x).localeCompare(String(y),"ru",{numeric:true}))*sortD});
-  $("tb").innerHTML=s.map(r=>`<tr><td>${esc(r.ts)}</td><td>${esc(r.district)}</td><td>${r.kind}</td><td>${esc(r.num)}</td><td>${esc(r.fio)}</td><td>${r.ok}</td><td>${r.bad}</td><td><span class="pill ${pctClass(r.pct)}">${r.pct}%</span></td><td>${esc(r.wrong)}</td></tr>`).join("");
+  
+  $("tb").innerHTML=s.map(r=>`<tr>
+    <td>${esc(r.ts)}</td>
+    <td>${esc(r.district)}</td>
+    <td>${r.kind}</td>
+    <td>${esc(r.num)}</td>
+    <td>${esc(r.fio)}</td>
+    <td>${r.ok}</td>
+    <td>${r.bad}</td>
+    <td><span class="pill ${pctClass(r.pct)}">${r.pct}%</span></td>
+    <td>${esc(r.wrong)}</td>
+    <td style="text-align:center"><button class="btn-del" title="Удалить запись" onclick="deleteRow('${esc(r.ts)}', '${esc(r.fio)}')">✕</button></td>
+  </tr>`).join("");
 }
+
 ["fd","fk","fmin","fmax"].forEach(i=>$(i).onchange=draw);$("fq").oninput=draw;
 $("reset").onclick=()=>{["fd","fk","fmin","fmax","fq"].forEach(i=>$(i).value="");draw()};
 $("refresh").onclick=async ()=>{
@@ -530,9 +622,17 @@ $("refresh").onclick=async ()=>{
     alert("Ошибка: " + e.message);
   }
 };
-$("csv").onclick=()=>{const rows=filtered();const h=COLS.map(c=>c[1]);const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
-  const t=[h.map(q).join(";")].concat(rows.map(r=>COLS.map(([k])=>q(r[k])).join(";"))).join("\n");
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+t],{type:"text/csv;charset=utf-8"}));a.download="results.csv";a.click()};
+
+$("csv").onclick=()=>{
+  const rows=filtered();
+  const h=COLS.filter(c=>c[0]!=="del").map(c=>c[1]);
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  const t=[h.map(q).join(";")].concat(rows.map(r=>COLS.filter(c=>c[0]!=="del").map(([k])=>q(r[k])).join(";"))).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob(["\ufeff"+t],{type:"text/csv;charset=utf-8"}));
+  a.download="results.csv";
+  a.click();
+};
 
 async function enter(){
   const val = $("key").value.trim();
