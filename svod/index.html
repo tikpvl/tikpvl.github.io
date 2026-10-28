@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -520,7 +521,15 @@
       const STORAGE_KEY = 'pavlodar_tik_oik_records_prod_v1';
       const PROFILE_KEY = 'pavlodar_tik_oik_profile_v1';
       const MY_HISTORY_KEY = 'pavlodar_oik_my_submissions_prod_v1';
+      // URL развернутого скрипта Google Apps Script (Code.gs):
+      const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwexWujTtqxSZyAAFNUmG6pF8PTVZcKhd40XIjAfb0fgzP8D4ghjeBsIlVjx5eAkrE/exec';
       const WEBHOOK_KEY = 'pavlodar_tik_gas_webhook_v1';
+
+      function getGasWebhookUrl() {
+        const stored = (localStorage.getItem(WEBHOOK_KEY) || '').trim();
+        if (stored && stored.startsWith('https://')) return stored;
+        return (DEFAULT_GAS_URL || '').trim();
+      }
       let lastNotifiedMinute = '';
 
 
@@ -835,7 +844,7 @@
             bc.close();
           }
 
-          const wh = localStorage.getItem(WEBHOOK_KEY);
+          const wh = getGasWebhookUrl();
           if (wh && wh.startsWith('https://')) {
             fetch(wh, {
               method: 'POST',
@@ -995,6 +1004,29 @@ function renderMyHistory() {
           '</div>';
         }).join('');
       }
+
+            window.getGasWebhookUrl = getGasWebhookUrl;
+      window.setGasWebhook = function (newUrl) {
+        if (!newUrl) {
+          newUrl = prompt('Введите URL развернутого Google Apps Script (https://script.google.com/macros/s/.../exec):', getGasWebhookUrl());
+        }
+        if (newUrl && newUrl.trim().startsWith('https://')) {
+          localStorage.setItem(WEBHOOK_KEY, newUrl.trim());
+          showToast('URL Google Таблицы сохранен!');
+        }
+      };
+
+      // Вызов по клику на версию с зажатым Ctrl или двойному клику
+      const vBadge1 = document.getElementById('appVersionBadge');
+      if (vBadge1) {
+        vBadge1.addEventListener('dblclick', function () { window.setGasWebhook(); });
+      }
+      window.addEventListener('keydown', function (e) {
+        if (e.ctrlKey && e.shiftKey && (e.key === 'S' || e.key === 's' || e.key === 'Ы' || e.key === 'ы')) {
+          e.preventDefault();
+          window.setGasWebhook();
+        }
+      });
 
       function init() {
         try {
@@ -1160,7 +1192,7 @@ function renderMyHistory() {
               bc.close();
             }
 
-            const wh = localStorage.getItem(WEBHOOK_KEY);
+            const wh = getGasWebhookUrl();
             if (wh && wh.startsWith('https://')) {
               fetch(wh, {
                 method: 'POST',
