@@ -6,19 +6,19 @@
   <title>Территориальная избирательная комиссия Павлодарской области | Портал сервисов</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --kz-blue-dark: #002b49;
-      --kz-blue-deep: #051929;
-      --kz-gold: #e5a93b;
-      --kz-gold-light: #ffd275;
-      --kz-gold-glow: rgba(229, 169, 59, 0.28);
-      --card-bg: rgba(9, 32, 54, 0.75);
-      --card-border: rgba(229, 169, 59, 0.22);
-      --card-hover-border: rgba(229, 169, 59, 0.7);
-      --text-main: #f4f8fb;
-      --text-muted: #94abbd;
+      --kz-cyan: #00b4d8;
+      --kz-blue-bright: #0077b6;
+      --kz-gold: #ffbe0b;
+      --kz-gold-bright: #ffd000;
+      --kz-gold-hover: #fff066;
+      --card-bg: rgba(7, 33, 64, 0.75);
+      --card-border: rgba(255, 190, 11, 0.35);
+      --card-hover-border: #ffd000;
+      --text-white: #ffffff;
+      --text-soft: #c8e1f5;
     }
 
     * {
@@ -29,8 +29,8 @@
     }
 
     body {
-      background: radial-gradient(circle at 50% 8%, #093c66 0%, var(--kz-blue-deep) 65%, #020a12 100%);
-      color: var(--text-main);
+      background: radial-gradient(circle at 50% 0%, #005f9e 0%, #003666 45%, #02182b 100%);
+      color: var(--text-white);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -39,33 +39,49 @@
       overflow-x: hidden;
     }
 
+    /* Яркие фоновые световые пятна (Glow effect) */
     body::before {
       content: "";
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(0, 180, 216, 0.45) 0%, rgba(255, 190, 11, 0.15) 50%, transparent 75%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Фоновый узор */
+    .bg-pattern {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 520px;
-      background-image: radial-gradient(circle at center, transparent 35%, var(--kz-blue-deep) 90%),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath fill='%23e5a93b' fill-opacity='0.035' d='M60 0 C45 20 15 20 0 0 L0 10 C15 30 45 30 60 10 C75 30 105 30 120 10 L120 0 C105 20 75 20 60 0 Z M60 30 C45 50 15 50 0 30 L0 40 C15 60 45 60 60 40 C75 60 105 60 120 40 L120 30 C105 50 75 50 60 30 Z'/%3E%3C/svg%3E");
+      height: 600px;
+      background-image: radial-gradient(circle at center, transparent 30%, #02182b 95%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath fill='%23ffbe0b' fill-opacity='0.06' d='M60 0 C45 20 15 20 0 0 L0 10 C15 30 45 30 60 10 C75 30 105 30 120 10 L120 0 C105 20 75 20 60 0 Z M60 30 C45 50 15 50 0 30 L0 40 C15 60 45 60 60 40 C75 60 105 60 120 40 L120 30 C105 50 75 50 60 30 Z'/%3E%3C/svg%3E");
       background-repeat: repeat;
       pointer-events: none;
       z-index: 0;
     }
 
-    .top-ornament-bar {
+    /* Верхняя золотая сверкающая полоса */
+    .top-gold-line {
       width: 100%;
-      height: 6px;
-      background: linear-gradient(90deg, #002b49 0%, var(--kz-gold) 50%, #002b49 100%);
-      box-shadow: 0 0 18px var(--kz-gold-glow);
+      height: 8px;
+      background: linear-gradient(90deg, #0077b6 0%, var(--kz-gold-bright) 50%, #0077b6 100%);
+      box-shadow: 0 0 20px rgba(255, 208, 0, 0.8), 0 2px 10px rgba(0,0,0,0.5);
       position: relative;
       z-index: 2;
     }
 
     header {
       width: 100%;
-      max-width: 960px;
-      padding: 40px 20px 20px;
+      max-width: 980px;
+      padding: 45px 20px 25px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -74,146 +90,156 @@
       z-index: 1;
     }
 
+    /* Контейнер логотипа */
     .logo-container {
-      width: 110px;
-      height: 110px;
+      width: 124px;
+      height: 124px;
       margin-bottom: 22px;
       border-radius: 50%;
-      box-shadow: 0 0 30px var(--kz-gold-glow), 0 8px 20px rgba(0,0,0,0.4);
+      padding: 4px;
+      background: linear-gradient(135deg, var(--kz-gold-hover), #e67e22, var(--kz-gold-bright));
+      box-shadow: 0 0 35px rgba(255, 208, 0, 0.6), 0 10px 25px rgba(0,0,0,0.6);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.3s ease;
-      background: #000;
-      overflow: hidden;
+      transition: all 0.35s ease;
+      cursor: pointer;
     }
 
     .logo-container:hover {
-      transform: scale(1.05);
+      transform: scale(1.08) rotate(3deg);
+      box-shadow: 0 0 50px rgba(255, 208, 0, 0.9), 0 12px 30px rgba(0,0,0,0.7);
     }
 
     .logo-img {
       width: 100%;
       height: 100%;
+      border-radius: 50%;
       object-fit: cover;
       display: block;
+      background: #000;
     }
 
     .header-titles h1 {
-      font-size: 1.55rem;
-      font-weight: 800;
+      font-size: 1.7rem;
+      font-weight: 900;
       color: #ffffff;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       line-height: 1.35;
-      margin-bottom: 8px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      margin-bottom: 10px;
+      text-shadow: 0 3px 15px rgba(0,0,0,0.6);
     }
 
     .header-titles p {
-      font-size: 0.95rem;
-      color: var(--kz-gold-light);
-      letter-spacing: 1.5px;
+      font-size: 1.05rem;
+      color: var(--kz-gold-bright);
+      letter-spacing: 2px;
       text-transform: uppercase;
-      font-weight: 600;
+      font-weight: 700;
+      text-shadow: 0 2px 10px rgba(255, 208, 0, 0.4);
     }
 
+    /* Разделитель с орнаментом */
     .divider-ornament {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 16px;
       width: 100%;
-      max-width: 440px;
-      margin: 20px auto 0;
+      max-width: 480px;
+      margin: 22px auto 0;
     }
 
     .divider-line {
       flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--kz-gold), transparent);
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--kz-gold-bright), transparent);
     }
 
     .ornament-icon {
-      width: 22px;
-      height: 22px;
-      fill: var(--kz-gold);
+      width: 26px;
+      height: 26px;
+      fill: var(--kz-gold-bright);
+      filter: drop-shadow(0 0 6px rgba(255, 208, 0, 0.7));
     }
 
     .container {
       width: 100%;
-      max-width: 960px;
-      padding: 10px 20px 40px;
+      max-width: 980px;
+      padding: 15px 20px 50px;
       display: flex;
       flex-direction: column;
-      gap: 36px;
+      gap: 40px;
       position: relative;
       z-index: 1;
     }
 
     .section-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--kz-gold);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--kz-gold-bright);
       text-transform: uppercase;
       letter-spacing: 1.5px;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
       gap: 12px;
+      text-shadow: 0 0 10px rgba(255, 208, 0, 0.4);
     }
 
     .section-title::after {
       content: "";
-      height: 1px;
-      background: linear-gradient(90deg, var(--card-border), transparent);
+      height: 2px;
+      background: linear-gradient(90deg, rgba(255, 208, 0, 0.6), transparent);
       flex: 1;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 20px;
     }
 
+    /* Карточки */
     .card {
       background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 22px;
+      border: 1.5px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
       text-decoration: none;
       color: inherit;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      backdrop-filter: blur(10px);
-      transition: all 0.28s ease;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
       overflow: hidden;
     }
 
+    /* Золотой градиентный акцент слева */
     .card::before {
       content: "";
       position: absolute;
       top: 0;
       left: 0;
-      width: 4px;
+      width: 5px;
       height: 100%;
-      background: var(--kz-gold);
-      opacity: 0.4;
-      transition: opacity 0.25s, width 0.25s;
+      background: linear-gradient(180deg, var(--kz-gold-bright), #00b4d8);
+      transition: width 0.25s ease;
     }
 
     a.card:hover {
-      background: rgba(14, 44, 73, 0.88);
+      background: rgba(10, 48, 88, 0.95);
       border-color: var(--card-hover-border);
-      transform: translateY(-3px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 16px var(--kz-gold-glow);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 208, 0, 0.45);
     }
 
     a.card:hover::before {
-      opacity: 1;
-      width: 6px;
+      width: 8px;
     }
 
     .card-top {
@@ -221,46 +247,50 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .card h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
+      font-size: 1.25rem;
+      font-weight: 800;
       color: #ffffff;
       line-height: 1.3;
     }
 
+    /* Бейджи */
     .badge {
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 4px 10px;
+      letter-spacing: 0.6px;
+      padding: 5px 12px;
       border-radius: 20px;
-      background: rgba(0, 119, 153, 0.25);
-      border: 1px solid rgba(0, 180, 230, 0.4);
-      color: #72d9ff;
-      font-weight: 600;
+      background: rgba(0, 180, 216, 0.2);
+      border: 1px solid #00b4d8;
+      color: #90e0ef;
+      font-weight: 700;
       white-space: nowrap;
+      box-shadow: 0 0 8px rgba(0, 180, 216, 0.3);
     }
 
     .badge-admin {
-      background: rgba(229, 62, 62, 0.15);
-      border: 1px solid rgba(229, 62, 62, 0.4);
-      color: #ff8585;
+      background: rgba(239, 35, 60, 0.25);
+      border: 1px solid #ff4d6d;
+      color: #ffb3c1;
+      box-shadow: 0 0 8px rgba(255, 77, 109, 0.35);
     }
 
     .badge-soon {
-      background: rgba(148, 171, 189, 0.1);
-      border: 1px solid rgba(148, 171, 189, 0.25);
-      color: var(--text-muted);
+      background: rgba(144, 224, 239, 0.08);
+      border: 1px dashed rgba(200, 225, 245, 0.3);
+      color: var(--text-soft);
+      box-shadow: none;
     }
 
     .card p {
-      color: var(--text-muted);
-      font-size: 0.86rem;
-      line-height: 1.45;
-      margin-bottom: 20px;
+      color: var(--text-soft);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      margin-bottom: 22px;
     }
 
     .card-footer {
@@ -270,24 +300,26 @@
     }
 
     .card-btn {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--kz-gold);
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--kz-gold-bright);
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: gap 0.2s;
+      transition: all 0.25s ease;
     }
 
     a.card:hover .card-btn {
-      color: #fff;
-      gap: 10px;
+      color: #ffffff;
+      gap: 12px;
+      text-shadow: 0 0 10px rgba(255, 208, 0, 0.8);
     }
 
     .card.disabled {
-      opacity: 0.45;
+      opacity: 0.55;
       cursor: not-allowed;
       border-style: dashed;
+      background: rgba(4, 20, 38, 0.5);
     }
 
     .card.disabled::before {
@@ -298,23 +330,24 @@
       margin-top: auto;
       width: 100%;
       text-align: center;
-      padding: 24px 20px;
-      border-top: 1px solid rgba(229, 169, 59, 0.15);
-      color: var(--text-muted);
-      font-size: 0.82rem;
-      background: rgba(2, 10, 18, 0.7);
+      padding: 28px 20px;
+      border-top: 2px solid rgba(255, 190, 11, 0.25);
+      color: var(--text-soft);
+      font-size: 0.86rem;
+      background: rgba(1, 15, 28, 0.85);
       position: relative;
       z-index: 1;
     }
 
     footer b {
-      color: var(--kz-gold-light);
+      color: var(--kz-gold-bright);
     }
   </style>
 </head>
 <body>
 
-  <div class="top-ornament-bar"></div>
+  <div class="top-gold-line"></div>
+  <div class="bg-pattern"></div>
 
   <header>
     <div class="logo-container">
