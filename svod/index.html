@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -510,8 +509,35 @@
           <p class="mt-1">Нажмите внизу <strong>«Поделиться» → «На экран «Домой»» → «Добавить»</strong>. В 17:30 приложение напомнит заполнить данные.</p>
         </div>
       </div>
+      <button id="nativeInstallPromptBtn" type="button" class="hidden w-full py-2.5 rounded-xl bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs mb-2 transition flex items-center justify-center gap-1.5">
+        <span>📲 Установить на телефон в 1 клик</span>
+      </button>
       <div class="flex justify-end gap-2">
         <button id="closeInstallModalBottomBtn" type="button" class="px-4 py-2 rounded-xl bg-slate-900 text-white font-semibold text-xs">Понятно</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Модальное окно подтверждения удаления сводки -->
+  <div id="deleteConfirmModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+      <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl font-bold">
+        🗑️
+      </div>
+      <div class="text-center">
+        <h3 class="text-base font-bold text-slate-900">Удалить сводку ОИК?</h3>
+        <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+          Вы точно собираетесь удалить свод по этому округу? Запись будет удалена из локального отчета и отправлен запрос на исключение из базы.
+        </p>
+      </div>
+      <div class="flex items-center gap-2.5 pt-2">
+        <button id="cancelDeleteModalBtn" type="button" class="w-1/2 py-2.5 rounded-xl border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-xs transition">
+          Отмена
+        </button>
+        <button id="confirmDeleteModalBtn" type="button" class="w-1/2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-xs transition">
+          Да, удалить
+        </button>
       </div>
     </div>
   </div>
@@ -651,55 +677,112 @@
         }
       }
 
-      function recalcTotals() {
-        const selfVal = Math.max(0, parseInt(document.getElementById('selfNominatedInput').value, 10) || 0);
+      window.autoBalanceCompliance = function () {
+        const totalVal = Math.max(0, parseInt(document.getElementById('totalCandidatesInput').value, 10) || 0);
+        const compVal = Math.max(0, parseInt(document.getElementById('compliantInput').value, 10) || 0);
+        const nonVal = Math.max(0, parseInt(document.getElementById('nonCompliantInput').value, 10) || 0);
+        const remainder = Math.max(0, totalVal - compVal - nonVal);
+        const pendEl = document.getElementById('pendingInput');
+        if (pendEl) pendEl.value = remainder;
+        recalcTotals('step3');
+        showToast('Остаток кандидатов (' + remainder + ') направлен в «На проверке»', false);
+      };
+
+      function recalcTotals(source) {
+        const selfInp = document.getElementById('selfNominatedInput');
+        const selfVal = Math.max(0, parseInt(selfInp ? selfInp.value : 0, 10) || 0);
         let partySum = 0;
         document.querySelectorAll('.party-input').forEach(function (el) {
           partySum += Math.max(0, parseInt(el.value, 10) || 0);
         });
-        document.getElementById('partyTotalBadge').textContent = 'От партий: ' + partySum;
+        const partyBadge = document.getElementById('partyTotalBadge');
+        if (partyBadge) partyBadge.textContent = 'От партий: ' + partySum;
 
         const totalEl = document.getElementById('totalCandidatesInput');
-        if (true) {
+        if (totalEl) {
           totalEl.value = selfVal + partySum;
         }
-        const totalVal = Math.max(0, parseInt(totalEl.value, 10) || 0);
+        const totalVal = Math.max(0, parseInt(totalEl ? totalEl.value : 0, 10) || 0);
+
+        const compInp = document.getElementById('compliantInput');
+        const pendInp = document.getElementById('pendingInput');
+        const nonInp = document.getElementById('nonCompliantInput');
+
+        let compVal = Math.max(0, parseInt(compInp ? compInp.value : 0, 10) || 0);
+        let pendVal = Math.max(0, parseInt(pendInp ? pendInp.value : 0, 10) || 0);
+        let nonVal = Math.max(0, parseInt(nonInp ? nonInp.value : 0, 10) || 0);
+        let compSum = compVal + pendVal + nonVal;
+
+        // Если изменения пришли из Шага 2 (добавление или снятие кандидатов):
+        if (source === 'step2') {
+          if (totalVal === 0) {
+            compVal = 0; pendVal = 0; nonVal = 0;
+            if (compInp) compInp.value = 0;
+            if (pendInp) pendInp.value = 0;
+            if (nonInp) nonInp.value = 0;
+          } else if (compSum < totalVal) {
+            // Новые кандидаты автоматически направляются в «На проверке» в госорганах
+            pendVal += (totalVal - compSum);
+            if (pendInp) pendInp.value = pendVal;
+          } else if (compSum > totalVal) {
+            // Если уменьшили кандидатов в шаге 2, снимаем излишек сначала с проверки, затем с соответствия
+            let diff = compSum - totalVal;
+            if (pendVal >= diff) {
+              pendVal -= diff;
+              diff = 0;
+            } else {
+              diff -= pendVal;
+              pendVal = 0;
+              if (compVal >= diff) {
+                compVal -= diff;
+                diff = 0;
+              } else {
+                compVal = 0;
+                nonVal = Math.max(0, nonVal - diff);
+              }
+            }
+            if (pendInp) pendInp.value = pendVal;
+            if (compInp) compInp.value = compVal;
+            if (nonInp) nonInp.value = nonVal;
+          }
+          compSum = compVal + pendVal + nonVal;
+        }
 
         // 1. Проверка баланса выдвижения (Шаг 2)
         const banner1 = document.getElementById('sumCheckBanner');
-        if (totalVal === selfVal + partySum) {
-          banner1.className = 'px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between';
-          banner1.innerHTML = '<span>✓ Проверка выдвижения: Самовыдвижение (' + selfVal + ') + Партии (' + partySum + ') = Всего (' + totalVal + ')</span><span class="font-bold">Совпадает</span>';
-        } else {
-          banner1.className = 'px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center justify-between';
-          banner1.innerHTML = '<span>⚠ Расхождение: Самовыдвижение (' + selfVal + ') + Партии (' + partySum + ') ≠ Всего (' + totalVal + ')</span><span class="font-bold">Исправьте</span>';
+        if (banner1) {
+          if (totalVal === selfVal + partySum) {
+            banner1.className = 'px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between';
+            banner1.innerHTML = '<span>✓ Проверка выдвижения: Самовыдвижение (' + selfVal + ') + Партии (' + partySum + ') = Всего (' + totalVal + ')</span><span class="font-bold">Совпадает</span>';
+          } else {
+            banner1.className = 'px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center justify-between';
+            banner1.innerHTML = '<span>⚠ Расхождение: Самовыдвижение (' + selfVal + ') + Партии (' + partySum + ') ≠ Всего (' + totalVal + ')</span><span class="font-bold">Исправьте</span>';
+          }
         }
 
         // 2. Проверка баланса соответствия (Шаг 3): Соотв + На проверке + Отказ = Всего
-        const compVal = Math.max(0, parseInt(document.getElementById('compliantInput').value, 10) || 0);
-        const pendVal = Math.max(0, parseInt(document.getElementById('pendingInput').value, 10) || 0);
-        const nonVal = Math.max(0, parseInt(document.getElementById('nonCompliantInput').value, 10) || 0);
-        const compSum = compVal + pendVal + nonVal;
-
         const banner2 = document.getElementById('complianceCheckBanner');
         const text2 = document.getElementById('complianceCheckText');
         const status2 = document.getElementById('complianceCheckStatus');
 
-        if (compSum === totalVal) {
-          banner2.className = 'px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between';
-          text2.textContent = '✓ Проверка соответствия: Соотв. (' + compVal + ') + На проверке (' + pendVal + ') + Не соотв. (' + nonVal + ') = ' + totalVal + ' из ' + totalVal;
-          status2.textContent = 'Все распределены ✓';
-        } else if (compSum < totalVal) {
-          banner2.className = 'px-3.5 py-2.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-semibold flex items-center justify-between';
-          text2.textContent = '⚠ Расхождение: распределено ' + compSum + ' из ' + totalVal + ' канд. (Осталось распределить: ' + (totalVal - compSum) + ' чел.)';
-          status2.textContent = 'Не все распределены';
-        } else {
-          banner2.className = 'px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-semibold flex items-center justify-between';
-          text2.textContent = '⚠ Ошибка: сумма по статусам (' + compSum + ') превышает общее число (' + totalVal + ') на ' + (compSum - totalVal) + ' чел.!';
-          status2.textContent = 'Превышение';
+        if (banner2 && text2 && status2) {
+          if (compSum === totalVal) {
+            banner2.className = 'px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center justify-between';
+            text2.textContent = '✓ Проверка соответствия: Соотв. (' + compVal + ') + На проверке (' + pendVal + ') + Не соотв. (' + nonVal + ') = ' + totalVal + ' из ' + totalVal;
+            status2.textContent = 'Все распределены ✓';
+          } else if (compSum < totalVal) {
+            banner2.className = 'px-3.5 py-2.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-semibold flex items-center justify-between';
+            const remain = totalVal - compSum;
+            text2.innerHTML = '<span>⚠ Расхождение: распределено ' + compSum + ' из ' + totalVal + ' канд. (Осталось: ' + remain + ' чел.)</span> <button type="button" onclick="window.autoBalanceCompliance()" class="ml-2 px-2.5 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] shadow-xs cursor-pointer">⚡ В «На проверке»</button>';
+            status2.textContent = 'Не все';
+          } else {
+            banner2.className = 'px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs font-semibold flex items-center justify-between';
+            text2.textContent = '⚠ Ошибка: сумма по статусам (' + compSum + ') превышает общее число (' + totalVal + ') на ' + (compSum - totalVal) + ' чел.!';
+            status2.textContent = 'Превышение';
+          }
         }
 
-        // 3. Автоматический расчет статуса ОИК (никакого ложного полного соответствия!)
+        // 3. Автоматический расчет статуса ОИК
         let calcStatus = 'Полное соответствие';
         let badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300';
         let badgeHtml = '✓ Полное соответствие (' + totalVal + ' из ' + totalVal + ')';
@@ -720,8 +803,7 @@
           calcStatus = 'Выявлено несоответствие';
           badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-extrabold bg-rose-100 text-rose-900 border border-rose-300';
           badgeHtml = '✕ Все ' + totalVal + ' канд. сняты / отказ';
-        } else {
-          // Смешанный случай (например: 3 соотв., 3 на проверке, 1 отказ)
+        } else if (compVal > 0 || pendVal > 0 || nonVal > 0) {
           calcStatus = 'Смешанный статус';
           badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-extrabold bg-sky-100 text-sky-950 border border-sky-300';
           const parts = [];
@@ -729,9 +811,14 @@
           if (pendVal > 0) parts.push(pendVal + ' на пров.');
           if (nonVal > 0) parts.push(nonVal + ' отказ');
           badgeHtml = '📊 Смешанный: ' + parts.join(' • ');
+        } else {
+          calcStatus = 'Ожидает распределения';
+          badgeClass = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300';
+          badgeHtml = '⏳ Ожидает распределения (' + totalVal + ' чел.)';
         }
 
-        document.getElementById('complianceStatusSelect').value = calcStatus;
+        const sel = document.getElementById('complianceStatusSelect');
+        if (sel) sel.value = calcStatus;
         const statusBadge = document.getElementById('computedStatusBadge');
         if (statusBadge) {
           statusBadge.className = badgeClass;
@@ -1029,13 +1116,22 @@ function renderMyHistory() {
       });
 
       function init() {
+        function bindClick(id, fn) {
+          const el = document.getElementById(id);
+          if (el) el.addEventListener('click', fn);
+        }
+        function bindInput(id, fn) {
+          const el = document.getElementById(id);
+          if (el) el.addEventListener('input', fn);
+        }
+
         try {
           const prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
           if (prof) {
-            if (prof.level) document.getElementById('levelSelect').value = prof.level;
-            if (prof.district) document.getElementById('districtSelect').value = prof.district;
-            if (prof.oikNumber) document.getElementById('oikNumberInput').value = prof.oikNumber;
-            if (prof.secretary) document.getElementById('secretaryNameInput').value = prof.secretary;
+            if (prof.level && document.getElementById('levelSelect')) document.getElementById('levelSelect').value = prof.level;
+            if (prof.district && document.getElementById('districtSelect')) document.getElementById('districtSelect').value = prof.district;
+            if (prof.oikNumber && document.getElementById('oikNumberInput')) document.getElementById('oikNumberInput').value = prof.oikNumber;
+            if (prof.secretary && document.getElementById('secretaryNameInput')) document.getElementById('secretaryNameInput').value = prof.secretary;
           }
         } catch (e) {}
 
@@ -1046,42 +1142,44 @@ function renderMyHistory() {
             const inp = document.getElementById(id);
             if (inp) {
               inp.value = Math.max(0, (parseInt(inp.value, 10) || 0) + delta);
-              recalcTotals();
+              const isStep2 = id === 'selfNominatedInput' || (id && id.startsWith('p_')) || id === 'totalCandidatesInput';
+              recalcTotals(isStep2 ? 'step2' : 'step3');
             }
           });
         });
 
-        document.getElementById('selfNominatedInput').addEventListener('input', recalcTotals);
-        document.getElementById('totalCandidatesInput').addEventListener('input', recalcTotals);
-        // auto-total always on
+        bindInput('selfNominatedInput', function () { recalcTotals('step2'); });
+        bindInput('totalCandidatesInput', function () { recalcTotals('step2'); });
+
         document.querySelectorAll('.party-input').forEach(function (el) {
-          el.addEventListener('input', recalcTotals);
+          el.addEventListener('input', function () { recalcTotals('step2'); });
         });
         document.querySelectorAll('.compliance-input').forEach(function (el) {
-          el.addEventListener('input', recalcTotals);
+          el.addEventListener('input', function () { recalcTotals('step3'); });
         });
 
-        document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
-        const delEdit = document.getElementById('deleteEditBtn');
-        if (delEdit) {
-          delEdit.addEventListener('click', function () {
-            if (editingRecordId) requestDeleteRecord(editingRecordId);
+        bindClick('cancelEditBtn', cancelEdit);
+        bindClick('deleteEditBtn', function () {
+          if (editingRecordId) requestDeleteRecord(editingRecordId);
+        });
+        bindClick('cancelDeleteModalBtn', function () {
+          pendingDeleteId = null;
+          const m = document.getElementById('deleteConfirmModal');
+          if (m) m.classList.add('hidden');
+        });
+        bindClick('confirmDeleteModalBtn', executeDeleteRecord);
+
+        const histList = document.getElementById('myHistoryList');
+        if (histList) {
+          histList.addEventListener('click', function (e) {
+            const btn = e.target.closest('.edit-sub-btn');
+            if (!btn) return;
+            const id = btn.getAttribute('data-edit-id');
+            startEditRecord(id);
           });
         }
-        document.getElementById('cancelDeleteModalBtn').addEventListener('click', function () {
-          pendingDeleteId = null;
-          document.getElementById('deleteConfirmModal').classList.add('hidden');
-        });
-        document.getElementById('confirmDeleteModalBtn').addEventListener('click', executeDeleteRecord);
 
-        document.getElementById('myHistoryList').addEventListener('click', function (e) {
-          const btn = e.target.closest('.edit-sub-btn');
-          if (!btn) return;
-          const id = btn.getAttribute('data-edit-id');
-          startEditRecord(id);
-        });
-
-        document.getElementById('saveMyOikBtn').addEventListener('click', function () {
+        bindClick('saveMyOikBtn', function () {
           try {
             const prof = {
               level: document.getElementById('levelSelect').value,
@@ -1094,145 +1192,153 @@ function renderMyHistory() {
           } catch (e) {}
         });
 
-        document.getElementById('resetFormBtn').addEventListener('click', function () {
-          document.getElementById('selfNominatedInput').value = 0;
+        bindClick('resetFormBtn', function () {
+          const selfInp = document.getElementById('selfNominatedInput');
+          if (selfInp) selfInp.value = 0;
           document.querySelectorAll('.party-input').forEach(function (el) { el.value = 0; });
-          document.getElementById('compliantInput').value = 0;
-          document.getElementById('pendingInput').value = 0;
-          document.getElementById('nonCompliantInput').value = 0;
-          document.getElementById('notesInput').value = '';
-          recalcTotals();
+          const compInp = document.getElementById('compliantInput'); if (compInp) compInp.value = 0;
+          const pendInp = document.getElementById('pendingInput'); if (pendInp) pendInp.value = 0;
+          const nonInp = document.getElementById('nonCompliantInput'); if (nonInp) nonInp.value = 0;
+          const notesInp = document.getElementById('notesInput'); if (notesInp) notesInp.value = '';
+          recalcTotals('step2');
           showToast('Численные поля обнулены', false);
         });
 
-        document.getElementById('secretaryForm').addEventListener('submit', function (e) {
-          e.preventDefault();
-          const oikNum = parseInt(document.getElementById('oikNumberInput').value, 10);
-          if (!oikNum || oikNum < 1) {
-            showToast('Укажите номер вашего ОИК!', true);
-            return;
-          }
-
-          const parties = {};
-          let partySum = 0;
-          document.querySelectorAll('.party-input').forEach(function (el) {
-            const p = el.getAttribute('data-party');
-            const v = Math.max(0, parseInt(el.value, 10) || 0);
-            parties[p] = v;
-            partySum += v;
-          });
-
-          const selfVal = Math.max(0, parseInt(document.getElementById('selfNominatedInput').value, 10) || 0);
-          const totalVal = Math.max(0, parseInt(document.getElementById('totalCandidatesInput').value, 10) || 0);
-
-          // Проверка 1: Самовыдвижение + партии = Всего
-          if (totalVal !== selfVal + partySum) {
-            showToast('Ошибка выдвижения: сумма самовыдвижения (' + selfVal + ') и партий (' + partySum + ') не равна общему числу (' + totalVal + ')!', true);
-            const b1 = document.getElementById('sumCheckBanner');
-            if (b1) b1.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            return;
-          }
-
-          const compVal = Math.max(0, parseInt(document.getElementById('compliantInput').value, 10) || 0);
-          const pendVal = Math.max(0, parseInt(document.getElementById('pendingInput').value, 10) || 0);
-          const nonVal = Math.max(0, parseInt(document.getElementById('nonCompliantInput').value, 10) || 0);
-          const compSum = compVal + pendVal + nonVal;
-
-          // Проверка 2: Соответствуют + На проверке + Отказ = Всего кандидатов
-          if (compSum !== totalVal) {
-            showToast('Ошибка соответствия: распределите всех ' + totalVal + ' кандидатов! Сейчас указано ' + compSum + ' из ' + totalVal + ' (осталось: ' + Math.abs(totalVal - compSum) + ').', true);
-            const b2 = document.getElementById('complianceCheckBanner');
-            if (b2) b2.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            return;
-          }
-
-          const recordId = editingRecordId || ('rec-' + Date.now());
-          const now = new Date();
-          const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-
-          const record = {
-            id: recordId,
-            date: document.getElementById('reportDate').value || '2026-10-28',
-            region: document.getElementById('regionSelect').value,
-            level: document.getElementById('levelSelect').value,
-            district: document.getElementById('districtSelect').value,
-            oikNumber: oikNum,
-            secretary: document.getElementById('secretaryNameInput').value.trim() || 'Секретарь ОИК',
-            totalCandidates: totalVal,
-            selfNominated: selfVal,
-            parties: parties,
-            compliantCount: compVal,
-            pendingCount: pendVal,
-            nonCompliantCount: nonVal,
-            complianceStatus: document.getElementById('complianceStatusSelect').value,
-            notes: document.getElementById('notesInput').value.trim(),
-            submittedAt: timeStr
-          };
-
-          try {
-            const allRecords = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            const idx = allRecords.findIndex(function (r) {
-              return r.id === recordId || (r.district === record.district && r.oikNumber === record.oikNumber && r.level === record.level);
-            });
-            if (idx !== -1) allRecords[idx] = record;
-            else allRecords.push(record);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(allRecords));
-
-            const myHistory = JSON.parse(localStorage.getItem(MY_HISTORY_KEY) || '[]');
-            const hIdx = myHistory.findIndex(function (r) {
-              return r.id === recordId || (r.district === record.district && r.oikNumber === record.oikNumber && r.level === record.level);
-            });
-            if (hIdx !== -1) myHistory[hIdx] = record;
-            else myHistory.push(record);
-            localStorage.setItem(MY_HISTORY_KEY, JSON.stringify(myHistory));
-
-            if ('BroadcastChannel' in window) {
-              const bc = new BroadcastChannel('pavlodar_tik_sync');
-              bc.postMessage({ type: 'NEW_RECORD', record: record });
-              bc.close();
+        const secForm = document.getElementById('secretaryForm');
+        if (secForm) {
+          secForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const oikNum = parseInt(document.getElementById('oikNumberInput').value, 10);
+            if (!oikNum || oikNum < 1) {
+              showToast('Укажите номер вашего ОИК!', true);
+              return;
             }
 
-            const wh = getGasWebhookUrl();
-            if (wh && wh.startsWith('https://')) {
-              fetch(wh, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(record)
+            const parties = {};
+            let partySum = 0;
+            document.querySelectorAll('.party-input').forEach(function (el) {
+              const p = el.getAttribute('data-party');
+              const v = Math.max(0, parseInt(el.value, 10) || 0);
+              parties[p] = v;
+              partySum += v;
+            });
+
+            const selfVal = Math.max(0, parseInt(document.getElementById('selfNominatedInput').value, 10) || 0);
+            const totalVal = Math.max(0, parseInt(document.getElementById('totalCandidatesInput').value, 10) || 0);
+
+            // Проверка 1: Самовыдвижение + партии = Всего
+            if (totalVal !== selfVal + partySum) {
+              showToast('Ошибка выдвижения: сумма самовыдвижения (' + selfVal + ') и партий (' + partySum + ') не равна общему числу (' + totalVal + ')!', true);
+              const b1 = document.getElementById('sumCheckBanner');
+              if (b1) b1.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              return;
+            }
+
+            const compVal = Math.max(0, parseInt(document.getElementById('compliantInput').value, 10) || 0);
+            const pendVal = Math.max(0, parseInt(document.getElementById('pendingInput').value, 10) || 0);
+            const nonVal = Math.max(0, parseInt(document.getElementById('nonCompliantInput').value, 10) || 0);
+            const compSum = compVal + pendVal + nonVal;
+
+            // Проверка 2: Соответствуют + На проверке + Отказ = Всего кандидатов
+            if (compSum !== totalVal) {
+              showToast('Ошибка соответствия: распределите всех ' + totalVal + ' кандидатов! Сейчас указано ' + compSum + ' из ' + totalVal + ' (осталось: ' + Math.abs(totalVal - compSum) + ').', true);
+              const b2 = document.getElementById('complianceCheckBanner');
+              if (b2) b2.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              return;
+            }
+
+            const recordId = editingRecordId || ('rec-' + Date.now());
+            const now = new Date();
+            const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+            const record = {
+              id: recordId,
+              date: document.getElementById('reportDate').value || '2026-10-28',
+              region: document.getElementById('regionSelect').value,
+              level: document.getElementById('levelSelect').value,
+              district: document.getElementById('districtSelect').value,
+              oikNumber: oikNum,
+              secretary: document.getElementById('secretaryNameInput').value.trim() || 'Секретарь ОИК',
+              totalCandidates: totalVal,
+              selfNominated: selfVal,
+              parties: parties,
+              compliantCount: compVal,
+              pendingCount: pendVal,
+              nonCompliantCount: nonVal,
+              complianceStatus: document.getElementById('complianceStatusSelect').value,
+              notes: document.getElementById('notesInput').value.trim(),
+              submittedAt: timeStr
+            };
+
+            try {
+              const allRecords = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+              const idx = allRecords.findIndex(function (r) {
+                return r.id === recordId || (r.district === record.district && r.oikNumber === record.oikNumber && r.level === record.level);
               });
+              if (idx !== -1) allRecords[idx] = record;
+              else allRecords.push(record);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(allRecords));
+
+              const myHistory = JSON.parse(localStorage.getItem(MY_HISTORY_KEY) || '[]');
+              const hIdx = myHistory.findIndex(function (r) {
+                return r.id === recordId || (r.district === record.district && r.oikNumber === record.oikNumber && r.level === record.level);
+              });
+              if (hIdx !== -1) myHistory[hIdx] = record;
+              else myHistory.push(record);
+              localStorage.setItem(MY_HISTORY_KEY, JSON.stringify(myHistory));
+
+              if ('BroadcastChannel' in window) {
+                const bc = new BroadcastChannel('pavlodar_tik_sync');
+                bc.postMessage({ type: 'NEW_RECORD', record: record });
+                bc.close();
+              }
+
+              const wh = getGasWebhookUrl();
+              if (wh && wh.startsWith('https://')) {
+                fetch(wh, {
+                  method: 'POST',
+                  mode: 'no-cors',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(record)
+                });
+              }
+            } catch (err) {}
+
+            if (editingRecordId) {
+              cancelEdit();
+              showToast('Изменения в сводке ОИК №' + record.oikNumber + ' (' + record.district + ') сохранены!', false);
+            } else {
+              showToast('Сводка ОИК №' + record.oikNumber + ' (' + record.district + ') успешно отправлена в ТИК!', false);
             }
-          } catch (err) {}
+            renderMyHistory();
+          });
+        }
 
-          const wasEditing = Boolean(editingRecordId);
-          if (editingRecordId) {
-            cancelEdit();
-            showToast('Изменения в сводке ОИК №' + record.oikNumber + ' (' + record.district + ') сохранены!', false);
-          } else {
-            showToast('Сводка ОИК №' + record.oikNumber + ' (' + record.district + ') успешно отправлена в ТИК!', false);
-          }
-          renderMyHistory();
+        bindClick('testPushBtn', function () { trigger1730Alert(true); });
+        bindClick('closePushBannerBtn', function () {
+          const pb = document.getElementById('pushBanner');
+          if (pb) pb.classList.add('hidden');
         });
-
-        document.getElementById('testPushBtn').addEventListener('click', function () { trigger1730Alert(true); });
-        document.getElementById('closePushBannerBtn').addEventListener('click', function () {
-          document.getElementById('pushBanner').classList.add('hidden');
+        bindClick('dismissPushBtn', function () {
+          const pb = document.getElementById('pushBanner');
+          if (pb) pb.classList.add('hidden');
         });
-        document.getElementById('dismissPushBtn').addEventListener('click', function () {
-          document.getElementById('pushBanner').classList.add('hidden');
-        });
-        document.getElementById('focusFormFromPushBtn').addEventListener('click', function () {
-          document.getElementById('pushBanner').classList.add('hidden');
-          document.getElementById('totalCandidatesInput').focus();
+        bindClick('focusFormFromPushBtn', function () {
+          const pb = document.getElementById('pushBanner');
+          if (pb) pb.classList.add('hidden');
+          const tInp = document.getElementById('totalCandidatesInput');
+          if (tInp) tInp.focus();
         });
 
-        document.getElementById('enableNotifBtn').addEventListener('click', function () {
+        bindClick('enableNotifBtn', function () {
           if (!('Notification' in window)) {
             showToast('Звуковое напоминание в 17:30 активно', false);
             return;
           }
           Notification.requestPermission().then(function (p) {
             if (p === 'granted') {
-              document.getElementById('enableNotifBtn').textContent = '✓ Пуши 17:30 включены';
+              const b = document.getElementById('enableNotifBtn');
+              if (b) b.textContent = '✓ Пуши 17:30 включены';
               showToast('Уведомления на 17:30 включены!', false);
             } else {
               showToast('Включено звуковое напоминание в 17:30', false);
@@ -1257,13 +1363,14 @@ function renderMyHistory() {
               deferredInstallPrompt.prompt();
               deferredInstallPrompt.userChoice.then(function () {
                 deferredInstallPrompt = null;
-                document.getElementById('installModal').classList.add('hidden');
+                const m = document.getElementById('installModal');
+                if (m) m.classList.add('hidden');
               });
             }
           });
         }
 
-        document.getElementById('openInstallGuideBtn').addEventListener('click', function () {
+        bindClick('openInstallGuideBtn', function () {
           if (deferredInstallPrompt) {
             deferredInstallPrompt.prompt();
             deferredInstallPrompt.userChoice.then(function (choice) {
@@ -1272,24 +1379,22 @@ function renderMyHistory() {
                 showToast('Приложение установлено!', false);
                 return;
               }
-              document.getElementById('installModal').classList.remove('hidden');
+              const m = document.getElementById('installModal');
+              if (m) m.classList.remove('hidden');
             });
           } else {
-            document.getElementById('installModal').classList.remove('hidden');
+            const m = document.getElementById('installModal');
+            if (m) m.classList.remove('hidden');
           }
         });
-        document.getElementById('closeInstallModalBtn').addEventListener('click', function () {
-          document.getElementById('installModal').classList.add('hidden');
+        bindClick('closeInstallModalBtn', function () {
+          const m = document.getElementById('installModal');
+          if (m) m.classList.add('hidden');
         });
-        document.getElementById('closeInstallModalBottomBtn').addEventListener('click', function () {
-          document.getElementById('installModal').classList.add('hidden');
+        bindClick('closeInstallModalBottomBtn', function () {
+          const m = document.getElementById('installModal');
+          if (m) m.classList.add('hidden');
         });
-
-        
-
-        
-
-        
 
         if ('BroadcastChannel' in window) {
           try {
@@ -1315,16 +1420,13 @@ function renderMyHistory() {
           } catch (e) {}
         }
 
-        document.getElementById('appVersionBadge').addEventListener('click', function () {
+        bindClick('appVersionBadge', function () {
           checkAppVersion(true);
         });
 
-        const reloadBtn = document.getElementById('reloadAppBtn');
-        if (reloadBtn) {
-          reloadBtn.addEventListener('click', function () {
-            window.location.reload(true);
-          });
-        }
+        bindClick('reloadAppBtn', function () {
+          window.location.reload(true);
+        });
 
         // Автоматическая проверка при разворачивании свернутого приложения на телефоне
         document.addEventListener('visibilitychange', function () {
@@ -1339,7 +1441,7 @@ function renderMyHistory() {
         checkAppVersion(false);
         setInterval(function () { checkAppVersion(false); }, 300000);
 
-        recalcTotals();
+        recalcTotals('step2');
         renderMyHistory();
         updateTimer();
         setInterval(updateTimer, 1000);
@@ -1350,4 +1452,3 @@ function renderMyHistory() {
   </script>
 </body>
 </html>
-```
