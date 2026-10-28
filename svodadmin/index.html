@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -490,7 +491,7 @@
         Чтобы данные с телефонов секретарей ОИК (Сайт №1) мгновенно собирались на вашем компьютере ТИК (Сайт №2), создайте Google Таблицу, откройте <strong>Расширения → Apps Script</strong>, вставьте код ниже и нажмите <strong>Развернуть → Новое развертывание (Веб-приложение, доступ: Все)</strong>.
       </p>
       <div class="flex flex-col sm:flex-row gap-2">
-        <input id="webhookUrlInput" type="url" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-xs">
+        <input id="webhookUrlInput" type="url" value="https://script.google.com/macros/s/AKfycbwexWujTtqxSZyAAFNUmG6pF8PTVZcKhd40XIjAfb0fgzP8D4ghjeBsIlVjx5eAkrE/exec" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-xs">
         <button id="saveWebhookUrlBtn" type="button" class="px-4 py-2 rounded-lg bg-sky-800 hover:bg-sky-900 text-white font-semibold text-xs">Сохранить URL</button>
       </div>
       <div class="flex items-center justify-between">
@@ -629,7 +630,15 @@ function getOrCreateSheet() {
   <script>
     (function () {
       const STORAGE_KEY = 'pavlodar_tik_oik_records_prod_v1';
+      // URL развернутого скрипта Google Apps Script (Code.gs):
+      const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwexWujTtqxSZyAAFNUmG6pF8PTVZcKhd40XIjAfb0fgzP8D4ghjeBsIlVjx5eAkrE/exec';
       const WEBHOOK_KEY = 'pavlodar_tik_gas_webhook_v1';
+
+      function getGasWebhookUrl() {
+        const stored = (localStorage.getItem(WEBHOOK_KEY) || '').trim();
+        if (stored && stored.startsWith('https://')) return stored;
+        return (DEFAULT_GAS_URL || '').trim();
+      }
       const PARTY_KEYS = ['AMANAT', 'Ақ жол', 'Ауыл', 'НПК', 'Respublica', 'ОСДП', 'Байтақ'];
       const CITIES = ['г. Павлодар', 'г. Экибастуз', 'г. Аксу'];
       const DISTRICTS = [
@@ -1005,7 +1014,7 @@ function renderDistrictRows(filtered) {
 
 
       function syncFromGoogleSheets(silent) {
-        const url = (localStorage.getItem(WEBHOOK_KEY) || '').trim();
+        const url = getGasWebhookUrl();
         if (!url || !url.startsWith('https://')) {
           if (!silent) showToast('Укажите URL Google Таблицы в разделе ⚙️ База Google Sheets');
           return;
@@ -1134,6 +1143,27 @@ function renderDistrictRows(filtered) {
         document.body.appendChild(script);
       }
 
+              // Функция вызова окна привязки Google Sheets
+        window.openGasSettings = function () {
+          const m = document.getElementById('cloudModal');
+          if (m) {
+            document.getElementById('webhookUrlInput').value = getGasWebhookUrl();
+            m.classList.remove('hidden');
+          }
+        };
+
+        // Открытие настроек по клику на бейдж версии или Ctrl+Shift+S
+        const vBadge = document.getElementById('appVersionBadge');
+        if (vBadge) {
+          vBadge.addEventListener('dblclick', function () { window.openGasSettings(); });
+        }
+        window.addEventListener('keydown', function (e) {
+          if (e.ctrlKey && e.shiftKey && (e.key === 'S' || e.key === 's' || e.key === 'Ы' || e.key === 'ы')) {
+            e.preventDefault();
+            window.openGasSettings();
+          }
+        });
+
       function init() {
         loadData();
         renderAll();
@@ -1215,7 +1245,7 @@ function renderDistrictRows(filtered) {
           showToast('Запись ОИК удалена');
 
           // Удаляем также из Google Таблицы при наличии вебхука
-          const wh = localStorage.getItem(WEBHOOK_KEY);
+          const wh = getGasWebhookUrl();
           if (wh && wh.startsWith('https://')) {
             try {
               fetch(wh, {
@@ -1356,6 +1386,12 @@ function renderDistrictRows(filtered) {
       init();
     })();
   </script>
+  <footer class="mt-8 py-4 border-t border-slate-200 text-center text-xs text-slate-400 flex flex-wrap items-center justify-center gap-4">
+    <span>ТИК Павлодарской области • Версия v1.3</span>
+    <button type="button" onclick="window.openGasSettings()" class="text-slate-400 hover:text-sky-700 underline text-xs transition">
+      ⚙️ Настройка Google Таблицы (URL)
+    </button>
+  </footer>
 </body>
 </html>
 ```
