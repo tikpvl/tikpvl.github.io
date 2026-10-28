@@ -6,25 +6,19 @@
   <title>Территориальная избирательная комиссия Павлодарской области | Портал сервисов</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Фирменный синий цвет плашки gov.kz */
-      --gov-blue: #2b52d9;
-      --gov-blue-dark: #1f3ea8;
-      --gov-blue-soft: #edf2fe;
-      
-      /* Спокойный приглушенный фон страницы */
-      --bg-page: #eef2f6;
-      --bg-card: #ffffff;
-      
-      --border-color: #dbe3eb;
-      --border-hover: #b8c9dc;
-      --text-dark: #1a2433;
-      --text-muted: #5e6e82;
-      
-      --shadow-card: 0 2px 6px rgba(15, 34, 58, 0.06);
-      --shadow-hover: 0 8px 20px rgba(43, 82, 217, 0.12);
+      --kz-blue-dark: #002b49;
+      --kz-blue-deep: #051929;
+      --kz-gold: #e5a93b;
+      --kz-gold-light: #ffd275;
+      --kz-gold-glow: rgba(229, 169, 59, 0.28);
+      --card-bg: rgba(9, 32, 54, 0.75);
+      --card-border: rgba(229, 169, 59, 0.22);
+      --card-hover-border: rgba(229, 169, 59, 0.7);
+      --text-main: #f4f8fb;
+      --text-muted: #94abbd;
     }
 
     * {
@@ -35,47 +29,67 @@
     }
 
     body {
-      background-color: var(--bg-page);
-      color: var(--text-dark);
+      background: radial-gradient(circle at 50% 8%, #093c66 0%, var(--kz-blue-deep) 65%, #020a12 100%);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    /* Верхняя акцентная полоска */
-    .top-bar {
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 520px;
+      background-image: radial-gradient(circle at center, transparent 35%, var(--kz-blue-deep) 90%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60' viewBox='0 0 120 60'%3E%3Cpath fill='%23e5a93b' fill-opacity='0.035' d='M60 0 C45 20 15 20 0 0 L0 10 C15 30 45 30 60 10 C75 30 105 30 120 10 L120 0 C105 20 75 20 60 0 Z M60 30 C45 50 15 50 0 30 L0 40 C15 60 45 60 60 40 C75 60 105 60 120 40 L120 30 C105 50 75 50 60 30 Z'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .top-ornament-bar {
       width: 100%;
-      height: 4px;
-      background: var(--gov-blue);
+      height: 6px;
+      background: linear-gradient(90deg, #002b49 0%, var(--kz-gold) 50%, #002b49 100%);
+      box-shadow: 0 0 18px var(--kz-gold-glow);
+      position: relative;
+      z-index: 2;
     }
 
-    /* Шапка сайта */
     header {
       width: 100%;
-      background: #ffffff;
-      border-bottom: 1px solid var(--border-color);
+      max-width: 960px;
+      padding: 40px 20px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      padding: 34px 20px 26px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+      position: relative;
+      z-index: 1;
     }
 
     .logo-container {
-      width: 104px;
-      height: 104px;
-      margin-bottom: 16px;
+      width: 110px;
+      height: 110px;
+      margin-bottom: 22px;
       border-radius: 50%;
-      background: #ffffff;
-      box-shadow: 0 4px 14px rgba(43, 82, 217, 0.14);
-      border: 3px solid #ffffff;
-      outline: 2px solid var(--gov-blue);
+      box-shadow: 0 0 30px var(--kz-gold-glow), 0 8px 20px rgba(0,0,0,0.4);
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: transform 0.3s ease;
+      background: #000;
       overflow: hidden;
+    }
+
+    .logo-container:hover {
+      transform: scale(1.05);
     }
 
     .logo-img {
@@ -86,40 +100,63 @@
     }
 
     .header-titles h1 {
-      font-size: 1.45rem;
+      font-size: 1.55rem;
       font-weight: 800;
-      color: var(--text-dark);
+      color: #ffffff;
       text-transform: uppercase;
-      letter-spacing: 0.4px;
+      letter-spacing: 0.8px;
       line-height: 1.35;
-      margin-bottom: 6px;
-      max-width: 840px;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
 
     .header-titles p {
-      font-size: 0.9rem;
-      color: var(--gov-blue);
-      letter-spacing: 1.2px;
+      font-size: 0.95rem;
+      color: var(--kz-gold-light);
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      font-weight: 700;
+      font-weight: 600;
     }
 
-    /* Контейнер карточек */
+    .divider-ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 440px;
+      margin: 20px auto 0;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--kz-gold), transparent);
+    }
+
+    .ornament-icon {
+      width: 22px;
+      height: 22px;
+      fill: var(--kz-gold);
+    }
+
     .container {
       width: 100%;
-      max-width: 1040px;
-      padding: 36px 20px 60px;
+      max-width: 960px;
+      padding: 10px 20px 40px;
       display: flex;
       flex-direction: column;
       gap: 36px;
+      position: relative;
+      z-index: 1;
     }
 
     .section-title {
       font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--text-dark);
+      font-weight: 700;
+      color: var(--kz-gold);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 1.5px;
       margin-bottom: 18px;
       display: flex;
       align-items: center;
@@ -129,34 +166,32 @@
     .section-title::after {
       content: "";
       height: 1px;
-      background: #d3deea;
+      background: linear-gradient(90deg, var(--card-border), transparent);
       flex: 1;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 18px;
     }
 
-    /* Карточки-кубики */
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 22px 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 22px;
       text-decoration: none;
       color: inherit;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: var(--shadow-card);
-      transition: all 0.22s ease;
+      backdrop-filter: blur(10px);
+      transition: all 0.28s ease;
       position: relative;
       overflow: hidden;
     }
 
-    /* Полоска слева цвета полоски меню gov.kz */
     .card::before {
       content: "";
       position: absolute;
@@ -164,18 +199,21 @@
       left: 0;
       width: 4px;
       height: 100%;
-      background: var(--gov-blue);
-      transition: width 0.2s ease;
+      background: var(--kz-gold);
+      opacity: 0.4;
+      transition: opacity 0.25s, width 0.25s;
     }
 
     a.card:hover {
-      border-color: var(--gov-blue);
-      box-shadow: var(--shadow-hover);
-      transform: translateY(-2px);
+      background: rgba(14, 44, 73, 0.88);
+      border-color: var(--card-hover-border);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 16px var(--kz-gold-glow);
     }
 
     a.card:hover::before {
-      width: 7px;
+      opacity: 1;
+      width: 6px;
     }
 
     .card-top {
@@ -189,38 +227,40 @@
     .card h3 {
       font-size: 1.15rem;
       font-weight: 700;
-      color: var(--text-dark);
+      color: #ffffff;
       line-height: 1.3;
     }
 
-    /* Бейджи */
     .badge {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      padding: 4px 9px;
-      border-radius: 6px;
-      background: var(--gov-blue-soft);
-      color: var(--gov-blue);
-      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(0, 119, 153, 0.25);
+      border: 1px solid rgba(0, 180, 230, 0.4);
+      color: #72d9ff;
+      font-weight: 600;
       white-space: nowrap;
     }
 
     .badge-admin {
-      background: #fde8ea;
-      color: #c92a2a;
+      background: rgba(229, 62, 62, 0.15);
+      border: 1px solid rgba(229, 62, 62, 0.4);
+      color: #ff8585;
     }
 
     .badge-soon {
-      background: #f1f4f8;
-      color: #7d8c9c;
+      background: rgba(148, 171, 189, 0.1);
+      border: 1px solid rgba(148, 171, 189, 0.25);
+      color: var(--text-muted);
     }
 
     .card p {
       color: var(--text-muted);
-      font-size: 0.88rem;
-      line-height: 1.5;
-      margin-bottom: 22px;
+      font-size: 0.86rem;
+      line-height: 1.45;
+      margin-bottom: 20px;
     }
 
     .card-footer {
@@ -230,25 +270,24 @@
     }
 
     .card-btn {
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 700;
-      color: var(--gov-blue);
+      color: var(--kz-gold);
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s ease;
+      transition: gap 0.2s;
     }
 
     a.card:hover .card-btn {
-      color: var(--gov-blue-dark);
-      gap: 9px;
+      color: #fff;
+      gap: 10px;
     }
 
     .card.disabled {
-      background: #f6f8fa;
-      border-style: dashed;
-      opacity: 0.75;
+      opacity: 0.45;
       cursor: not-allowed;
+      border-style: dashed;
     }
 
     .card.disabled::before {
@@ -259,21 +298,23 @@
       margin-top: auto;
       width: 100%;
       text-align: center;
-      padding: 22px 20px;
-      border-top: 1px solid var(--border-color);
+      padding: 24px 20px;
+      border-top: 1px solid rgba(229, 169, 59, 0.15);
       color: var(--text-muted);
-      font-size: 0.84rem;
-      background: #ffffff;
+      font-size: 0.82rem;
+      background: rgba(2, 10, 18, 0.7);
+      position: relative;
+      z-index: 1;
     }
 
     footer b {
-      color: var(--text-dark);
+      color: var(--kz-gold-light);
     }
   </style>
 </head>
 <body>
 
-  <div class="top-bar"></div>
+  <div class="top-ornament-bar"></div>
 
   <header>
     <div class="logo-container">
@@ -283,6 +324,14 @@
     <div class="header-titles">
       <h1>Территориальная избирательная комиссия Павлодарской области</h1>
       <p>Портал цифровых сервисов</p>
+    </div>
+
+    <div class="divider-ornament">
+      <div class="divider-line"></div>
+      <svg class="ornament-icon" viewBox="0 0 24 24">
+        <path d="M12 4C9 0 3 0 3 5C3 9 7 11 10 11C11 11 12 11 12 12C12 11 13 11 14 11C17 11 21 9 21 5C21 0 15 0 12 4ZM5 5C5 2.5 8.5 2.5 10.5 5.5L12 7.5L13.5 5.5C15.5 2.5 19 2.5 19 5C19 7.5 16 9 14 9C12.5 9 12 9.5 12 10.5C12 9.5 11.5 9 10 9C8 9 5 7.5 5 5Z M12 13C10.5 13 4 14.5 4 19C4 22 7 24 10 24C13 24 14 21 14 19L12 19C12 20 11.5 22 10 22C8 22 6 21 6 19C6 16.5 10.5 15 12 15C13.5 15 18 16.5 18 19C18 21 16 22 14 22C12.5 22 12 20 12 19L10 19C10 21 11 24 14 24C17 24 20 22 20 19C20 14.5 13.5 13 12 13Z"/>
+      </svg>
+      <div class="divider-line"></div>
     </div>
   </header>
 
@@ -303,7 +352,7 @@
             <p>Геоинформационная система избирательных округов и участков Павлодарской области.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
@@ -317,7 +366,7 @@
             <p>Тестирование профессиональной квалификации членов избирательных комиссий.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
@@ -331,7 +380,7 @@
             <p>Панель мониторинга и подробные результаты тестирования сотрудников.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
@@ -345,7 +394,7 @@
             <p>Форма оперативного сбора данных о ходе голосования и явке избирателей.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
@@ -359,7 +408,7 @@
             <p>Сводная аналитическая панель для контроля отчетов из районов и городов.</p>
           </div>
           <div class="card-footer">
-            <span class="card-btn">Открыть &rarr;</span>
+            <span class="card-btn">Открыть в новом окне &rarr;</span>
           </div>
         </a>
 
@@ -371,6 +420,7 @@
       <div class="section-title">Сервисы избирательного периода (в разработке)</div>
       <div class="grid">
 
+        <!-- Наблюдатели: Регистрация -->
         <div class="card disabled">
           <div>
             <div class="card-top">
@@ -384,6 +434,7 @@
           </div>
         </div>
 
+        <!-- Наблюдатели: Мониторинг -->
         <div class="card disabled">
           <div>
             <div class="card-top">
@@ -397,6 +448,7 @@
           </div>
         </div>
 
+        <!-- Пригласительные: Регистрация -->
         <div class="card disabled">
           <div>
             <div class="card-top">
@@ -410,6 +462,7 @@
           </div>
         </div>
 
+        <!-- Пригласительные: Мониторинг -->
         <div class="card disabled">
           <div>
             <div class="card-top">
