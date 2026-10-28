@@ -99,7 +99,7 @@
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
         </svg>
-        <span>Добавить на рабочий стол</span>
+        <span>Добавить ярлык</span>
       </button>
     </div>
   </header>
@@ -136,7 +136,7 @@
         </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <button id="whatsappTodayBtn" type="button" class="hidden px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 shadow-2xs transition flex items-center gap-1.5" title="Скопировать и отправить в WhatsApp">
+        <button id="whatsappTodayBtn" type="button" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shrink-0 shadow-2xs transition flex items-center gap-1.5" title="Скопировать и отправить в WhatsApp">
           <span>📲 В WhatsApp</span>
         </button>
         <button id="editTodayBtn" type="button" class="hidden px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold text-xs shrink-0 shadow-2xs transition flex items-center gap-1">
@@ -470,6 +470,9 @@
           </svg>
           <span id="submitBtnText">Отправить ежедневную сводку ОИК</span>
         </button>
+        <button id="whatsappFormBtn" type="button" class="w-full sm:w-auto py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5" title="Сформировать сводку и открыть в WhatsApp">
+          <span>📲 В WhatsApp</span>
+        </button>
         <button id="resetFormBtn" type="button" class="w-full sm:w-auto py-3.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 font-semibold text-xs transition">
           Обнулить числа
         </button>
@@ -496,7 +499,7 @@
   <div id="installModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4">
       <div class="flex items-center justify-between border-b border-slate-200 pb-3">
-        <h3 class="text-sm font-bold text-slate-900">Как установить иконку на рабочий стол</h3>
+        <h3 class="text-sm font-bold text-slate-900">Как добавить ярлык на телефон или ПК</h3>
         <button id="closeInstallModalBtn" type="button" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
       </div>
       <div class="space-y-3 text-xs text-slate-700 leading-relaxed">
@@ -965,12 +968,97 @@
         showToast('Сводка ОИК успешно удалена', false);
       }
 
+      function openWhatsAppWithMessage(text) {
+        if (!text) return;
+
+        // 1. Копируем в буфер обмена для надежности
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          try {
+            navigator.clipboard.writeText(text).catch(function () {});
+          } catch (e) {}
+        } else {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          } catch (e) {}
+        }
+
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const encText = encodeURIComponent(text);
+
+        if (isMobile) {
+          // На смартфонах: открываем установленное приложение WhatsApp напрямую по схеме whatsapp://
+          const appUrl = 'whatsapp://send?text=' + encText;
+          const webFallback = 'https://api.whatsapp.com/send?text=' + encText;
+
+          window.location.href = appUrl;
+
+          // Резервный переход, если схема whatsapp:// заблокирована
+          setTimeout(function () {
+            if (document.hidden || document.webkitHidden) return;
+            window.location.href = webFallback;
+          }, 1200);
+        } else {
+          // На компьютере (ПК): открываем WhatsApp Web напрямую в новой вкладке
+          const webUrl = 'https://web.whatsapp.com/send?text=' + encText;
+          const win = window.open(webUrl, '_blank', 'noopener,noreferrer');
+          if (!win || win.closed || typeof win.closed === 'undefined') {
+            window.location.href = webUrl;
+          }
+        }
+        showToast('Текст сводки скопирован и WhatsApp открывается...', false);
+      }
+
       function sendWhatsAppSummary(rec) {
-        if (!rec) return;
+        let district, oikNumber, level, secretary, date, time;
+        let totalCandidates, selfNominated, compliantCount, pendingCount, nonCompliantCount;
+        let partiesObj = {};
+
+        if (rec) {
+          district = rec.district || '';
+          oikNumber = rec.oikNumber || '';
+          level = rec.level || '';
+          secretary = rec.secretary || '';
+          date = rec.date || '';
+          time = rec.submittedAt || '';
+          totalCandidates = rec.totalCandidates || 0;
+          selfNominated = rec.selfNominated || 0;
+          compliantCount = rec.compliantCount || 0;
+          pendingCount = rec.pendingCount || 0;
+          nonCompliantCount = rec.nonCompliantCount || 0;
+          partiesObj = rec.parties || {};
+        } else {
+          // Если запись ещё не отправлена в базу — берем текущие значения прямо из полей формы
+          district = (document.getElementById('districtSelect') && document.getElementById('districtSelect').value) || 'г. Павлодар';
+          oikNumber = (document.getElementById('oikNumberInput') && document.getElementById('oikNumberInput').value) || '';
+          level = (document.getElementById('levelSelect') && document.getElementById('levelSelect').value) || 'Городской / Районный маслихат';
+          secretary = (document.getElementById('secretaryNameInput') && document.getElementById('secretaryNameInput').value.trim()) || 'Секретарь ОИК';
+          date = (document.getElementById('reportDate') && document.getElementById('reportDate').value) || new Date().toISOString().slice(0, 10);
+          const now = new Date();
+          time = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+          totalCandidates = Math.max(0, parseInt(document.getElementById('totalCandidatesInput').value, 10) || 0);
+          selfNominated = Math.max(0, parseInt(document.getElementById('selfNominatedInput').value, 10) || 0);
+          compliantCount = Math.max(0, parseInt(document.getElementById('compliantInput').value, 10) || 0);
+          pendingCount = Math.max(0, parseInt(document.getElementById('pendingInput').value, 10) || 0);
+          nonCompliantCount = Math.max(0, parseInt(document.getElementById('nonCompliantInput').value, 10) || 0);
+
+          document.querySelectorAll('.party-input').forEach(function (inp) {
+            const p = inp.getAttribute('data-party');
+            const v = Math.max(0, parseInt(inp.value, 10) || 0);
+            partiesObj[p] = v;
+          });
+        }
+
         const partiesList = [];
         let partyCountSum = 0;
         PARTY_KEYS.forEach(function (k) {
-          const cnt = (rec.parties && rec.parties[k]) || 0;
+          const cnt = (partiesObj && partiesObj[k]) || 0;
           if (cnt > 0) {
             partiesList.push(k + ': ' + cnt);
             partyCountSum += cnt;
@@ -979,49 +1067,59 @@
         const partyText = partiesList.length > 0 ? (partyCountSum + ' (' + partiesList.join(', ') + ')') : '0';
 
         const lines = [
-          '• Округ: ' + rec.district + ', ОИК №' + rec.oikNumber + ' (' + rec.level + ')',
-          '• Всего кандидатов: ' + rec.totalCandidates,
-          '• Самовыдвижение: ' + rec.selfNominated,
+          '• Округ: ' + district + (oikNumber ? (', ОИК №' + oikNumber) : '') + ' (' + level + ')',
+          '• Всего кандидатов: ' + totalCandidates,
+          '• Самовыдвижение: ' + selfNominated,
           '• От партий: ' + partyText,
-          '• Соответствуют требованиям: ' + rec.compliantCount,
-          '• На проверке: ' + (rec.pendingCount || 0),
-          '• Не соответствуют / отказ: ' + (rec.nonCompliantCount || 0),
-          '• Секретарь ОИК: ' + (rec.secretary || 'Секретарь ОИК'),
-          '• Время: ' + (rec.submittedAt || '') + ' (' + rec.date + ')'
+          '• Соответствуют требованиям: ' + compliantCount,
+          '• На проверке: ' + pendingCount,
+          '• Не соответствуют / отказ: ' + nonCompliantCount,
+          '• Секретарь ОИК: ' + (secretary || 'Секретарь ОИК'),
+          '• Время: ' + (time ? (time + ' ') : '') + '(' + date + ')'
         ];
         const waText = lines.join('\n');
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(waText).catch(function () {});
-        }
-        window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(waText), '_blank');
-        showToast('Текст сводки скопирован и WhatsApp открыт', false);
+        openWhatsAppWithMessage(waText);
       }
 
-function renderMyHistory() {
+      function renderMyHistory() {
         let list = [];
         try {
           list = JSON.parse(localStorage.getItem(MY_HISTORY_KEY) || '[]');
         } catch (e) {}
-        document.getElementById('mySentCountBadge').textContent = String(list.length);
+        const countBadge = document.getElementById('mySentCountBadge');
+        if (countBadge) countBadge.textContent = String(list.length);
         const container = document.getElementById('myHistoryList');
+
+        const waBtn = document.getElementById('whatsappTodayBtn');
+        const editBtn = document.getElementById('editTodayBtn');
+        const delBtn = document.getElementById('deleteTodayBtn');
+
         if (!list.length) {
-          container.innerHTML = '<p class="text-slate-400 py-3 text-center">Вы еще не отправляли сводку с этого устройства</p>';
+          if (container) container.innerHTML = '<p class="text-slate-400 py-3 text-center">Вы еще не отправляли сводку с этого устройства</p>';
           const card = document.getElementById('todayStatusCard');
           if (card) {
             card.className = 'p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3';
-            document.getElementById('todayStatusIcon').className = 'w-9 h-9 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center shrink-0';
-            document.getElementById('todayStatusIcon').textContent = '!';
-            document.getElementById('todayStatusTitle').className = 'text-xs sm:text-sm font-bold text-amber-950';
-            document.getElementById('todayStatusTitle').textContent = 'Сводка за сегодня еще не отправлена';
-            document.getElementById('todayStatusSub').className = 'text-xs text-amber-800';
-            document.getElementById('todayStatusSub').textContent = 'Заполните форму ниже до 17:30 — писать в группы WhatsApp не нужно';
-            const editBtn = document.getElementById('editTodayBtn');
-            if (editBtn) editBtn.classList.add('hidden');
-            const waBtn = document.getElementById('whatsappTodayBtn');
-            if (waBtn) waBtn.classList.add('hidden');
-            const delBtn = document.getElementById('deleteTodayBtn');
-            if (delBtn) delBtn.classList.add('hidden');
+            const icon = document.getElementById('todayStatusIcon');
+            if (icon) {
+              icon.className = 'w-9 h-9 rounded-xl bg-amber-500 text-white font-bold flex items-center justify-center shrink-0';
+              icon.textContent = '!';
+            }
+            const title = document.getElementById('todayStatusTitle');
+            if (title) {
+              title.className = 'text-xs sm:text-sm font-bold text-amber-950';
+              title.textContent = 'Сводка за сегодня еще не отправлена';
+            }
+            const sub = document.getElementById('todayStatusSub');
+            if (sub) {
+              sub.className = 'text-xs text-amber-800';
+              sub.textContent = 'Заполните форму ниже до 17:30 — писать в группы WhatsApp не нужно';
+            }
+          }
+          if (editBtn) editBtn.classList.add('hidden');
+          if (delBtn) delBtn.classList.add('hidden');
+          if (waBtn) {
+            waBtn.classList.remove('hidden');
+            waBtn.onclick = function () { sendWhatsAppSummary(); };
           }
           return;
         }
@@ -1029,70 +1127,81 @@ function renderMyHistory() {
         // Обновляем карточку статуса сегодня
         const last = list[list.length - 1];
         const card = document.getElementById('todayStatusCard');
-        card.className = 'p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3';
-        document.getElementById('todayStatusIcon').className = 'w-9 h-9 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0';
-        document.getElementById('todayStatusIcon').textContent = '✓';
-        document.getElementById('todayStatusTitle').className = 'text-xs sm:text-sm font-bold text-emerald-950';
-        document.getElementById('todayStatusTitle').textContent = 'Сводка отправлена (' + last.district + ', ОИК №' + last.oikNumber + ')';
-        document.getElementById('todayStatusSub').className = 'text-xs text-emerald-800';
-        document.getElementById('todayStatusSub').textContent = 'Время: ' + last.submittedAt + ' • Кандидатов: ' + last.totalCandidates + ' (Соотв: ' + last.compliantCount + ', На пров: ' + last.pendingCount + (last.nonCompliantCount > 0 ? ', Отказ: ' + last.nonCompliantCount : '') + ')';
+        if (card) {
+          card.className = 'p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3';
+          const icon = document.getElementById('todayStatusIcon');
+          if (icon) {
+            icon.className = 'w-9 h-9 rounded-xl bg-emerald-600 text-white font-bold flex items-center justify-center shrink-0';
+            icon.textContent = '✓';
+          }
+          const title = document.getElementById('todayStatusTitle');
+          if (title) {
+            title.className = 'text-xs sm:text-sm font-bold text-emerald-950';
+            title.textContent = 'Сводка отправлена (' + last.district + ', ОИК №' + last.oikNumber + ')';
+          }
+          const sub = document.getElementById('todayStatusSub');
+          if (sub) {
+            sub.className = 'text-xs text-emerald-800';
+            sub.textContent = 'Время: ' + last.submittedAt + ' • Кандидатов: ' + last.totalCandidates + ' (Соотв: ' + last.compliantCount + ', На пров: ' + last.pendingCount + (last.nonCompliantCount > 0 ? ', Отказ: ' + last.nonCompliantCount : '') + ')';
+          }
+        }
 
-        const waBtn = document.getElementById('whatsappTodayBtn');
         if (waBtn) {
           waBtn.classList.remove('hidden');
           waBtn.onclick = function () { sendWhatsAppSummary(last); };
         }
-
-        const editBtn = document.getElementById('editTodayBtn');
         if (editBtn) {
           editBtn.classList.remove('hidden');
           editBtn.onclick = function () { startEditRecord(last.id); };
         }
-
-        const delBtn = document.getElementById('deleteTodayBtn');
         if (delBtn) {
           delBtn.classList.remove('hidden');
           delBtn.onclick = function () { requestDeleteRecord(last.id); };
         }
 
-        container.innerHTML = list.slice().reverse().slice(0, 5).map(function (item) {
-          let badgeHtml = '';
-          if (item.pendingCount === item.totalCandidates && item.totalCandidates > 0) {
-            badgeHtml = '<span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200">⏳ На проверке (' + item.pendingCount + ')</span>';
-          } else if (item.compliantCount === item.totalCandidates && item.totalCandidates > 0) {
-            badgeHtml = '<span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-200">✓ Полное соответствие (' + item.compliantCount + ')</span>';
-          } else if (item.nonCompliantCount === item.totalCandidates && item.totalCandidates > 0) {
-            badgeHtml = '<span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-100 text-rose-900 border border-rose-200">✕ Отказ (' + item.nonCompliantCount + ')</span>';
-          } else {
-            badgeHtml = '<div class="flex items-center gap-1 justify-end flex-wrap">' +
-              (item.compliantCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900">' + item.compliantCount + ' соотв.</span>' : '') +
-              (item.pendingCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900">' + item.pendingCount + ' пров.</span>' : '') +
-              (item.nonCompliantCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-900">' + item.nonCompliantCount + ' отказ</span>' : '') +
-            '</div>';
-          }
+        if (container) {
+          container.innerHTML = list.slice().reverse().slice(0, 5).map(function (item) {
+            let badgeHtml = '';
+            if (item.pendingCount === item.totalCandidates && item.totalCandidates > 0) {
+              badgeHtml = '<span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-200">⏳ На проверке (' + item.pendingCount + ')</span>';
+            } else if (item.compliantCount === item.totalCandidates && item.totalCandidates > 0) {
+              badgeHtml = '<span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-200">✓ Полное соответствие (' + item.compliantCount + ')</span>';
+            } else if (item.nonCompliantCount === item.totalCandidates && item.totalCandidates > 0) {
+              badgeHtml = '<span class="inline-block px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-100 text-rose-900 border border-rose-200">✕ Отказ (' + item.nonCompliantCount + ')</span>';
+            } else {
+              badgeHtml = '<div class="flex items-center gap-1 justify-end flex-wrap">' +
+                (item.compliantCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900">' + item.compliantCount + ' соотв.</span>' : '') +
+                (item.pendingCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900">' + item.pendingCount + ' пров.</span>' : '') +
+                (item.nonCompliantCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-900">' + item.nonCompliantCount + ' отказ</span>' : '') +
+              '</div>';
+            }
 
-          return '<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">' +
-            '<div class="flex-1 min-w-0">' +
-              '<div class="flex items-center gap-2 flex-wrap">' +
-                '<span class="font-bold text-slate-900">' + item.district + ' • ОИК №' + item.oikNumber + '</span>' +
-                '<span class="text-[10px] text-slate-500 font-medium">(' + item.date + ' в ' + item.submittedAt + ')</span>' +
+            return '<div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">' +
+              '<div class="flex-1 min-w-0">' +
+                '<div class="flex items-center gap-2 flex-wrap">' +
+                  '<span class="font-bold text-slate-900">' + item.district + ' • ОИК №' + item.oikNumber + '</span>' +
+                  '<span class="text-[10px] text-slate-500 font-medium">(' + item.date + ' в ' + item.submittedAt + ')</span>' +
+                '</div>' +
+                '<span class="block text-[11px] text-slate-500 mt-0.5">' + item.level + ' • Секретарь: ' + (item.secretary || '—') + '</span>' +
+                '<div class="mt-1.5 flex items-center gap-1.5 flex-wrap">' +
+                  '<span class="px-2 py-0.5 rounded bg-sky-100 text-sky-950 font-extrabold text-[11px]">Всего: ' + item.totalCandidates + '</span>' +
+                  badgeHtml +
+                '</div>' +
               '</div>' +
-              '<span class="block text-[11px] text-slate-500 mt-0.5">' + item.level + ' • Секретарь: ' + (item.secretary || '—') + '</span>' +
-              '<div class="mt-1.5 flex items-center gap-1.5 flex-wrap">' +
-                '<span class="px-2 py-0.5 rounded bg-sky-100 text-sky-950 font-extrabold text-[11px]">Всего: ' + item.totalCandidates + '</span>' +
-                badgeHtml +
+              '<div class="flex items-center gap-2 shrink-0 self-end sm:self-center">' +
+                '<button type="button" data-wa-id="' + item.id + '" class="wa-sub-btn px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs shadow-2xs transition flex items-center gap-1">' +
+                  '<span>📲 WhatsApp</span>' +
+                '</button>' +
+                '<button type="button" data-edit-id="' + item.id + '" class="edit-sub-btn px-2.5 py-1.5 rounded-lg bg-white hover:bg-sky-50 text-sky-800 border border-sky-300 font-bold text-xs shadow-2xs transition flex items-center gap-1">' +
+                  '<span>✏️ Редактировать</span>' +
+                '</button>' +
               '</div>' +
-            '</div>' +
-            '<div class="flex items-center gap-2 shrink-0 self-end sm:self-center">' +
-              '<button type="button" data-edit-id="' + item.id + '" class="edit-sub-btn px-3 py-1.5 rounded-lg bg-white hover:bg-sky-50 text-sky-800 border border-sky-300 font-bold text-xs shadow-2xs transition flex items-center gap-1">' +
-                '<span>✏️ Редактировать</span>' +
-              '</button>' +
-            '</div>' +
-          '</div>';
-        }).join('');
+            '</div>';
+          }).join('');
+        }
       }
 
-            window.getGasWebhookUrl = getGasWebhookUrl;
+      window.getGasWebhookUrl = getGasWebhookUrl;
       window.setGasWebhook = function (newUrl) {
         if (!newUrl) {
           newUrl = prompt('Введите URL развернутого Google Apps Script (https://script.google.com/macros/s/.../exec):', getGasWebhookUrl());
@@ -1172,12 +1281,30 @@ function renderMyHistory() {
         const histList = document.getElementById('myHistoryList');
         if (histList) {
           histList.addEventListener('click', function (e) {
-            const btn = e.target.closest('.edit-sub-btn');
-            if (!btn) return;
-            const id = btn.getAttribute('data-edit-id');
-            startEditRecord(id);
+            const editBtn = e.target.closest('.edit-sub-btn');
+            if (editBtn) {
+              const id = editBtn.getAttribute('data-edit-id');
+              startEditRecord(id);
+              return;
+            }
+            const waBtn = e.target.closest('.wa-sub-btn');
+            if (waBtn) {
+              const id = waBtn.getAttribute('data-wa-id');
+              let list = [];
+              try { list = JSON.parse(localStorage.getItem(MY_HISTORY_KEY) || '[]'); } catch (err) {}
+              const item = list.find(function (r) { return r.id === id; });
+              if (item) sendWhatsAppSummary(item);
+              return;
+            }
           });
         }
+
+        bindClick('whatsappFormBtn', function () {
+          sendWhatsAppSummary();
+        });
+        bindClick('whatsappTodayBtn', function () {
+          sendWhatsAppSummary();
+        });
 
         bindClick('saveMyOikBtn', function () {
           try {
