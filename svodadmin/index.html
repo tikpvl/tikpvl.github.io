@@ -1,586 +1,1446 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Мониторинг тестирования — избирательные комиссии</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-:root {
-  --primary-gradient: linear-gradient(135deg, #0B3C68 0%, #0F4C81 50%, #0284C7 100%);
-  --pri: #0F4C81;
-  --pri-dark: #0B3C68;
-  --gold: #F59E0B;
-  --gold-dark: #D97706;
-  --bg: #E2E8F0; /* Более темный, контрастный и глубокий фон */
-  --card: #FFFFFF;
-  --ink: #0F172A;
-  --ink-sec: #475569;
-  --mute: #64748B;
-  --line: #CBD5E1;
-  --ok: #15803D;
-  --ok-bg: #DCFCE7;
-  --bad: #B91C1C;
-  --bad-bg: #FEE2E2;
-  --warn: #B45309;
-  --warn-bg: #FEF3C7;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: var(--bg);
-  color: var(--ink);
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-.page-wrap {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-header {
-  width: 100%;
-  background: var(--primary-gradient);
-  color: #fff;
-  padding: 18px 24px;
-  box-shadow: 0 8px 20px rgba(11,60,104,0.18);
-  margin-bottom: 20px;
-}
-.header-in {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.gov-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(245, 158, 11, 0.2);
-  border: 1.5px solid rgba(245, 158, 11, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.gov-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: #FDE68A;
-}
-header b {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.35;
-  letter-spacing: -0.2px;
-}
-header small {
-  display: block;
-  font-size: 12.5px;
-  color: #BAE6FD;
-  margin-top: 2px;
-  font-weight: 500;
-}
-main {
-  width: 100%;
-  flex: 1;
-  padding: 0 24px 36px;
-}
-@media (max-width: 600px) {
-  header { padding: 14px 16px; }
-  main { padding: 0 14px 28px; }
-}
-.card {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 22px;
-  margin-bottom: 18px;
-  box-shadow: var(--shadow-sm);
-}
-h2 {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--pri-dark);
-  margin: 0 0 14px;
-  letter-spacing: -0.2px;
-}
-input, select, button {
-  font-family: inherit;
-  font-size: 14px;
-  min-height: 46px;
-  padding: 8px 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--ink);
-  transition: all 0.2s ease;
-}
-input:focus, select:focus {
-  outline: none;
-  border-color: var(--pri);
-  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
-}
-button {
-  cursor: pointer;
-  font-weight: 600;
-}
-.btn {
-  background: var(--pri);
-  color: #fff;
-  border: none;
-}
-.btn:hover {
-  background: var(--pri-dark);
-}
-.btn.sec {
-  background: #fff;
-  color: var(--pri);
-  border: 1.5px solid var(--line);
-}
-.btn.sec:hover {
-  background: #F8FAFC;
-  border-color: #94A3B8;
-}
-.filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  align-items: end;
-}
-.filters label {
-  font-size: 12px;
-  color: var(--ink-sec);
-  display: block;
-  margin-bottom: 4px;
-  font-weight: 600;
-}
-.filters > div > * {
-  width: 100%;
-}
-.kpis {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 14px;
-  margin-bottom: 18px;
-}
-.kpi {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 18px;
-  box-shadow: var(--shadow-sm);
-}
-.kpi b {
-  display: block;
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--pri-dark);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
-}
-.kpi span {
-  color: var(--mute);
-  font-size: 13px;
-  font-weight: 600;
-  margin-top: 5px;
-  display: block;
-}
-.grid2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-}
-@media (max-width: 900px) {
-  .grid2 { grid-template-columns: 1fr; }
-}
-.bar {
-  display: grid;
-  grid-template-columns: 180px 1fr 100px;
-  gap: 10px;
-  align-items: center;
-  margin: 9px 0;
-  font-size: 13px;
-}
-@media (max-width: 480px) {
-  .bar { grid-template-columns: 120px 1fr 80px; font-size: 12px; }
-}
-.bar .t {
-  background: #E2E8F0;
-  border-radius: 99px;
-  height: 14px;
-  overflow: hidden;
-}
-.bar .t i {
-  display: block;
-  height: 100%;
-  background: var(--primary-gradient);
-}
-.bar .v {
-  text-align: right;
-  color: var(--mute);
-  font-size: 12.5px;
-  font-variant-numeric: tabular-nums;
-  font-weight: 600;
-}
-.tw {
-  overflow: auto;
-  max-height: 600px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-}
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font-size: 13.5px;
-}
-th, td {
-  padding: 11px 14px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-  vertical-align: middle;
-}
-th {
-  position: sticky;
-  top: 0;
-  background: #F8FAFC;
-  cursor: pointer;
-  white-space: nowrap;
-  font-weight: 600;
-  color: var(--pri-dark);
-  border-bottom: 2px solid var(--line);
-  z-index: 2;
-}
-.pill {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.g { background: var(--ok-bg); color: var(--ok); }
-.y { background: var(--warn-bg); color: var(--warn); }
-.r { background: var(--bad-bg); color: var(--bad); }
-.hard li {
-  margin-bottom: 10px;
-  font-size: 13.5px;
-  line-height: 1.45;
-  color: var(--ink-sec);
-}
-.hard li b {
-  color: var(--pri-dark);
-}
-.m {
-  color: var(--mute);
-  font-size: 13px;
-}
-.hide { display: none !important; }
-
-/* Форма входа */
-#login {
-  max-width: 400px;
-  margin: 80px auto;
-  padding: 28px;
-  text-align: center;
-}
-#login h2 {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-#login input {
-  margin-bottom: 14px;
-}
-#login button {
-  width: 100%;
-}
-
-/* Оверлей загрузки */
-#loader-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-  user-select: none;
-}
-#loader-overlay.active {
-  opacity: 1;
-  pointer-events: all;
-}
-.loader-num {
-  font-size: min(48vw, 42vh);
-  font-weight: 900;
-  font-style: italic;
-  line-height: 0.85;
-  letter-spacing: -4px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(135deg, #FFFFFF 15%, #F59E0B 75%, #FCD34D 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
-  font-variant-numeric: tabular-nums;
-  transform: skewX(-6deg);
-}
-.loader-caption {
-  margin-top: 16px;
-  font-size: 13px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: #F8FAFC;
-  font-weight: 600;
-  opacity: 0.85;
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b3c68">
+  <meta name="app-version" content="v1.3">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22110%22%20fill%3D%22%230f4c81%22/%3E%0A%20%20%3Crect%20x%3D%2240%22%20y%3D%2240%22%20width%3D%22432%22%20height%3D%22432%22%20rx%3D%2290%22%20fill%3D%22%230b3c68%22%20stroke%3D%22%230284c7%22%20stroke-width%3D%2210%22/%3E%0A%20%20%3Crect%20x%3D%22136%22%20y%3D%22180%22%20width%3D%22240%22%20height%3D%22190%22%20rx%3D%2224%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23f59e0b%22%20stroke-width%3D%2212%22/%3E%0A%20%20%3Cline%20x1%3D%22180%22%20y1%3D%22230%22%20x2%3D%22332%22%20y2%3D%22230%22%20stroke%3D%22%23f59e0b%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22/%3E%0A%20%20%3Cpath%20d%3D%22M200%20300%20L240%20340%20L315%20260%22%20fill%3D%22none%22%20stroke%3D%22%2310b981%22%20stroke-width%3D%2220%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22140%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-weight%3D%22900%22%20font-size%3D%2264%22%20fill%3D%22%23f59e0b%22%20text-anchor%3D%22middle%22%3E%D0%9E%D0%98%D0%9A%3C/text%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22430%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2232%22%20fill%3D%22%23bae6fd%22%20text-anchor%3D%22middle%22%3E%D0%9F%D0%90%D0%92%D0%9B%D0%9E%D0%94%D0%90%D0%A0%3C/text%3E%0A%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%22110%22%20fill%3D%22%230f4c81%22/%3E%0A%20%20%3Crect%20x%3D%2240%22%20y%3D%2240%22%20width%3D%22432%22%20height%3D%22432%22%20rx%3D%2290%22%20fill%3D%22%230b3c68%22%20stroke%3D%22%230284c7%22%20stroke-width%3D%2210%22/%3E%0A%20%20%3Crect%20x%3D%22136%22%20y%3D%22180%22%20width%3D%22240%22%20height%3D%22190%22%20rx%3D%2224%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23f59e0b%22%20stroke-width%3D%2212%22/%3E%0A%20%20%3Cline%20x1%3D%22180%22%20y1%3D%22230%22%20x2%3D%22332%22%20y2%3D%22230%22%20stroke%3D%22%23f59e0b%22%20stroke-width%3D%2212%22%20stroke-linecap%3D%22round%22/%3E%0A%20%20%3Cpath%20d%3D%22M200%20300%20L240%20340%20L315%20260%22%20fill%3D%22none%22%20stroke%3D%22%2310b981%22%20stroke-width%3D%2220%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22140%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-weight%3D%22900%22%20font-size%3D%2264%22%20fill%3D%22%23f59e0b%22%20text-anchor%3D%22middle%22%3E%D0%9E%D0%98%D0%9A%3C/text%3E%0A%20%20%3Ctext%20x%3D%22256%22%20y%3D%22430%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2232%22%20fill%3D%22%23bae6fd%22%20text-anchor%3D%22middle%22%3E%D0%9F%D0%90%D0%92%D0%9B%D0%9E%D0%94%D0%90%D0%A0%3C/text%3E%0A%3C/svg%3E">
+  <title>Панель мониторинга ТИК Павлодарской области — Сводка и фильтрация ОИК</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    .tik-header {
+      background: linear-gradient(135deg, #092e52 0%, #0f4c81 60%, #0369a1 100%);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+  </style>
 </head>
-<body>
-<div class="page-wrap">
-  <header>
-    <div class="header-in">
-      <div class="header-brand">
-        <div class="gov-icon">
-          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm6 12H6v-1c0-2 4-3.1 6-3.1s6 1.1 6 3.1v1z"/></svg>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Баннер новой версии -->
+  <div id="updateAvailableBanner" class="hidden fixed top-3 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-slate-950 px-4 py-2 rounded-xl shadow-xl border border-amber-300 text-xs font-bold flex items-center gap-2.5 transition">
+    <span>🚀 Доступна новая версия интерфейса!</span>
+    <button id="reloadAppBtn" type="button" class="px-2.5 py-1 rounded-lg bg-slate-950 text-white text-[11px] font-extrabold hover:bg-slate-800 transition">Обновить</button>
+  </div>
+
+  <!-- Тост-уведомление -->
+  <div id="toastBox" class="hidden fixed bottom-5 right-5 z-50 max-w-sm bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl border border-slate-700 flex items-center gap-3">
+    <span id="toastIcon" class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+    <span id="toastText" class="text-sm font-medium">Данные обновлены</span>
+  </div>
+
+  <!-- Шапка Сайта №2 (Панель ТИК) -->
+  <header class="tik-header text-white shadow-lg relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center shrink-0">
+          <svg class="w-6 h-6 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
         </div>
         <div>
-          <b>Мониторинг тестирования</b>
-          <small>Территориальная избирательная комиссия Павлодарской области</small>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-amber-400/20 border border-amber-300/30 text-amber-200">Панель ТИК Павлодарской области</span>
+            <span id="appVersionBadge" class="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/25 text-emerald-200 border border-emerald-400/30 flex items-center gap-1.5 cursor-pointer hover:bg-emerald-500/40 transition" title="Текущая версия интерфейса. Нажмите для проверки обновления">
+              <span id="versionDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span id="versionLabel">v1.3 • Актуально</span>
+            </span>
+            <span id="liveSyncStatus" class="text-xs font-mono text-sky-200">● Синхронизация активна</span>
+          </div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight mt-0.5">
+            Сводный мониторинг ОИК • Выборы депутатов маслихатов
+          </h1>
         </div>
       </div>
-      <div id="h-logout" class="hide">
-        <button class="btn sec" id="logout" style="min-height:36px;padding:6px 14px;font-size:12.5px;border-radius:8px">Выйти</button>
+
+      <!-- Кнопки управления для ТИК -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="downloadExcelCsvBtn" type="button" class="px-3.5 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 font-semibold text-xs transition flex items-center gap-1.5">
+          <span>📥 Скачать Excel (CSV)</span>
+        </button>
+        <button id="openWhatsappReportHeaderBtn" type="button" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition flex items-center gap-1.5" title="Сформировать сводку для WhatsApp">
+          <span>📲 Сводка в WhatsApp</span>
+        </button>
+        <button id="syncFromGoogleSheetsBtn" type="button" class="px-3.5 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow transition flex items-center gap-1.5" title="Загрузить актуальные данные (удалить исключенные строки)">
+          <span id="syncSpinner" class="hidden animate-spin">🔄</span>
+          <span id="syncIcon">🔄</span>
+          <span>Обновить данные</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <main>
-    <!-- Оверлей загрузки -->
-    <div id="loader-overlay">
-      <div class="loader-num" id="pct-val">0%</div>
-      <div class="loader-caption">Синхронизация данных</div>
-    </div>
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-    <!-- Вход -->
-    <div id="login" class="card hide">
-      <h2>Вход</h2>
-      <input id="key" type="password" placeholder="Введите пароль">
-      <p id="lerr" style="color:var(--bad);font-size:13px;margin:0 0 14px"></p>
-      <button class="btn" id="go">Войти</button>
-    </div>
-
-    <div id="app" class="hide">
-      <div class="card">
-        <div class="filters">
-          <div><label>Район / город</label><select id="fd"><option value="">Все</option></select></div>
-          <div><label>Тип комиссии</label><select id="fk"><option value="">УИК и ОИК</option><option>УИК</option><option>ОИК</option></select></div>
-          <div><label>Результат от, %</label><input id="fmin" type="number" min="0" max="100" placeholder="0"></div>
-          <div><label>Результат до, %</label><input id="fmax" type="number" min="0" max="100" placeholder="100"></div>
-          <div><label>Поиск по ФИО / номеру</label><input id="fq" placeholder="Иванов или 12"></div>
-          <div><button class="btn sec" id="reset">Сбросить</button></div>
-          <div><button class="btn" id="refresh">Обновить данные</button></div>
-        </div>
-        <p class="m" id="upd" style="margin-top:14px;margin-bottom:0"></p>
+    <!-- Панель фильтрации -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <svg class="w-4 h-4 text-sky-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+          </svg>
+          <span>Фильтрация по области, группе комиссий, городам/районам, № ОИК, партиям и соответствию</span>
+        </h2>
+        <button id="clearAllFiltersBtn" type="button" class="text-xs font-semibold text-rose-600 hover:text-rose-800">
+          Сбросить все фильтры
+        </button>
       </div>
 
-      <div class="kpis" id="kpis"></div>
-
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px">
-          <h2 style="margin:0">Сдавшие <span class="m" id="cnt"></span></h2>
-          <button class="btn sec" id="csv" style="min-height:38px;padding:6px 16px">Скачать CSV</button>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+        <div>
+          <label for="fRegion" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Область</label>
+          <select id="fRegion" class="w-full rounded-lg border border-slate-300 bg-slate-50 px-2.5 py-2 text-xs font-semibold text-slate-900">
+            <option value="ALL">Павлодарская область</option>
+          </select>
         </div>
-        <div class="tw">
-          <table>
-            <thead><tr id="th"></tr></thead>
-            <tbody id="tb"></tbody>
-          </table>
+
+        <div>
+          <label for="fLevel" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Уровень / Группа</label>
+          <select id="fLevel" class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-xs font-semibold text-slate-900">
+            <option value="ALL">Все уровни (Группа 1 + 2)</option>
+            <option value="Областной маслихат">Группа 1: Областные ОИК</option>
+            <option value="Городской / Районный маслихат">Группа 2: Городские и районные ОИК</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="fDistrict" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Город или район</label>
+          <select id="fDistrict" class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-xs font-semibold text-slate-900">
+            <option value="ALL">Все города и районы (13)</option>
+            <option value="ONLY_CITIES">Только города (Павлодар, Экибастуз, Аксу)</option>
+            <option value="ONLY_DISTRICTS">Только районы области (10 районов)</option>
+            <optgroup label="Города областного значения">
+              <option value="г. Павлодар">г. Павлодар</option>
+              <option value="г. Экибастуз">г. Экибастуз</option>
+              <option value="г. Аксу">г. Аксу</option>
+            </optgroup>
+            <optgroup label="Районы Павлодарской области">
+              <option value="Актогайский район">Актогайский район</option>
+              <option value="Баянаульский район">Баянаульский район</option>
+              <option value="Железинский район">Железинский район</option>
+              <option value="Иртышский район">Иртышский район</option>
+              <option value="район Тереңкөл">район Тереңкөл</option>
+              <option value="район Аққулы">район Аққулы</option>
+              <option value="Майский район">Майский район</option>
+              <option value="Павлодарский район">Павлодарский район</option>
+              <option value="Успенский район">Успенский район</option>
+              <option value="Щербактинский район">Щербактинский район</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div>
+          <label for="fOik" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Номер ОИК</label>
+          <select id="fOik" class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-xs font-semibold text-slate-900">
+            <option value="ALL">Все номера ОИК</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="fParty" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Самовыдвижение / Партия</label>
+          <select id="fParty" class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-xs font-semibold text-slate-900">
+            <option value="ALL">Все субъекты выдвижения</option>
+            <option value="SELF">Есть самовыдвиженцы</option>
+            <option value="Әділет">Партия «Әділет»</option>
+            <option value="Ақ жол">ДПК «Ақ жол»</option>
+            <option value="Ауыл">Партия «Ауыл»</option>
+            <option value="Respublica">Партия «Respublica»</option>
+            <option value="Байтақ">Партия «Байтақ»</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="fCompliance" class="block text-[11px] font-bold uppercase text-slate-500 mb-1">Соответствие</label>
+          <select id="fCompliance" class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-xs font-semibold text-slate-900">
+            <option value="ALL">Все статусы соответствия</option>
+            <option value="ALL_COMPLIANT">Только полное соответствие (100%)</option>
+            <option value="ANY_PENDING">Есть на проверке (в госорганах)</option>
+            <option value="ALL_PENDING">Все на проверке (100%)</option>
+            <option value="ANY_NON">Есть несоответствие / отказ</option>
+            <option value="MIXED">Смешанный статус (соотв. + на проверке)</option>
+          </select>
         </div>
       </div>
 
-      <div class="grid2">
-        <div class="card">
-          <h2>Средний результат по районам и городам</h2>
-          <div id="bd"></div>
+      <div class="pt-1 flex flex-col sm:flex-row items-center gap-3">
+        <input id="fSearch" type="text" placeholder="Поиск по ФИО секретаря, номеру ОИК, городу/району или примечанию..." class="w-full sm:flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-600">
+        <span id="filterCounterText" class="text-xs font-semibold text-slate-600 shrink-0">Записей ОИК: 0</span>
+      </div>
+    </section>
+
+    <!-- Счётчики кандидатов по партиям и самовыдвижению (на всю ширину, как в официальном табло) -->
+    <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-sky-700"></span>
+            <span>Выдвижение: Самовыдвижение и Партии</span>
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">Численность кандидатов по 5 политическим партиям Казахстана и самовыдвиженцам</p>
         </div>
-        <div class="card">
-          <h2>Распределение результатов</h2>
-          <div id="bh"></div>
-          <h2 style="margin-top:22px">УИК и ОИК</h2>
-          <div id="bk"></div>
-        </div>
+        <span class="text-xs font-semibold text-sky-800 bg-sky-50 px-2.5 py-1 rounded-lg border border-sky-200 self-start sm:self-auto">
+          ● Данные счетчиков фильтруются в реальном времени
+        </span>
       </div>
 
-      <div class="card">
-        <h2>Чаще всего ошибались (по выбранным фильтрам)</h2>
-        <ol class="hard" id="hard" style="padding-left:20px;margin:0"></ol>
+      <!-- 6 карточек на всю ширину экрана -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <!-- 1. ДП Әділет -->
+        <div class="flex flex-col rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white hover:-translate-y-0.5 transition duration-200">
+          <div class="h-16 px-2 flex flex-col items-center justify-center bg-white border-b border-slate-100 text-center">
+            <span class="text-[11px] font-black text-[#6d28d9] tracking-tight">ӘДІЛЕТ</span>
+            <span class="text-[9px] text-slate-400 font-medium leading-tight">Демпартиясы</span>
+          </div>
+          <div class="bg-[#6d28d9] py-3.5 px-2 text-center flex-1 flex flex-col items-center justify-center">
+            <span id="score_adilet" class="text-3xl font-black text-white leading-none">0</span>
+            <span class="text-[11px] font-medium text-purple-100 mt-1">кандидат</span>
+          </div>
+        </div>
+
+        <!-- 2. ДПК Ақ жол -->
+        <div class="flex flex-col rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white hover:-translate-y-0.5 transition duration-200">
+          <div class="h-16 px-2 flex flex-col items-center justify-center bg-white border-b border-slate-100 text-center">
+            <span class="text-[11px] font-black text-[#1d4e9d] tracking-tight">АҚ ЖОЛ</span>
+            <span class="text-[9px] text-slate-400 font-medium leading-tight">Демпартиясы</span>
+          </div>
+          <div class="bg-[#1d4e9d] py-3.5 px-2 text-center flex-1 flex flex-col items-center justify-center">
+            <span id="score_akzhol" class="text-3xl font-black text-white leading-none">0</span>
+            <span class="text-[11px] font-medium text-blue-100 mt-1">кандидат</span>
+          </div>
+        </div>
+
+        <!-- 3. Партия Ауыл -->
+        <div class="flex flex-col rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white hover:-translate-y-0.5 transition duration-200">
+          <div class="h-16 px-2 flex flex-col items-center justify-center bg-white border-b border-slate-100 text-center">
+            <span class="text-[11px] font-black text-[#0b5c4b] tracking-tight">АУЫЛ</span>
+            <span class="text-[9px] text-slate-400 font-medium leading-tight">НДПП</span>
+          </div>
+          <div class="bg-[#0b5c4b] py-3.5 px-2 text-center flex-1 flex flex-col items-center justify-center">
+            <span id="score_auyl" class="text-3xl font-black text-white leading-none">0</span>
+            <span class="text-[11px] font-medium text-emerald-100 mt-1">кандидат</span>
+          </div>
+        </div>
+
+        <!-- 4. Партия Respublica -->
+        <div class="flex flex-col rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white hover:-translate-y-0.5 transition duration-200">
+          <div class="h-16 px-2 flex flex-col items-center justify-center bg-white border-b border-slate-100 text-center">
+            <span class="text-[11px] font-black text-[#01114c] tracking-tight">Respublica</span>
+            <span class="text-[9px] text-slate-400 font-medium leading-tight">Партиясы</span>
+          </div>
+          <div class="bg-[#01114c] py-3.5 px-2 text-center flex-1 flex flex-col items-center justify-center">
+            <span id="score_respublica" class="text-3xl font-black text-white leading-none">0</span>
+            <span class="text-[11px] font-medium text-slate-200 mt-1">кандидат</span>
+          </div>
+        </div>
+
+        <!-- 5. Партия Байтақ -->
+        <div class="flex flex-col rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-white hover:-translate-y-0.5 transition duration-200">
+          <div class="h-16 px-2 flex flex-col items-center justify-center bg-white border-b border-slate-100 text-center">
+            <span class="text-[11px] font-black text-[#236525] tracking-tight">BAYTAQ</span>
+            <span class="text-[9px] text-slate-400 font-medium leading-tight">Жасылдар</span>
+          </div>
+          <div class="bg-[#236525] py-3.5 px-2 text-center flex-1 flex flex-col items-center justify-center">
+            <span id="score_baytak" class="text-3xl font-black text-white leading-none">0</span>
+            <span class="text-[11px] font-medium text-green-100 mt-1">кандидат</span>
+          </div>
+        </div>
+
+        <!-- 6. Самовыдвижение (в конце) -->
+        <div class="flex flex-col rounded-2xl overflow-hidden border border-amber-300 shadow-sm bg-white hover:-translate-y-0.5 transition duration-200 ring-2 ring-amber-400/30">
+          <div class="h-16 px-2 flex flex-col items-center justify-center bg-amber-50/70 border-b border-amber-200 text-center">
+            <span class="text-[11px] font-black text-amber-950 tracking-tight">САМОВЫДВ.</span>
+            <span class="text-[9px] text-amber-800 font-medium leading-tight">Өзін-өзі ұсыну</span>
+          </div>
+          <div class="bg-[#d97706] py-3.5 px-2 text-center flex-1 flex flex-col items-center justify-center">
+            <span id="score_self" class="text-3xl font-black text-white leading-none">0</span>
+            <span class="text-[11px] font-medium text-amber-100 mt-1">кандидат</span>
+          </div>
+        </div>
+      </div></section>
+
+    <!-- Карточки KPI -->
+    <section class="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
+      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <span class="text-xs font-semibold text-slate-500">Отчиталось ОИК</span>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="kpiOiks" class="text-2xl font-extrabold text-slate-900">0</span>
+          <span class="text-xs font-semibold text-sky-700 bg-sky-50 px-2 py-0.5 rounded">округов</span>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-1">В текущей выборке</p>
       </div>
-    </div>
+
+      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <span class="text-xs font-semibold text-slate-500">Всего кандидатов</span>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="kpiTotal" class="text-2xl font-extrabold text-sky-900">0</span>
+          <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">100%</span>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-1">Выдвинуто по ОИК</p>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <span class="text-xs font-semibold text-slate-500">Самовыдвижение</span>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="kpiSelf" class="text-2xl font-extrabold text-amber-600">0</span>
+          <span id="kpiSelfPct" class="text-xs font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">0%</span>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-1">Самовыдвиженцы</p>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+        <span class="text-xs font-semibold text-slate-500">От партий</span>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="kpiParties" class="text-2xl font-extrabold text-indigo-700">0</span>
+          <span id="kpiPartiesPct" class="text-xs font-bold text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded">0%</span>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-1">По 5 партиям РК</p>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 col-span-2 lg:col-span-1">
+        <span class="text-xs font-semibold text-slate-500">Соответствуют</span>
+        <div class="mt-1 flex items-baseline justify-between">
+          <span id="kpiCompliant" class="text-2xl font-extrabold text-emerald-600">0</span>
+          <span id="kpiPendingBadge" class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">0 пров.</span>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-1">Прошли проверку</p>
+      </div>
+    </section>
+
+    <!-- График по городам и районам Павлодарской области на всю ширину -->
+    <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+      <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+        <div>
+          <h3 class="text-sm font-bold text-slate-900">Сводка по городам и районам Павлодарской области</h3>
+          <p class="text-xs text-slate-500">Всего кандидатов и подтвержденное соответствие по 13 городам и районам</p>
+        </div>
+      </div>
+      <div class="relative h-72">
+        <canvas id="chartDistricts"></canvas>
+      </div>
+    </section>
+
+    <!-- Таблицы: Свод по районам/городам и Детальный реестр ОИК -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-4 border-b border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="tabByOikBtn" type="button" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-sky-800 text-white shadow-sm transition">
+            Детальный реестр по каждому ОИК
+          </button>
+          <button id="tabByDistrictBtn" type="button" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition">
+            Итоги по городам и районам (Сводка ТИК)
+          </button>
+          <button id="tabByOblastBtn" type="button" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition">
+            Итоги областных ОИК
+          </button>
+        </div>
+        <span class="text-xs text-slate-500">Обновляется автоматически при отправке формы секретарями</span>
+      </div>
+
+      <!-- Таблица 1: По каждому ОИК -->
+      <div id="oikTableWrap" class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[980px]">
+          <thead>
+            <tr class="bg-slate-100 text-[11px] font-bold uppercase text-slate-600 border-b border-slate-200">
+              <th class="py-3 px-3">Город / Район</th>
+              <th class="py-3 px-3">Уровень (Группа)</th>
+              <th class="py-3 px-3">№ ОИК</th>
+              <th class="py-3 px-3 text-center bg-sky-50 text-sky-900">Всего</th>
+              <th class="py-3 px-3 text-center bg-amber-50 text-amber-900">Самовыдв.</th>
+              <th class="py-3 px-2 text-center text-purple-900 bg-purple-50/50">Әділет</th>
+              <th class="py-3 px-2 text-center">Ақ жол</th>
+              <th class="py-3 px-2 text-center">Ауыл</th>
+              <th class="py-3 px-2 text-center">Respublica</th>
+              <th class="py-3 px-2 text-center">Байтақ</th>
+              <th class="py-3 px-3">Соответствие</th>
+              <th class="py-3 px-3">Секретарь / Время</th>
+              <th class="py-3 px-3 text-right">Действие</th>
+            </tr>
+          </thead>
+          <tbody id="oikRowsBody" class="divide-y divide-slate-200 text-xs"></tbody>
+        </table>
+      </div>
+
+      <!-- Таблица 2: Сводные итоги по городам и районам -->
+      <div id="districtTableWrap" class="hidden overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[920px]">
+          <thead>
+            <tr class="bg-slate-100 text-[11px] font-bold uppercase text-slate-600 border-b border-slate-200">
+              <th class="py-3 px-4">Город / Район Павлодарской области</th>
+              <th class="py-3 px-3 text-center">Сдали ОИК</th>
+              <th class="py-3 px-3 text-center bg-sky-50 text-sky-900">Всего канд.</th>
+              <th class="py-3 px-3 text-center bg-amber-50 text-amber-900">Самовыдв.</th>
+              <th class="py-3 px-2 text-center text-purple-900 bg-purple-50/50">Әділет</th>
+              <th class="py-3 px-2 text-center">Ақ жол</th>
+              <th class="py-3 px-2 text-center">Ауыл</th>
+              <th class="py-3 px-2 text-center">Respublica</th>
+              <th class="py-3 px-2 text-center">Байтақ</th>
+              <th class="py-3 px-3 text-center bg-emerald-50 text-emerald-900">Соответствуют</th>
+              <th class="py-3 px-3 text-center">На пров. / Отказ</th>
+            </tr>
+          </thead>
+          <tbody id="districtRowsBody" class="divide-y divide-slate-200 text-xs"></tbody>
+        </table>
+      </div>
+
+      <!-- Таблица 3: Итоги областных ОИК (Округа №1 – №30) -->
+      <div id="oblastOikTableWrap" class="hidden overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left border-collapse min-w-[980px]">
+          <thead>
+            <tr class="bg-slate-100 text-[11px] font-bold uppercase text-slate-600 border-b border-slate-200">
+              <th class="py-3 px-3">Округ</th>
+              <th class="py-3 px-3">Город / Район</th>
+              <th class="py-3 px-3 text-center bg-sky-50 text-sky-900">Всего</th>
+              <th class="py-3 px-3 text-center bg-amber-50 text-amber-900">Самовыдв.</th>
+              <th class="py-3 px-2 text-center text-purple-900 bg-purple-50/50">Әділет</th>
+              <th class="py-3 px-2 text-center">Ақ жол</th>
+              <th class="py-3 px-2 text-center">Ауыл</th>
+              <th class="py-3 px-2 text-center">Respublica</th>
+              <th class="py-3 px-2 text-center">Байтақ</th>
+              <th class="py-3 px-3 text-center bg-emerald-50 text-emerald-900">Соответствуют</th>
+              <th class="py-3 px-3 text-center">На проверке</th>
+              <th class="py-3 px-3 text-center">Не соотв.</th>
+              <th class="py-3 px-3">Секретарь / Статус</th>
+            </tr>
+          </thead>
+          <tbody id="oblastRowsBody" class="divide-y divide-slate-200 text-xs"></tbody>
+          <tfoot id="oblastRowsFoot" class="bg-slate-100 font-extrabold text-xs border-t-2 border-slate-300"></tfoot>
+        </table>
+      </div>
+    </section>
+
   </main>
-</div>
 
-<script>
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbyHILsdW6BNbhgG9w0acbCBeQyVJ1a7CrK_bUJKcKts3_tJao_ujzS7VYObPfa9oquP/exec";
-const QT={"1":"В ТИК поступила жалоба на решение УИК. В какой срок комиссия обязана рассмотреть это обращение в ходе избирательного процесса?","2":"В какой момент кандидат в депутаты маслихата по одномандатному округу должен внести избирательный взнос?","3":"В какой срок государственные органы и организации обязаны предоставлять ответы на официальные обращения и запросы избирательных комиссий?","4":"В какой срок ОИК обязана представить протокол о регистрации кандидатов в вышестоящую или территориальную избирательную комиссию?","5":"В какой срок решение ОИК об отказе в регистрации или об отмене регистрации кандидата может быть обжаловано в вышестоящую комиссию или суд?","6":"В какой срок территориальная избирательная комиссия устанавливает итоги выборов депутатов маслихатов?","7":"В каких случаях бюллетени признаются недействительными?","8":"В каких случаях внесенный кандидатом в депутаты маслихата избирательный взнос (5 МЗП) подлежит возврату?","9":"В какой срок должен быть произведен повторный подсчет голосов, осуществляемый на основании решения избирательной комиссии?","10":"В каком размере кандидат в депутаты маслихата по одномандатному избирательному округу вносит избирательный взнос?","11":"В каком случае ОИК назначает повторное голосование по выборам депутата маслихата по одномандатному избирательному округу?","12":"В какие сроки доставляются избирательные бюллетени участковым избирательным комиссиям?","13":"В какие сроки публикуется в средствах массовой информации сообщение об итогах выборов депутатов маслихатов?","14":"В какие сроки прекращается выдача открепительных удостоверений избирателям?","15":"В какие сроки участковая избирательная комиссия оповещает избирателей о времени и месте голосования по выборам?","16":"В день голосования с момента открытия избирательного участка на избирательном участке вправе одновременно присутствовать:","17":"В день голосования участковые избирательные комиссии …","18":"В течение какого времени акимы должны оповестить избирателей о границах избирательных участков и местах нахождения избирательных комиссий при выборах?","19":"В течение какого времени копия протокола ОИК о результатах голосования по избирательному округу должна находиться в помещении комиссии для всеобщего ознакомления?","20":"В течение какого срока вышестоящая избирательная комиссия обязана рассмотреть жалобу на решение или действие (бездействие) нижестоящей избирательной комиссии?","21":"В течение какого срока органы государственных доходов проверяют достоверность сведений в декларациях об активах и обязательствах кандидатов и их супругов?","22":"В случае если избирательных бюллетеней установленного образца в переносной избирательной урне оказалось больше, чем число письменных заявлений, …","23":"В случае нарушения законодательства Республики Казахстан о выборах член избирательной комиссии:","24":"В случае нарушения законодательства Республики Казахстан о выборах наблюдатель и иные лица ...","25":"Главным требованием к аккредитации общественных объединений и некоммерческих организаций по наблюдению за выборами является …","26":"Действия участковой избирательной комиссии при предъявлении избирателем открепительного удостоверения на право голосования в день голосования?","27":"Депутат маслихата, избранный по партийному списку, досрочно выбыл. Что происходит с мандатом?","28":"Доверенные лица и наблюдатели, присутствующие при подсчете голосов, наблюдают за подсчетом голосов на расстоянии и в условиях, обеспечивающих обозримость …","29":"До какого момента кандидат в депутаты маслихата по одномандатному избирательному округу имеет право отозвать свою кандидатуру, подав заявление в ОИК?","30":"Допускается ли использование агитационных материалов, изготовленных для предыдущих избирательных кампаний?","31":"Жалоба на решение ОИК одновременно подана в ТИК и в суд. Как поступает ТИК?","32":"За сколько дней до голосования запрещается опубликование результатов опросов общественного мнения в СМИ и на онлайн-платформах?","33":"Из каких источников и в каких пределах образуется избирательный фонд кандидата в депутаты маслихатов районов и городов областного значения?","34":"Избиратель обнаружил, что он не включен в список избирателей за 10 дней до выборов. В какой срок комиссия обязана рассмотреть его заявление?","35":"Избиратель по ошибке испортил бюллетень и требует выдать ему второй. Как должен поступить член УИК?","36":"Как оплачивается сверхурочная работа, работа в праздничные и выходные дни, труд в ночное время членов избирательных комиссий?","37":"Как проходит процедура подсчета избирательных бюллетеней?","38":"Как исчисляется заработная плата членов избирательных комиссий, не являющихся государственными служащими, в период подготовки и проведения выборов?","39":"Как принимается решение при возникновении разногласий в отношении действительности бюллетеней?","40":"Какова минимальная совокупная квота для женщин и молодежи в партийных списках кандидатов в депутаты маслихатов?","41":"Какое действие обязан совершить председатель УИК за 30 минут до начала голосования в присутствии членов комиссии и наблюдателей?","42":"Какое из следующих процедурных ограничений проверяет комиссия при приеме документов и вынесении решения о регистрации кандидатов в депутаты маслихата по одномандатному округу?","43":"Какое ограничение установлено законом для общественных объединений (за исключением политических партий) при выдвижении кандидатов в депутаты маслихата по одномандатным округам?","44":"Какое условие является обязательным для допуска представителя отечественного средства массовой информации на избирательный участок в день голосования?","45":"Какое количество членов избирательной комиссии сопровождают переносную урну для голосования?","46":"Какой орган вправе организовывать предвыборные дебаты между кандидатами в депутаты маслихатов?","47":"Какой орган регистрирует доверенных лиц на выборах депутатов маслихатов?","48":"Какой процентный барьер должна преодолеть политическая партия для участия в распределении депутатских мандатов маслихата по партийным спискам?","49":"Каким документом удостоверяются полномочия наблюдателя?","50":"Какие сроки рассмотрения заявления на аккредитацию в качестве наблюдателей?","51":"Какие документы должен иметь представитель средства массовой информации Республики Казахстан для присутствия на избирательном участке?","52":"Кандидат в депутаты маслихата по одномандатному округу пришел в ОИК в день выдвижения и приложил к первичному заявлению квитанцию об уплате избирательного взноса. Какова правильная последовательность действий комиссии при проведении процедуры регистрации в части избирательного взноса?","53":"Кандидаты и политические партии, выдвинувшие партийные списки, определяют доверенных лиц по своему усмотрению в количестве, …","54":"Кем подписываются протоколы о результатах голосования?","55":"Когда по законодательству начинается голосование вне помещения для голосования?","56":"Когда участковая избирательная комиссия производит подсчет избирателей, получивших бюллетени, и определяет их общее число?","57":"Кому участковые избирательные комиссии немедленно пересылают первые экземпляры протоколов о результатах голосования по одномандатным избирательным округам?","58":"Копия протокола о результатах голосования вывешивается в помещении избирательного участка в специально установленном месте для всеобщего ознакомления …","59":"Количество бюллетеней в переносной избирательной урне должно соответствовать …","60":"Кто делает соответствующую отметку в списке избирателей против фамилии избирателя, подавшего заявление на голосование вне помещения для голосования?","61":"Кто определяет график работы участковых избирательных комиссий, за исключением дня голосования?","62":"Кто определяет порядок и объем сообщений избирательных комиссии, размещаемых в периодических печатных изданиях?","63":"Кто и в какой срок определяет очередность получения мандатов внутри партийного списка по итогам выборов?","64":"На каких участников избирательного процесса не распространяется требование о предоставлении объема информации для агитации пользователями онлайн-платформ исключительно на договорной основе?","65":"На основании какого документа банковское учреждение открывает специальный временный счет избирательного фонда кандидата в депутаты маслихата по одномандатному округу?","66":"На сколько дней окружная избирательная комиссия продлевает срок выдвижения кандидатов, если на день окончания выдвижения по округу зарегистрировано менее двух кандидатов?","67":"Не позднее чем за сколько дней до дня голосования территориальные комиссии передают открепительные удостоверения участковым по акту?","68":"Обвинительный приговор суда в отношении кандидата вступил в законную силу за 1 день до дня голосования (в «день тишины»). Каковы правомерные действия комиссии?","69":"ОГД выдал документ о недостоверности декларации кандидата, и ОИК/ТИК отменила его регистрацию. Кандидат подал иск в суд. До начала слушаний ОГД признал свою техническую ошибку и предложил комиссии заменить справку на «благоприятную» для кандидата. Как должна поступить комиссия?","70":"Перед вскрытием урн все неиспользованные бюллетени …","71":"Переносные избирательные урны ....","72":"По какой избирательной системе избираются депутаты маслихатов столицы, областей, городов республиканского значения?","73":"По желанию кого, выдается копия протокола о результатах голосования?","74":"После регистрации кандидата «Д» в депутаты маслихата по одномандатному избирательному округу выяснилось, что его родной брат является секретарем одной из участковых избирательных комиссий (УИК) данного избирательного округа. Какое решение должно быть принято в связи с возникшим ограничением?","75":"Предвыборная агитация – …","76":"При возникновении разногласий в отношении действительности бюллетеней вопрос разрешается избирательной комиссией путем …","77":"Работодатель хочет уволить сотрудника, являющегося членом УИК, в период проведения избирательной кампании. Законны ли действия работодателя?","78":"Разрешается ли размещение агитационного баннера на здании театра, признанного памятником архитектуры?","79":"Регистрация кандидата отменена решением комиссии. На его специальном счёте есть пожертвования. Когда и как они возвращаются?","80":"С какого возраста граждане Республики Казахстан допускаются к деятельности в качестве наблюдателей и доверенных лиц?","81":"Сколько открепительных удостоверений выдается избирателю, который будет в другом населенном пункте в рамках своего округа районного (городского) маслихата?","82":"Сколько открепительных удостоверений выдается избирателю, который будет находиться в пределах области, но вне своего одномандатного округа областного маслихата?","83":"Списки избирателей по каждому избирательному участку представляются по акту ...","84":"Сколько дней находится в помещении избирательного участка копия протокола о результатах подсчета голосов?","85":"Сроки проведения предвыборной агитации?","86":"Урны для голосования должны вскрываться соответствующей избирательной комиссией …","87":"Член комиссии обнаружил бюллетень, в котором отметка за партию сделана карандашом. Является ли такой бюллетень действительным?","88":"Чему соответствует цвет открепительного удостоверения на выборах маслихатов?","89":"Что делает УИК, если избиратель просит открепительное удостоверение для голосования в другой области?","90":"Что гарантирует тайное голосование на выборах?","91":"Что запрещается избирателю в день голосования в отношении заполненного избирательного бюллетеня?","92":"Что происходит, если кандидат в депутаты маслихата по одномандатному округу прошел проверку на соответствие требованиям закона, но не предоставил документ об уплате избирательного взноса до окончания срока регистрации?","93":"Что является юридическим основанием для включения гражданина в список избирателей на конкретном участке?","94":"По какой избирательной системе избираются депутаты маслихатов районов и городов областного значения?","95":"В маслихате области 37 мандатов. Сколько мандатов распределяется по партийным спискам и сколько избирается по одномандатным округам?","96":"Распределяются 12 мандатов по партийным спискам. В голосовании приняли участие 130 000 избирателей. Голоса: «А» — 60 000, «Б» — 30 000, «В» — 20 000, «Г» — 6 000, «Д» — 4 000. Как распределятся мандаты?","97":"В партийный список включены 25 человек. Какое минимальное число женщин и молодёжи по совокупности необходимо для регистрации списка?","98":"Кто созывает первое заседание окружной избирательной комиссии после формирования ее состава и какие руководящие должности на нем избираются?","99":"В случае, если границы одномандатного территориального избирательного округа совпадают с границами административно-территориальной единицы…","100":"В ОИК из 5 членов на заседании присутствуют 4. По вопросу проголосовали: «за» — 2, «против» — 1, воздержался — 1. Что верно?","101":"Гражданин включён в партийный список партии «А». Общественное объединение выдвигает его кандидатом по одномандатному округу, он дал согласие. Как должна поступить ОИК?","102":"Каким путем граждане осуществляют самовыдвижение кандидатом в депутаты маслихата по одномандатному избирательному округу?","103":"При внесении данных кандидата в единую систему СДОВ высветилось, что его ИИН уже зарегистрирован при выдвижении в одномандатном избирательном округе соседней области. Какое решение обязана принять комиссия?","104":"При подаче документов кандидат указал, что в отношении него идет судебное разбирательство по уголовному делу о коррупционном правонарушении, однако приговор судом еще не вынесен. Какое решение должна принять ОИК при проверке его соответствия требованиям закона?","105":"В какой срок организации обязаны предоставить информацию по требованию органов государственных доходов при проверке деклараций кандидата?","106":"В какой орган окружная избирательная комиссия обязана передать протокол о регистрации кандидата по одномандатному округу после его составления?","107":"Каков предельный размер собственных средств политической партии, направляемых в ее избирательный фонд на каждый партийный список при выборах депутатов маслихата?","108":"Каков предельный размер избирательного фонда кандидата в депутаты маслихатов столицы, областей и городов республиканского значения?","109":"Какой орган выделяет кандидатам по одномандатным округам бюджетные средства на издание печатных агитационных материалов (плакатов, листовок)?","110":"В ОИК поступили материалы прокуратуры о том, что кандидат лично заказал и оплатил наличными деньгами (из собственных средств, не зачисленных на специальный временный счет избирательного фонда) печать 5 000 агитационных буклетов в местной типографии. Каковы правовые последствия данного нарушения для кандидата?","111":"Кандидат «А» подал жалобу в ОИК на Кандидата «Б», обвиняя его в распространении сведений, подрывающих деловую репутацию. Каков правомерный порядок действий ОИК?","112":"В «день тишины» в мессенджерах WhatsApp массово рассылаются призывы голосовать за кандидата. Как должна поступить комиссия?","113":"Кандидат подал жалобу в вышестоящую ТИК на решение ОИК об отказе в его регистрации на 9-й день после вынесения решения, ссылаясь на общую норму о 10-дневном сроке обжалования решений комиссий. Какое решение должна принять ТИК?","114":"ТИК приняла решение об исключении лица из партийного списка из-за недостоверности его декларации. Как это решение может быть обжаловано?","115":"За 1 день до выборов в ОИК поступило вступившее в силу решение суда о восстановлении ранее снятого кандидата. Как должна поступить ОИК?","116":"Полномочия избирательных комиссий при подведении итогов выборов депутатов маслихатов","117":"В какой срок сообщение об итогах выборов депутатов маслихатов публикуется в СМИ?","118":"Какой орган производит регистрацию избранных депутатов маслихатов и выдает им депутатские удостоверения и нагрудные знаки?","119":"Какой орган полномочен принять решение о признании выборов депутата маслихата по избирательному участку или округу недействительными при выявлении нарушений закона?","120":"ТИК признала выборы недействительными. Какое утверждение о повторных выборах верно?","121":"ТИК признала выборы в округе недействительными. Кто и в какой срок вправе обжаловать это решение?","122":"Кто присутствует при повторном подсчете голосов избирателей, осуществляемый на основании решения избирательной комиссии?","123":"В «день тишины» в социальной сети сохраняется ранее опубликованный агитационный ролик партии. Обязана ли комиссия требовать его удаления?","124":"Каковы действия избирательной комиссии в случае, когда отдельные избиратели по состоянию здоровья, по причине ухода за больным членом семьи, а также находящиеся в отдаленных и труднодоступных районах, где не образованы избирательные участки, не могут прибыть для голосования.","125":"В день голосования на избирательный участок пришел гражданин, которому исполнилось 18 лет непосредственно в день выборов. Какое решение должна принять участковая избирательная комиссия относительно его права на голосование?","126":"На основании чего проводится повторный подсчет голосов?","127":"Заседания избирательных комиссий правомочны, если в них принимает участие …","128":"Кому наблюдатель предъявляет документы для регистрации?","129":"Какой орган осуществляет аккредитацию региональных и местных общественных объединений и некоммерческих организаций, к уставной деятельности которых относится осуществление деятельности по наблюдению за выборами?","130":"Какое участие необходимо для правомочности заседания ОИК?","131":"Сколько кандидатов в каждом округе выдвигает общественное объединение (не политическая партия) и его филиал?","132":"Кто устанавливает текст бюллетеня для голосования по выборам депутатов маслихатов по одномандатным территориальным округам?","133":"Не позднее какого дня после регистрации ОИК публикует в местных СМИ сообщение о регистрации кандидата?","134":"Как принимаются решения ОИК?","135":"Какие полномочия в отношении участковых комиссий есть у ОИК?","136":"Какое основание влечет только отмену регистрации (но не отказ в регистрации)?","137":"За сколько дней до дня голосования не допускаются отмена регистрации и восстановление ранее исключенного кандидата?","138":"В протоколе УИК строки заполнены карандашом, а в графе итогов есть исправление. Что вправе сделать ОИК?","139":"Кто вправе проводить предвыборную агитацию, не требующую финансирования?","140":"По окончании подсчета голосов наблюдатели отмечают расхождения в количестве проголосовавших, по их подсчетам и по результатам комиссии, и требуют пересчитать бюллетени. Действия членов УИК?","141":"Какое из указанных лиц НЕ может быть доверенным лицом кандидата в депутаты маслихата?","142":"Сколько открепительных удостоверений выдается избирателю, который будет находиться в своем одномандатном округе областного маслихата, но вне округа районного (городского) маслихата?","143":"Какие организации имеют право проводить опрос общественного мнения?","144":"Что делают с неиспользованными открепительными удостоверениями?","145":"При каких обстоятельствах соответствующая вышестоящая избирательная комиссия вправе принять решение о повторном подсчете голосов избирателей соответствующей участковой избирательной комиссией?"};
-const $=id=>document.getElementById(id);
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-let ALL=[],sortK="ts",sortD=-1;
-const COLS=[["ts","Дата"],["district","Район / город"],["kind","Тип"],["num","№"],["fio","ФИО"],["ok","Верно"],["bad","Неверно"],["pct","%"],["wrong","Неверные вопросы (№ в базе)"]];
-function pctClass(p){return p>=80?"g":p>=60?"y":"r"}
+  <!-- Модальное окно готовой сводки для WhatsApp -->
+  <div id="reportModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 class="text-base font-bold text-slate-900">Сводка ТИК по выбранным фильтрам</h3>
+        <button id="closeReportModalBtn" type="button" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+      </div>
+      <textarea id="reportTextOutput" rows="12" readonly class="w-full rounded-xl border border-slate-300 bg-slate-50 p-3 text-xs font-mono text-slate-800"></textarea>
+      <div class="flex flex-wrap justify-end gap-2">
+        <button id="openWhatsappReportModalBtn" type="button" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5">
+          <span>📲 Открыть в WhatsApp</span>
+        </button>
+        <button id="copyReportTextBtn" type="button" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-semibold text-xs">Скопировать текст</button>
+        <button id="closeReportModalBottomBtn" type="button" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-800 font-semibold text-xs">Закрыть</button>
+      </div>
+    </div>
+  </div>
 
-let pctTimer = null;
-let currentPct = 0;
 
-function startLoaderAnim() {
-  currentPct = 0;
-  $("pct-val").textContent = "0%";
-  $("loader-overlay").classList.add("active");
-  clearInterval(pctTimer);
-  pctTimer = setInterval(() => {
-    if (currentPct < 90) {
-      currentPct += Math.floor(Math.random() * 8) + 3;
-      if (currentPct > 90) currentPct = 90;
-      $("pct-val").textContent = currentPct + "%";
-    }
-  }, 90);
-}
-
-function finishLoaderAnim() {
-  clearInterval(pctTimer);
-  $("pct-val").textContent = "100%";
-  setTimeout(() => {
-    $("loader-overlay").classList.remove("active");
-  }, 300);
-}
-
-function stopLoaderAnim() {
-  clearInterval(pctTimer);
-  $("loader-overlay").classList.remove("active");
-}
-
-async function load(keyOverride){
-  const key = keyOverride !== undefined ? keyOverride : (localStorage.getItem("ak") || "");
-  const j=await new Promise((res,rej)=>{const cb="cb"+Date.now(),s=document.createElement("script");
-    const t=setTimeout(()=>{c();rej(new Error("нет ответа от скрипта: проверьте развёртывание"))},20000);
-    function c(){clearTimeout(t);delete window[cb];s.remove()}
-    window[cb]=x=>{c();res(x)};s.onerror=()=>{c();rej(new Error("скрипт недоступен: проверьте развёртывание"))};
-    s.src=SCRIPT_URL+"?action=list&key="+encodeURIComponent(key)+"&callback="+cb;document.head.appendChild(s)});
-  if(!j.ok)throw new Error(j.error||"error");
-  ALL=j.rows.map(r=>{const m=/^(УИК|ОИК)\s*№?\s*(\S*)/.exec(r.commission||"")||[];const ok=+r.ok||0,bad=+r.bad||0;
-    return {ts:r.ts,district:r.district,kind:m[1]||"",num:m[2]||"",fio:r.fio,ok,bad,pct:Math.round(ok/Math.max(1,ok+bad)*100),wrong:(r.wrong&&r.wrong!=="—")?String(r.wrong):""}});
-  const ds=[...new Set(ALL.map(r=>r.district))].sort();
-  const cur=$("fd").value;$("fd").innerHTML='<option value="">Все</option>'+ds.map(d=>`<option>${esc(d)}</option>`).join("");$("fd").value=cur;
-  $("upd").textContent="Обновлено: "+new Date().toLocaleString("ru-RU");
-  draw();
-}
-function filtered(){
-  const d=$("fd").value,k=$("fk").value,mn=$("fmin").value,mx=$("fmax").value,q=$("fq").value.trim().toLowerCase();
-  return ALL.filter(r=>(!d||r.district===d)&&(!k||r.kind===k)&&(mn===""||r.pct>=+mn)&&(mx===""||r.pct<=+mx)&&(!q||(r.fio+" "+r.num).toLowerCase().includes(q)));
-}
-function bars(el,items,max,fmt){
-  el.innerHTML=items.length?items.map(([n,v,extra])=>`<div class="bar"><div>${esc(n)}</div><div class="t"><i style="width:${max?v/max*100:0}%"></i></div><div class="v">${fmt(v,extra)}</div></div>`).join(""):'<p class="m">Нет данных</p>';
-}
-function draw(){
-  const rows=filtered(),n=rows.length;
-  const avg=n?Math.round(rows.reduce((a,r)=>a+r.pct,0)/n):0;
-  const pass=rows.filter(r=>r.pct>=60).length;
-  const best=n?Math.max(...rows.map(r=>r.pct)):0,low=n?Math.min(...rows.map(r=>r.pct)):0;
-  $("kpis").innerHTML=[["Сдали тест",n],["Средний результат",avg+"%"],["Набрали 80% и выше",rows.filter(r=>r.pct>=80).length],["Ниже 60%",n-pass],["Лучший / худший",best+"% / "+low+"%"]].map(([a,b])=>`<div class="kpi"><b>${b}</b><span>${a}</span></div>`).join("");
-  const by={};rows.forEach(r=>{(by[r.district]=by[r.district]||[]).push(r.pct)});
-  bars($("bd"),Object.entries(by).map(([d,a])=>[d,Math.round(a.reduce((x,y)=>x+y,0)/a.length),a.length]).sort((a,b)=>b[1]-a[1]),100,(v,c)=>v+"% · "+c+" чел.");
-  const buckets=[["0–39%",0,39],["40–59%",40,59],["60–79%",60,79],["80–100%",80,100]].map(([l,a,b])=>[l,rows.filter(r=>r.pct>=a&&r.pct<=b).length]);
-  bars($("bh"),buckets,Math.max(1,...buckets.map(b=>b[1])),v=>v+" чел.");
-  const kk=["УИК","ОИК"].map(k=>[k,rows.filter(r=>r.kind===k).length]);
-  bars($("bk"),kk,Math.max(1,...kk.map(b=>b[1])),v=>v+" чел.");
-  const cnt={};rows.forEach(r=>r.wrong.split(",").map(s=>s.trim()).filter(Boolean).forEach(x=>cnt[x]=(cnt[x]||0)+1));
-  $("hard").innerHTML=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([q,c])=>`<li><b>№${q}</b> — ошибок: ${c}. ${esc(QT[q]||"")}</li>`).join("")||'<li class="m">Нет данных</li>';
-  $("cnt").textContent="("+n+")";
-  $("th").innerHTML=COLS.map(([k,l])=>`<th data-k="${k}">${l}${sortK===k?(sortD>0?" ▲":" ▼"):""}</th>`).join("");
-  $("th").querySelectorAll("th").forEach(t=>t.onclick=()=>{const k=t.dataset.k;sortD=sortK===k?-sortD:1;sortK=k;draw()});
-  const s=[...rows].sort((a,b)=>{const x=a[sortK],y=b[sortK];return (typeof x==="number"&&typeof y==="number"?x-y:String(x).localeCompare(String(y),"ru",{numeric:true}))*sortD});
-  $("tb").innerHTML=s.map(r=>`<tr><td>${esc(r.ts)}</td><td>${esc(r.district)}</td><td>${r.kind}</td><td>${esc(r.num)}</td><td>${esc(r.fio)}</td><td>${r.ok}</td><td>${r.bad}</td><td><span class="pill ${pctClass(r.pct)}">${r.pct}%</span></td><td>${esc(r.wrong)}</td></tr>`).join("");
-}
-["fd","fk","fmin","fmax"].forEach(i=>$(i).onchange=draw);$("fq").oninput=draw;
-$("reset").onclick=()=>{["fd","fk","fmin","fmax","fq"].forEach(i=>$(i).value="");draw()};
-$("refresh").onclick=async ()=>{
-  startLoaderAnim();
-  try {
-    await load();
-    finishLoaderAnim();
-  } catch(e) {
-    stopLoaderAnim();
-    alert("Ошибка: " + e.message);
-  }
-};
-$("csv").onclick=()=>{const rows=filtered();const h=COLS.map(c=>c[1]);const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
-  const t=[h.map(q).join(";")].concat(rows.map(r=>COLS.map(([k])=>q(r[k])).join(";"))).join("\n");
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+t],{type:"text/csv;charset=utf-8"}));a.download="results.csv";a.click()};
-
-async function enter(){
-  const val = $("key").value.trim();
-  const currentKey = val || localStorage.getItem("ak") || "";
-  if (!currentKey) {
-    $("login").classList.remove("hide");
-    $("lerr").textContent = "Введите пароль.";
-    return;
-  }
   
-  startLoaderAnim();
-  $("login").classList.add("hide");
 
+  <!-- Модальное окно настройки Google Sheets (Code.gs) -->
+  <div id="cloudModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <h3 class="text-base font-bold text-slate-900">Облачная синхронизация Сайта №1 и Сайта №2 через Google Sheets</h3>
+        <button id="closeCloudModalBtn" type="button" class="text-slate-400 hover:text-slate-700 font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-600 leading-relaxed">
+        Чтобы данные с телефонов секретарей ОИК (Сайт №1) мгновенно собирались на вашем компьютере ТИК (Сайт №2), создайте Google Таблицу, откройте <strong>Расширения → Apps Script</strong>, вставьте код ниже и нажмите <strong>Развернуть → Новое развертывание (Веб-приложение, доступ: Все)</strong>.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input id="webhookUrlInput" type="url" value="https://script.google.com/macros/s/AKfycbwexWujTtqxSZyAAFNUmG6pF8PTVZcKhd40XIjAfb0fgzP8D4ghjeBsIlVjx5eAkrE/exec" placeholder="https://script.google.com/macros/s/.../exec" class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-xs">
+        <button id="saveWebhookUrlBtn" type="button" class="px-4 py-2 rounded-lg bg-sky-800 hover:bg-sky-900 text-white font-semibold text-xs">Сохранить URL</button>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-bold uppercase text-slate-500">Код сервера Google Apps Script (Code.gs):</span>
+        <button id="copyGasScriptBtn" type="button" class="text-xs font-bold text-sky-700 hover:text-sky-900">Скопировать код</button>
+      </div>
+      <pre id="gasScriptPre" class="bg-slate-900 text-slate-100 p-3.5 rounded-xl text-[11px] font-mono overflow-x-auto">function doPost(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(10000);
   try {
-    await load(currentKey);
-    localStorage.setItem("ak", currentKey);
-    finishLoaderAnim();
-    $("app").classList.remove("hide");
-    $("h-logout").classList.remove("hide");
-    $("lerr").textContent = "";
-  } catch(e) {
-    stopLoaderAnim();
-    $("login").classList.remove("hide");
-    if(e.message === "forbidden"){
-      $("lerr").textContent = "Неверный пароль.";
-      localStorage.removeItem("ak");
-    } else {
-      $("lerr").textContent = "Не удалось загрузить: " + e.message;
+    var sheet = getOrCreateSheet();
+    var d = JSON.parse(e.postData.contents);
+
+    // Удаление строки по ID (когда запись удалили в интерфейсе ТИК)
+    if (d.action === 'delete') {
+      var data = sheet.getDataRange().getValues();
+      for (var i = data.length - 1; i >= 1; i--) {
+        if (String(data[i][0]) === String(d.id)) {
+          sheet.deleteRow(i + 1);
+          break;
+        }
+      }
+      return ContentService.createTextOutput(JSON.stringify({ status: 'ok', deleted: d.id }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
+
+    // Добавление или обновление строки (защита от дубликатов при повторной отправке)
+    var data = sheet.getDataRange().getValues();
+    var existingRow = -1;
+    for (var i = 1; i < data.length; i++) {
+      if (String(data[i][0]) === String(d.id) ||
+         (String(data[i][1]) === String(d.date) && String(data[i][4]) === String(d.district) && String(data[i][5]) === String(d.oikNumber) && String(data[i][3]) === String(d.level))) {
+        existingRow = i + 1;
+        break;
+      }
+    }
+
+    var rowValues = [
+      d.id, d.date, d.region, d.level, d.district, d.oikNumber,
+      d.secretary, d.totalCandidates, d.selfNominated,
+      (d.parties && d.parties['AMANAT']) || 0,
+      (d.parties && d.parties['Ақ жол']) || 0,
+      (d.parties && d.parties['Ауыл']) || 0,
+      (d.parties && d.parties['НПК']) || 0,
+      (d.parties && d.parties['Respublica']) || 0,
+      (d.parties && d.parties['ОСДП']) || 0,
+      (d.parties && d.parties['Байтақ']) || 0,
+      d.compliantCount, d.pendingCount, d.nonCompliantCount,
+      d.complianceStatus, d.notes, (d.submittedAt ? (d.date + ' ' + d.submittedAt) : new Date().toLocaleString('ru-RU'))
+    ];
+
+    if (existingRow > 0) {
+      sheet.getRange(existingRow, 1, 1, rowValues.length).setValues([rowValues]);
+    } else {
+      sheet.appendRow(rowValues);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ status: 'ok' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
   }
 }
 
-$("go").onclick = enter;
-$("key").onkeydown = e => { if(e.key === "Enter") enter(); };
+function doGet(e) {
+  var lock = LockService.getScriptLock();
+  lock.tryLock(5000);
+  try {
+    var sheet = getOrCreateSheet();
+    var values = sheet.getDataRange().getValues();
+    var records = [];
 
-$("logout").onclick = () => {
-  localStorage.removeItem("ak");
-  $("key").value = "";
-  $("app").classList.add("hide");
-  $("h-logout").classList.add("hide");
-  $("login").classList.remove("hide");
-};
+    // values[0] - заголовки, данные начинаются со строки 1
+    for (var i = 1; i < values.length; i++) {
+      var row = values[i];
+      if (!row[0] && !row[5]) continue; // Пропуск пустых строк
+      records.push({
+        id: String(row[0] || ('rec-' + i)),
+        date: String(row[1] || ''),
+        region: String(row[2] || 'Павлодарская область'),
+        level: String(row[3] || 'Городской / Районный маслихат'),
+        district: String(row[4] || ''),
+        oikNumber: parseInt(row[5], 10) || 0,
+        secretary: String(row[6] || ''),
+        totalCandidates: parseInt(row[7], 10) || 0,
+        selfNominated: parseInt(row[8], 10) || 0,
+        parties: {
+          'AMANAT': parseInt(row[9], 10) || 0,
+          'Ақ жол': parseInt(row[10], 10) || 0,
+          'Ауыл': parseInt(row[11], 10) || 0,
+          'НПК': parseInt(row[12], 10) || 0,
+          'Respublica': parseInt(row[13], 10) || 0,
+          'ОСДП': parseInt(row[14], 10) || 0,
+          'Байтақ': parseInt(row[15], 10) || 0
+        },
+        compliantCount: parseInt(row[16], 10) || 0,
+        pendingCount: parseInt(row[17], 10) || 0,
+        nonCompliantCount: parseInt(row[18], 10) || 0,
+        complianceStatus: String(row[19] || 'Полное соответствие'),
+        notes: String(row[20] || ''),
+        submittedAt: String(row[21] || '')
+      });
+    }
 
-if (localStorage.getItem("ak")) {
-  enter();
-} else {
-  $("login").classList.remove("hide");
+    var output = JSON.stringify({ status: 'ok', records: records, rows: values });
+    if (e && e.parameter && e.parameter.callback) {
+      return ContentService.createTextOutput(e.parameter.callback + '(' + output + ')')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return ContentService.createTextOutput(output)
+      .setMimeType(ContentService.MimeType.JSON);
+  } finally {
+    lock.releaseLock();
+  }
 }
-</script>
+
+function getOrCreateSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Сводка_ОИК') || ss.insertSheet('Сводка_ОИК');
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      'ID', 'Дата', 'Область', 'Уровень маслихата', 'Город / Район', 'Номер ОИК',
+      'ФИО Секретаря', 'Всего кандидатов', 'Самовыдвижение',
+      'Әділет', 'Ақ жол', 'Ауыл', 'Respublica', 'Байтақ',
+      'Соответствуют', 'На проверке', 'Не соответствуют', 'Статус соответствия', 'Примечание', 'Время подачи'
+    ]);
+  }
+  return sheet;
+}</pre>
+      <div class="flex justify-end">
+        <button id="closeCloudModalBottomBtn" type="button" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-800 font-semibold text-xs">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'pavlodar_tik_oik_records_prod_v1';
+      // URL развернутого скрипта Google Apps Script (Code.gs):
+      const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwexWujTtqxSZyAAFNUmG6pF8PTVZcKhd40XIjAfb0fgzP8D4ghjeBsIlVjx5eAkrE/exec';
+      const WEBHOOK_KEY = 'pavlodar_tik_gas_webhook_v1';
+
+      function getGasWebhookUrl() {
+        const stored = (localStorage.getItem(WEBHOOK_KEY) || '').trim();
+        if (stored && stored.startsWith('https://')) return stored;
+        return (DEFAULT_GAS_URL || '').trim();
+      }
+      const PARTY_KEYS = ['Әділет', 'Ақ жол', 'Ауыл', 'Respublica', 'Байтақ'];
+      const CITIES = ['г. Павлодар', 'г. Экибастуз', 'г. Аксу'];
+      const DISTRICTS = [
+        'Актогайский район', 'Баянаульский район', 'Железинский район',
+        'Иртышский район', 'район Тереңкөл', 'район Аққулы',
+        'Майский район', 'Павлодарский район', 'Успенский район', 'Щербактинский район'
+      ];
+      const ALL_TERRITORIES = CITIES.concat(DISTRICTS);
+
+      function getDefaultRecords() { return []; }
+
+      let records = [];
+      let chart1 = null;
+      let chart2 = null;
+
+            function loadData() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              records = parsed;
+              return;
+            }
+          }
+        } catch (e) {}
+        records = [];
+        saveData();
+      }
+
+      function saveData() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        } catch (e) {}
+      }
+
+
+      const APP_VERSION = 'v1.3';
+
+      function checkAppVersion(isManualClick) {
+        if (!window.location.protocol.startsWith('http')) {
+          if (isManualClick) showToast('Локальный файл. Версия: ' + APP_VERSION);
+          return;
+        }
+
+        const vUrl = '.' + '/version.json?t=' + Date.now(); fetch(vUrl, { cache: 'no-store' })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            handleVersionResult(data && data.version, isManualClick);
+          })
+          .catch(function () {
+            fetch(window.location.pathname + '?t=' + Date.now(), { cache: 'no-store' })
+              .then(function (r) { return r.text(); })
+              .then(function (html) {
+                const m = html.match(/name=["']app-version["']\s+content=["']([^"']+)["']/);
+                handleVersionResult(m && m[1], isManualClick);
+              }).catch(function () {});
+          });
+      }
+
+      function handleVersionResult(serverVer, isManualClick) {
+        if (serverVer && serverVer !== APP_VERSION) {
+          const badge = document.getElementById('appVersionBadge');
+          const dot = document.getElementById('versionDot');
+          const label = document.getElementById('versionLabel');
+          if (badge && dot && label) {
+            badge.className = 'text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 border border-amber-300 flex items-center gap-1.5 cursor-pointer shadow-sm';
+            dot.className = 'w-1.5 h-1.5 rounded-full bg-rose-600 animate-ping';
+            label.textContent = 'Доступно ' + serverVer + ' • Нажмите обновить';
+          }
+          const banner = document.getElementById('updateAvailableBanner');
+          if (banner) banner.classList.remove('hidden');
+          showToast('Доступно обновление интерфейса (' + serverVer + ')!', true);
+        } else {
+          if (isManualClick) {
+            showToast('У вас установлена актуальная версия (' + APP_VERSION + ')');
+          }
+        }
+      }
+
+      function showToast(msg) {
+        const box = document.getElementById('toastBox');
+        document.getElementById('toastText').textContent = msg;
+        box.classList.remove('hidden');
+        setTimeout(function () { box.classList.add('hidden'); }, 3500);
+      }
+
+      function updateOikDropdown() {
+        const sel = document.getElementById('fOik');
+        const cur = sel.value;
+        const nums = Array.from(new Set(records.map(function (r) { return r.oikNumber; }))).sort(function (a, b) { return a - b; });
+        let html = '<option value="ALL">Все номера ОИК (' + nums.length + ')</option>';
+        nums.forEach(function (n) {
+          html += '<option value="' + n + '">ОИК № ' + n + '</option>';
+        });
+        sel.innerHTML = html;
+        if (nums.map(String).indexOf(cur) !== -1) sel.value = cur;
+      }
+
+      function getFiltered() {
+        const levelVal = document.getElementById('fLevel').value;
+        const distVal = document.getElementById('fDistrict').value;
+        const oikVal = document.getElementById('fOik').value;
+        const partyVal = document.getElementById('fParty').value;
+        const compVal = document.getElementById('fCompliance').value;
+        const q = (document.getElementById('fSearch').value || '').trim().toLowerCase();
+
+        return records.filter(function (r) {
+          if (levelVal !== 'ALL' && r.level !== levelVal) return false;
+          if (distVal === 'ONLY_CITIES' && CITIES.indexOf(r.district) === -1) return false;
+          if (distVal === 'ONLY_DISTRICTS' && DISTRICTS.indexOf(r.district) === -1) return false;
+          if (distVal !== 'ALL' && distVal !== 'ONLY_CITIES' && distVal !== 'ONLY_DISTRICTS' && r.district !== distVal) return false;
+          if (oikVal !== 'ALL' && String(r.oikNumber) !== String(oikVal)) return false;
+          if (partyVal === 'SELF' && (!r.selfNominated || r.selfNominated <= 0)) return false;
+          if (partyVal !== 'ALL' && partyVal !== 'SELF' && (!r.parties || !r.parties[partyVal] || r.parties[partyVal] <= 0)) return false;
+          if (compVal === 'ALL_COMPLIANT' && (r.compliantCount !== r.totalCandidates || r.totalCandidates === 0)) return false;
+          if (compVal === 'ANY_PENDING' && (!r.pendingCount || r.pendingCount <= 0)) return false;
+          if (compVal === 'ALL_PENDING' && (r.pendingCount !== r.totalCandidates || r.totalCandidates === 0)) return false;
+          if (compVal === 'ANY_NON' && (!r.nonCompliantCount || r.nonCompliantCount <= 0)) return false;
+          if (compVal === 'MIXED' && (r.pendingCount === r.totalCandidates || r.compliantCount === r.totalCandidates || r.nonCompliantCount === r.totalCandidates)) return false;
+          if (q) {
+            const hay = (r.district + ' оик ' + r.oikNumber + ' ' + r.secretary + ' ' + r.notes + ' ' + r.level).toLowerCase();
+            if (hay.indexOf(q) === -1) return false;
+          }
+          return true;
+        });
+      }
+
+      function renderAll() {
+        updateOikDropdown();
+        const filtered = getFiltered();
+        document.getElementById('filterCounterText').textContent = 'Записей ОИК: ' + filtered.length + ' из ' + records.length;
+
+        let totalCand = 0;
+        let totalSelf = 0;
+        let totalComp = 0;
+        let totalPend = 0;
+        let totalNon = 0;
+        const pMap = {};
+        PARTY_KEYS.forEach(function (k) { pMap[k] = 0; });
+
+        filtered.forEach(function (r) {
+          totalCand += r.totalCandidates || 0;
+          totalSelf += r.selfNominated || 0;
+          totalComp += r.compliantCount || 0;
+          totalPend += r.pendingCount || 0;
+          totalNon += r.nonCompliantCount || 0;
+          PARTY_KEYS.forEach(function (k) {
+            pMap[k] += (r.parties && r.parties[k]) ? r.parties[k] : 0;
+          });
+        });
+
+        const partySum = PARTY_KEYS.reduce(function (a, k) { return a + pMap[k]; }, 0);
+        document.getElementById('kpiOiks').textContent = String(filtered.length);
+        document.getElementById('kpiTotal').textContent = String(totalCand);
+        document.getElementById('kpiSelf').textContent = String(totalSelf);
+        document.getElementById('kpiSelfPct').textContent = (totalCand ? Math.round((totalSelf / totalCand) * 100) : 0) + '%';
+        document.getElementById('kpiParties').textContent = String(partySum);
+        document.getElementById('kpiPartiesPct').textContent = (totalCand ? Math.round((partySum / totalCand) * 100) : 0) + '%';
+        document.getElementById('kpiCompliant').textContent = String(totalComp);
+        document.getElementById('kpiPendingBadge').textContent = totalPend + ' пров. / ' + totalNon + ' отк.';
+        // Обновление счетчиков на табло 8 субъектов выдвижения
+        const elAd = document.getElementById('score_adilet'); if (elAd) elAd.textContent = String(pMap['Әділет'] || pMap['AMANAT'] || 0);
+        const elAk = document.getElementById('score_akzhol'); if (elAk) elAk.textContent = String(pMap['Ақ жол'] || 0);
+        const elAu = document.getElementById('score_auyl'); if (elAu) elAu.textContent = String(pMap['Ауыл'] || 0);
+        const elRe = document.getElementById('score_respublica'); if (elRe) elRe.textContent = String(pMap['Respublica'] || 0);
+        const elBa = document.getElementById('score_baytak'); if (elBa) elBa.textContent = String(pMap['Байтақ'] || 0);
+        const elSe = document.getElementById('score_self'); if (elSe) elSe.textContent = String(totalSelf || 0);
+
+
+        renderCharts(totalSelf, pMap, filtered);
+        renderOikRows(filtered);
+        renderDistrictRows(filtered);
+        renderOblastRows(filtered);
+      }
+
+      function renderCharts(totalSelf, pMap, filtered) {
+        if (typeof Chart === 'undefined') return;
+
+        const dAgg = {};
+        filtered.forEach(function (r) {
+          if (!dAgg[r.district]) dAgg[r.district] = { total: 0, comp: 0 };
+          dAgg[r.district].total += r.totalCandidates;
+          dAgg[r.district].comp += r.compliantCount;
+        });
+        const dLabels = Object.keys(dAgg);
+        const c2 = document.getElementById('chartDistricts').getContext('2d');
+        if (chart2) chart2.destroy();
+        chart2 = new Chart(c2, {
+          type: 'bar',
+          data: {
+            labels: dLabels,
+            datasets: [
+              { label: 'Всего кандидатов', data: dLabels.map(function (k) { return dAgg[k].total; }), backgroundColor: '#0f4c81', borderRadius: 5 },
+              { label: 'Соответствуют', data: dLabels.map(function (k) { return dAgg[k].comp; }), backgroundColor: '#10b981', borderRadius: 5 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+          }
+        });
+      }
+
+      function renderOikRows(filtered) {
+        const tbody = document.getElementById('oikRowsBody');
+        if (!filtered.length) {
+          tbody.innerHTML = '<tr><td colspan="13" class="py-8 text-center text-slate-400">Сводки от секретарей ОИК пока не поступали. Ожидание данных к 17:30.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = filtered.map(function (r) {
+          let compBadge = '';
+          if (r.pendingCount === r.totalCandidates && r.totalCandidates > 0) {
+            compBadge = '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-900 border border-amber-300">⏳ Все на проверке (' + r.pendingCount + ')</span>';
+          } else if (r.compliantCount === r.totalCandidates && r.totalCandidates > 0) {
+            compBadge = '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">✓ Полное соотв. (' + r.compliantCount + ')</span>';
+          } else if (r.nonCompliantCount === r.totalCandidates && r.totalCandidates > 0) {
+            compBadge = '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-900 border border-rose-300">✕ Отказ (' + r.nonCompliantCount + ')</span>';
+          } else {
+            compBadge = '<div class="flex items-center gap-1 flex-wrap">' +
+              (r.compliantCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-900">' + r.compliantCount + ' соотв.</span>' : '') +
+              (r.pendingCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-900">' + r.pendingCount + ' пров.</span>' : '') +
+              (r.nonCompliantCount > 0 ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-900">' + r.nonCompliantCount + ' отказ</span>' : '') +
+            '</div>';
+          }
+          const lvl = r.level === 'Областной маслихат'
+            ? '<span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 font-semibold">Областной (Гр.1)</span>'
+            : '<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">Район/Город (Гр.2)</span>';
+
+          return '<tr class="hover:bg-slate-50">' +
+            '<td class="py-2.5 px-3 font-bold text-slate-900">' + r.district + '</td>' +
+            '<td class="py-2.5 px-3">' + lvl + '</td>' +
+            '<td class="py-2.5 px-3 font-extrabold text-sky-900">ОИК №' + r.oikNumber + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-extrabold bg-sky-50/60">' + r.totalCandidates + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-bold bg-amber-50/60">' + r.selfNominated + '</td>' +
+            '<td class="py-2.5 px-2 text-center font-semibold bg-purple-50/30 text-purple-950">' + ((r.parties && (r.parties['Әділет'] || r.parties['AMANAT'])) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Ақ жол']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Ауыл']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Respublica']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Байтақ']) || 0) + '</td>' +
+            '<td class="py-2.5 px-3">' + compBadge +
+              (r.notes ? '<div class="text-[11px] text-slate-500 mt-0.5">' + r.notes + '</div>' : '') +
+            '</td>' +
+            '<td class="py-2.5 px-3"><div class="font-semibold text-slate-800">' + (r.secretary || '—') + '</div><div class="text-[10px] text-slate-400">' + r.date + ' в ' + r.submittedAt + '</div></td>' +
+            '<td class="py-2.5 px-3 text-right"><button type="button" data-del="' + r.id + '" class="del-btn text-rose-600 hover:text-rose-800 font-semibold text-xs px-2 py-1 rounded hover:bg-rose-50">Удалить</button></td>' +
+          '</tr>';
+        }).join('');
+      }
+
+            function renderOblastRows(filtered) {
+        const tbody = document.getElementById('oblastRowsBody');
+        const tfoot = document.getElementById('oblastRowsFoot');
+        if (!tbody || !tfoot) return;
+
+        const oblastRecords = filtered.filter(function (r) {
+          return r.level === 'Областной маслихат';
+        }).sort(function (a, b) {
+          return (a.oikNumber || 0) - (b.oikNumber || 0);
+        });
+
+        if (oblastRecords.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="13" class="py-8 text-center text-slate-400 font-medium">Нет данных по областным ОИК (сводки областного маслихата пока не поступили)</td></tr>';
+          tfoot.innerHTML = '';
+          return;
+        }
+
+        let tot = 0, selfTot = 0, compTot = 0, pendTot = 0, nonCompTot = 0;
+        const pTotals = { 'Әділет': 0, 'Ақ жол': 0, 'Ауыл': 0, 'Respublica': 0, 'Байтақ': 0 };
+
+        tbody.innerHTML = oblastRecords.map(function (r) {
+          tot += r.totalCandidates || 0;
+          selfTot += r.selfNominated || 0;
+          compTot += r.compliantCount || 0;
+          pendTot += r.pendingCount || 0;
+          nonCompTot += r.nonCompliantCount || 0;
+          PARTY_KEYS.forEach(function (k) {
+            pTotals[k] += (r.parties && r.parties[k]) ? r.parties[k] : 0;
+          });
+
+          return '<tr class="hover:bg-slate-50 transition">' +
+            '<td class="py-2.5 px-3 font-extrabold text-sky-900 whitespace-nowrap">ОИК №' + r.oikNumber + '</td>' +
+            '<td class="py-2.5 px-3 font-semibold text-slate-800">' + (r.district || 'Павлодар') + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-black bg-sky-50/60 text-sky-950">' + r.totalCandidates + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-bold bg-amber-50/60 text-amber-950">' + r.selfNominated + '</td>' +
+            '<td class="py-2.5 px-2 text-center font-semibold bg-purple-50/30 text-purple-950">' + ((r.parties && (r.parties['Әділет'] || r.parties['AMANAT'])) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Ақ жол']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Ауыл']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Respublica']) || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + ((r.parties && r.parties['Байтақ']) || 0) + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-bold text-emerald-800 bg-emerald-50/60">' + r.compliantCount + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-semibold text-amber-800 bg-amber-50/40">' + (r.pendingCount || 0) + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-semibold text-rose-800 bg-rose-50/40">' + (r.nonCompliantCount || 0) + '</td>' +
+            '<td class="py-2.5 px-3 text-slate-600">' + (r.secretary ? ('<span class="font-medium text-slate-800">' + r.secretary + '</span> • ') : '') + (r.submittedAt || 'Сегодня') + '</td>' +
+          '</tr>';
+        }).join('');
+
+        tfoot.innerHTML = '<tr>' +
+          '<td class="py-3 px-3 uppercase text-slate-800" colspan="2">ИТОГО ОБЛАСТНЫХ ОИК (' + oblastRecords.length + '):</td>' +
+          '<td class="py-3 px-3 text-center font-black bg-sky-100 text-sky-950">' + tot + '</td>' +
+          '<td class="py-3 px-3 text-center font-black bg-amber-100 text-amber-950">' + selfTot + '</td>' +
+          '<td class="py-3 px-2 text-center font-extrabold bg-purple-100 text-purple-950">' + (pTotals['Әділет'] || 0) + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['Ақ жол'] + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['Ауыл'] + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['Respublica'] + '</td>' +
+          '<td class="py-3 px-2 text-center">' + pTotals['Байтақ'] + '</td>' +
+          '<td class="py-3 px-3 text-center font-black text-emerald-900 bg-emerald-100">' + compTot + '</td>' +
+          '<td class="py-3 px-3 text-center font-black text-amber-900 bg-amber-100">' + pendTot + '</td>' +
+          '<td class="py-3 px-3 text-center font-black text-rose-900 bg-rose-100">' + nonCompTot + '</td>' +
+          '<td class="py-3 px-3 text-slate-500 font-semibold">Сдано: ' + oblastRecords.length + ' из 30</td>' +
+        '</tr>';
+      }
+
+function renderDistrictRows(filtered) {
+        const tbody = document.getElementById('districtRowsBody');
+        const map = {};
+        ALL_TERRITORIES.forEach(function (t) {
+          map[t] = { oiks: 0, total: 0, self: 0, parties: { 'Әділет': 0, 'Ақ жол': 0, 'Ауыл': 0, 'Respublica': 0, 'Байтақ': 0 }, comp: 0, other: 0 };
+        });
+        filtered.forEach(function (r) {
+          if (!map[r.district]) return;
+          const d = map[r.district];
+          d.oiks += 1;
+          d.total += r.totalCandidates;
+          d.self += r.selfNominated;
+          PARTY_KEYS.forEach(function (k) { d.parties[k] += (r.parties && r.parties[k]) ? r.parties[k] : 0; });
+          d.comp += r.compliantCount;
+          d.other += (r.pendingCount || 0) + (r.nonCompliantCount || 0);
+        });
+
+        tbody.innerHTML = ALL_TERRITORIES.map(function (t) {
+          const d = map[t];
+          const cls = d.oiks > 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50/60 text-slate-400';
+          return '<tr class="' + cls + '">' +
+            '<td class="py-2.5 px-4 font-bold text-slate-900">' + t + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-bold">' + d.oiks + ' ОИК</td>' +
+            '<td class="py-2.5 px-3 text-center font-extrabold bg-sky-50/50">' + d.total + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-bold bg-amber-50/50">' + d.self + '</td>' +
+            '<td class="py-2.5 px-2 text-center font-semibold bg-purple-50/30 text-purple-950">' + (d.parties['Әділет'] || 0) + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + d.parties['Ақ жол'] + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + d.parties['Ауыл'] + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + d.parties['Respublica'] + '</td>' +
+            '<td class="py-2.5 px-2 text-center">' + d.parties['Байтақ'] + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-bold text-emerald-800 bg-emerald-50/50">' + d.comp + '</td>' +
+            '<td class="py-2.5 px-3 text-center font-semibold text-amber-800">' + d.other + '</td>' +
+          '</tr>';
+        }).join('');
+      }
+
+      
+      function openWhatsAppWithMessage(text) {
+        if (!text) return;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          try { navigator.clipboard.writeText(text).catch(function () {}); } catch (e) {}
+        } else {
+          try {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+          } catch (e) {}
+        }
+
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const encText = encodeURIComponent(text);
+
+        if (isMobile) {
+          const appUrl = 'whatsapp://send?text=' + encText;
+          const webFallback = 'https://api.whatsapp.com/send?text=' + encText;
+          window.location.href = appUrl;
+          setTimeout(function () {
+            if (document.hidden || document.webkitHidden) return;
+            window.location.href = webFallback;
+          }, 1200);
+        } else {
+          const webUrl = 'https://web.whatsapp.com/send?text=' + encText;
+          const win = window.open(webUrl, '_blank', 'noopener,noreferrer');
+          if (!win || win.closed || typeof win.closed === 'undefined') {
+            window.location.href = webUrl;
+          }
+        }
+        showToast('Текст сводки скопирован и WhatsApp открывается...');
+      }
+
+      function generateSummaryText() {
+        const filtered = getFiltered();
+        let tCand = 0, tSelf = 0, tComp = 0, tPend = 0, tNon = 0;
+        const p = {};
+        PARTY_KEYS.forEach(function (k) { p[k] = 0; });
+        filtered.forEach(function (r) {
+          tCand += r.totalCandidates;
+          tSelf += r.selfNominated;
+          tComp += r.compliantCount;
+          tPend += r.pendingCount || 0;
+          tNon += r.nonCompliantCount || 0;
+          PARTY_KEYS.forEach(function (k) { p[k] += (r.parties && r.parties[k]) ? r.parties[k] : 0; });
+        });
+
+        const pList = [];
+        PARTY_KEYS.forEach(function (k) {
+          if (p[k] > 0) pList.push(k + ': ' + p[k]);
+        });
+        const pText = pList.length > 0 ? ((tCand - tSelf) + ' (' + pList.join(', ') + ')') : '0';
+
+        const lines = [
+          '• Территория: ' + (document.getElementById('fDistrict').value === 'ALL' ? 'Вся Павлодарская область' : document.getElementById('fDistrict').value),
+          '• Уровень: ' + (document.getElementById('fLevel').value === 'ALL' ? 'Все уровни' : document.getElementById('fLevel').value),
+          '• Отчиталось ОИК: ' + filtered.length,
+          '• Всего кандидатов: ' + tCand,
+          '• Самовыдвижение: ' + tSelf,
+          '• От партий: ' + pText,
+          '• Соответствуют требованиям: ' + tComp,
+          '• На проверке в госорганах: ' + tPend,
+          '• Не соответствуют / отказ: ' + tNon,
+          '• Время: ' + new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) + ' (' + new Date().toLocaleDateString('ru-RU') + ')'
+        ];
+        return lines.join('\n');
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(function () { showToast('Скопировано в буфер обмена'); });
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); showToast('Скопировано в буфер обмена'); } catch (e) {}
+          document.body.removeChild(ta);
+        }
+      }
+
+
+      function syncFromGoogleSheets(silent) {
+        const url = getGasWebhookUrl();
+        if (!url || !url.startsWith('https://')) {
+          if (!silent) showToast('Укажите URL Google Таблицы в разделе ⚙️ База Google Sheets');
+          return;
+        }
+
+        const spinner = document.getElementById('syncSpinner');
+        const icon = document.getElementById('syncIcon');
+        if (spinner && icon) {
+          spinner.classList.remove('hidden');
+          icon.classList.add('hidden');
+        }
+
+        const cbName = 'gasCallback_' + Date.now();
+        let completed = false;
+
+        const script = document.createElement('script');
+        const sep = url.indexOf('?') === -1 ? '?' : '&';
+        script.src = url + sep + 'action=get&callback=' + cbName + '&t=' + Date.now();
+
+        const timer = setTimeout(function () {
+          if (!completed) {
+            completed = true;
+            cleanup();
+            directFetch();
+          }
+        }, 6000);
+
+        function cleanup() {
+          clearTimeout(timer);
+          if (window[cbName]) delete window[cbName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+          if (spinner && icon) {
+            spinner.classList.add('hidden');
+            icon.classList.remove('hidden');
+          }
+        }
+
+        window[cbName] = function (data) {
+          if (completed) return;
+          completed = true;
+          cleanup();
+          processGasData(data);
+        };
+
+        script.onerror = function () {
+          if (completed) return;
+          completed = true;
+          cleanup();
+          directFetch();
+        };
+
+        function directFetch() {
+          fetch(url + sep + 't=' + Date.now())
+            .then(function (res) { return res.json(); })
+            .then(function (data) { processGasData(data); })
+            .catch(function () {
+              if (!silent) showToast('Не удалось загрузить данные из Google Таблицы', true);
+              if (spinner && icon) {
+                spinner.classList.add('hidden');
+                icon.classList.remove('hidden');
+              }
+            });
+        }
+
+        function processGasData(data) {
+          if (!data) return;
+          let parsedRecords = [];
+          if (Array.isArray(data.records)) {
+            parsedRecords = data.records;
+          } else if (Array.isArray(data.rows)) {
+            // Парсинг raw-строк из предыдущей версии скрипта
+            const rows = data.rows;
+            for (let i = 1; i < rows.length; i++) {
+              const r = rows[i];
+              if (!r[0] && !r[5]) continue;
+              parsedRecords.push({
+                id: String(r[0] || ('rec-' + i)),
+                date: String(r[1] || ''),
+                region: String(r[2] || 'Павлодарская область'),
+                level: String(r[3] || 'Городской / Районный маслихат'),
+                district: String(r[4] || ''),
+                oikNumber: parseInt(r[5], 10) || 0,
+                secretary: String(r[6] || ''),
+                totalCandidates: parseInt(r[7], 10) || 0,
+                selfNominated: parseInt(r[8], 10) || 0,
+                parties: {
+                  'Әділет': parseInt(r[9], 10) || 0,
+                  'Ақ жол': parseInt(r[10], 10) || 0,
+                  'Ауыл': parseInt(r[11], 10) || 0,
+                  'Respublica': parseInt(r[12], 10) || 0,
+                  'Байтақ': parseInt(r[13], 10) || 0
+                },
+                compliantCount: parseInt(r[14], 10) || 0,
+                pendingCount: parseInt(r[15], 10) || 0,
+                nonCompliantCount: parseInt(r[16], 10) || 0,
+                complianceStatus: String(r[19] || 'Полное соответствие'),
+                notes: String(r[20] || ''),
+                submittedAt: String(r[21] || '')
+              });
+            }
+          }
+
+          // Перезаписываем локальный список ТОЛЬКО строками, существующими в Google Таблице!
+          records = parsedRecords;
+          saveData();
+          renderAll();
+
+          const syncLabel = document.getElementById('liveSyncStatus');
+          if (syncLabel) {
+            syncLabel.textContent = '● Таблица: ' + records.length + ' ОИК (обновлено ' + new Date().toLocaleTimeString('ru-RU') + ')';
+          }
+          if (!silent) {
+            showToast('Синхронизировано с Google Таблицей! Строк: ' + records.length);
+          }
+          if ('BroadcastChannel' in window) {
+            try {
+              const bc = new BroadcastChannel('pavlodar_tik_sync');
+              bc.postMessage({ type: 'SYNC_FROM_SHEETS', records: records });
+              bc.close();
+            } catch (e) {}
+          }
+        }
+
+        document.body.appendChild(script);
+      }
+
+              // Функция вызова окна привязки Google Sheets
+        window.openGasSettings = function () {
+          const m = document.getElementById('cloudModal');
+          if (m) {
+            document.getElementById('webhookUrlInput').value = getGasWebhookUrl();
+            m.classList.remove('hidden');
+          }
+        };
+
+        // Открытие настроек по клику на бейдж версии или Ctrl+Shift+S
+        const vBadge = document.getElementById('appVersionBadge');
+        if (vBadge) {
+          vBadge.addEventListener('dblclick', function () { window.openGasSettings(); });
+        }
+        window.addEventListener('keydown', function (e) {
+          if (e.ctrlKey && e.shiftKey && (e.key === 'S' || e.key === 's' || e.key === 'Ы' || e.key === 'ы')) {
+            e.preventDefault();
+            window.openGasSettings();
+          }
+        });
+
+      function init() {
+        loadData();
+        renderAll();
+        syncFromGoogleSheets(true);
+        document.getElementById('appVersionBadge').addEventListener('click', function () {
+          checkAppVersion(true);
+        });
+
+        const reloadBtn = document.getElementById('reloadAppBtn');
+        if (reloadBtn) {
+          reloadBtn.addEventListener('click', function () {
+            window.location.reload(true);
+          });
+        }
+
+        // Автоматическая проверка при разворачивании приложения / вкладки
+        document.addEventListener('visibilitychange', function () {
+          if (document.visibilityState === 'visible') {
+            checkAppVersion(false);
+            syncFromGoogleSheets(true);
+          }
+        });
+        window.addEventListener('focus', function () {
+          checkAppVersion(false);
+          syncFromGoogleSheets(true);
+        });
+
+        checkAppVersion(false);
+        setInterval(function () { checkAppVersion(false); }, 300000);
+
+
+        ['fRegion', 'fLevel', 'fDistrict', 'fOik', 'fParty', 'fCompliance'].forEach(function (id) {
+          document.getElementById(id).addEventListener('change', renderAll);
+        });
+        document.getElementById('fSearch').addEventListener('input', renderAll);
+
+        document.getElementById('clearAllFiltersBtn').addEventListener('click', function () {
+          document.getElementById('fLevel').value = 'ALL';
+          document.getElementById('fDistrict').value = 'ALL';
+          document.getElementById('fOik').value = 'ALL';
+          document.getElementById('fParty').value = 'ALL';
+          document.getElementById('fCompliance').value = 'ALL';
+          document.getElementById('fSearch').value = '';
+          renderAll();
+          showToast('Все фильтры сброшены');
+        });
+
+        function switchTableTab(activeTab) {
+          const oikWrap = document.getElementById('oikTableWrap');
+          const distWrap = document.getElementById('districtTableWrap');
+          const oblWrap = document.getElementById('oblastOikTableWrap');
+          const bOik = document.getElementById('tabByOikBtn');
+          const bDist = document.getElementById('tabByDistrictBtn');
+          const bObl = document.getElementById('tabByOblastBtn');
+
+          oikWrap.classList.toggle('hidden', activeTab !== 'oik');
+          distWrap.classList.toggle('hidden', activeTab !== 'district');
+          oblWrap.classList.toggle('hidden', activeTab !== 'oblast');
+
+          const activeCls = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-sky-800 text-white shadow-sm transition';
+          const inactiveCls = 'px-3.5 py-2 rounded-lg text-xs font-bold bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition';
+
+          bOik.className = activeTab === 'oik' ? activeCls : inactiveCls;
+          bDist.className = activeTab === 'district' ? activeCls : inactiveCls;
+          bObl.className = activeTab === 'oblast' ? activeCls : inactiveCls;
+        }
+
+        document.getElementById('tabByOikBtn').addEventListener('click', function () { switchTableTab('oik'); });
+        document.getElementById('tabByDistrictBtn').addEventListener('click', function () { switchTableTab('district'); });
+        document.getElementById('tabByOblastBtn').addEventListener('click', function () { switchTableTab('oblast'); });
+
+        document.getElementById('oikRowsBody').addEventListener('click', function (e) {
+          const btn = e.target.closest('.del-btn');
+          if (!btn) return;
+          const id = btn.getAttribute('data-del');
+          records = records.filter(function (r) { return r.id !== id; });
+          saveData();
+          renderAll();
+          showToast('Запись ОИК удалена');
+
+          // Удаляем также из Google Таблицы при наличии вебхука
+          const wh = getGasWebhookUrl();
+          if (wh && wh.startsWith('https://')) {
+            try {
+              fetch(wh, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', id: id })
+              });
+            } catch (err) {}
+          }
+        });
+
+        const waHeadBtn = document.getElementById('openWhatsappReportHeaderBtn');
+        if (waHeadBtn) {
+          waHeadBtn.addEventListener('click', function () {
+            const txt = generateSummaryText();
+            openWhatsAppWithMessage(txt);
+          });
+        }
+
+        const waModalBtn = document.getElementById('openWhatsappReportModalBtn');
+        if (waModalBtn) {
+          waModalBtn.addEventListener('click', function () {
+            const txt = (document.getElementById('reportTextOutput') && document.getElementById('reportTextOutput').value) || generateSummaryText();
+            openWhatsAppWithMessage(txt);
+          });
+        }
+
+        const copySumBtn = document.getElementById('copySummaryReportBtn'); if (copySumBtn) copySumBtn.addEventListener('click', function () {
+          const filtered = getFiltered();
+          let tCand = 0, tSelf = 0, tComp = 0, tPend = 0, tNon = 0;
+          const p = {};
+          PARTY_KEYS.forEach(function (k) { p[k] = 0; });
+          filtered.forEach(function (r) {
+            tCand += r.totalCandidates;
+            tSelf += r.selfNominated;
+            tComp += r.compliantCount;
+            tPend += r.pendingCount || 0;
+            tNon += r.nonCompliantCount || 0;
+            PARTY_KEYS.forEach(function (k) { p[k] += (r.parties && r.parties[k]) ? r.parties[k] : 0; });
+          });
+          const text = [
+            '📊 СВОДКА ТИК ПАВЛОДАРСКОЙ ОБЛАСТИ (Выборы депутатов маслихатов)',
+            'Территория: ' + (document.getElementById('fDistrict').value === 'ALL' ? 'Вся Павлодарская область' : document.getElementById('fDistrict').value),
+            'Уровень: ' + (document.getElementById('fLevel').value === 'ALL' ? 'Все уровни' : document.getElementById('fLevel').value),
+            '----------------------------------',
+            '• Отчиталось ОИК: ' + filtered.length,
+            '• Всего кандидатов: ' + tCand,
+            '• Самовыдвижение: ' + tSelf,
+            '• От партий: ' + (tCand - tSelf) + ' (AMANAT: ' + p['AMANAT'] + ', Ақ жол: ' + p['Ақ жол'] + ', Ауыл: ' + p['Ауыл'] + ', НПК: ' + p['НПК'] + ', Respublica: ' + p['Respublica'] + ', ОСДП: ' + p['ОСДП'] + ', Байтақ: ' + p['Байтақ'] + ')',
+            '• Соответствуют требованиям: ' + tComp + ' из ' + tCand,
+            '• На проверке в госорганах: ' + tPend + ' из ' + tCand,
+            '• Выявлено несоответствие / отказ: ' + tNon + ' из ' + tCand
+          ].join('\n');
+          document.getElementById('reportTextOutput').value = text;
+          document.getElementById('reportModal').classList.remove('hidden');
+        });
+
+        document.getElementById('copyReportTextBtn').addEventListener('click', function () {
+          copyText(document.getElementById('reportTextOutput').value);
+        });
+        document.getElementById('closeReportModalBtn').addEventListener('click', function () {
+          document.getElementById('reportModal').classList.add('hidden');
+        });
+        document.getElementById('closeReportModalBottomBtn').addEventListener('click', function () {
+          document.getElementById('reportModal').classList.add('hidden');
+        });
+
+        document.getElementById('downloadExcelCsvBtn').addEventListener('click', function () {
+          const filtered = getFiltered();
+          const rows = [['Дата', 'Область', 'Уровень', 'Город/Район', 'Номер ОИК', 'ФИО Секретаря', 'Всего', 'Самовыдвижение', 'Әділет', 'Ақ жол', 'Ауыл', 'Respublica', 'Байтақ', 'Соответствуют', 'На проверке', 'Не соответствуют', 'Статус', 'Примечание'].join(';')];
+          filtered.forEach(function (r) {
+            rows.push([
+              r.date, r.region, r.level, r.district, 'ОИК №' + r.oikNumber,
+              '"' + (r.secretary || '').replace(/"/g, '""') + '"',
+              r.totalCandidates, r.selfNominated,
+              r.parties['AMANAT'] || 0, r.parties['Ақ жол'] || 0, r.parties['Ауыл'] || 0,
+              r.parties['НПК'] || 0, r.parties['Respublica'] || 0, r.parties['ОСДП'] || 0, r.parties['Байтақ'] || 0,
+              r.compliantCount, r.pendingCount, r.nonCompliantCount, r.complianceStatus,
+              '"' + (r.notes || '').replace(/"/g, '""') + '"'
+            ].join(';'));
+          });
+          const blob = new Blob(['\uFEFF' + rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'tik_pavlodar_svodka.csv';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('Таблица Excel (CSV) скачана');
+        });
+
+        const cloudSyncBtn = document.getElementById('openCloudSyncModalBtn'); if (cloudSyncBtn) cloudSyncBtn.addEventListener('click', function () {
+          document.getElementById('cloudModal').classList.remove('hidden');
+        });
+        document.getElementById('closeCloudModalBtn').addEventListener('click', function () {
+          document.getElementById('cloudModal').classList.add('hidden');
+        });
+        document.getElementById('closeCloudModalBottomBtn').addEventListener('click', function () {
+          document.getElementById('cloudModal').classList.add('hidden');
+        });
+        document.getElementById('copyGasScriptBtn').addEventListener('click', function () {
+          copyText(document.getElementById('gasScriptPre').textContent);
+        });
+        const savedWh = localStorage.getItem(WEBHOOK_KEY) || '';
+        document.getElementById('webhookUrlInput').value = savedWh;
+
+        document.getElementById('saveWebhookUrlBtn').addEventListener('click', function () {
+          const val = document.getElementById('webhookUrlInput').value.trim();
+          try {
+            localStorage.setItem(WEBHOOK_KEY, val);
+          } catch (e) {}
+          showToast('URL Google Таблицы сохранен');
+          syncFromGoogleSheets(false);
+        });
+
+        document.getElementById('syncFromGoogleSheetsBtn').addEventListener('click', function () {
+          syncFromGoogleSheets(false);
+        });
+
+        // Фоновая авто-синхронизация каждые 20 секунд
+        setInterval(function () {
+          syncFromGoogleSheets(true);
+        }, 20000);
+
+        
+
+        
+
+        
+
+        
+
+        // Синхронизация в реальном времени с Сайтом №1
+        window.addEventListener('storage', function (e) {
+          if (e.key === STORAGE_KEY) {
+            loadData();
+            renderAll();
+            showToast('Поступила новая сводка от секретаря ОИК!');
+          }
+        });
+        if ('BroadcastChannel' in window) {
+          const bc = new BroadcastChannel('pavlodar_tik_sync');
+          bc.onmessage = function () {
+            loadData();
+            renderAll();
+            showToast('Поступила новая сводка от секретаря ОИК!');
+          };
+        }
+      }
+
+      init();
+    })();
+  </script>
+  <footer class="mt-8 py-4 border-t border-slate-200 text-center text-xs text-slate-400 flex flex-wrap items-center justify-center gap-4">
+    <span>ТИК Павлодарской области • Версия v1.3</span>
+    <button type="button" onclick="window.openGasSettings()" class="text-slate-400 hover:text-sky-700 underline text-xs transition">
+      ⚙️ Настройка Google Таблицы (URL)
+    </button>
+  </footer>
 </body>
 </html>
