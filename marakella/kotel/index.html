@@ -1,1 +1,194 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1220">
+  <title>REGLER Home — Управление котлом</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0b1220;
+      color: #edf4ff;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+    h1 { margin: 5px 0; font-size: 27px; }
+    h2 { font-size: 18px; margin-top: 0; }
+    .muted { color: #94a3b8; }
+    .status {
+      background: #293345;
+      color: #cbd5e1;
+      padding: 10px 14px;
+      border-radius: 30px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .notice {
+      padding: 16px;
+      border-radius: 14px;
+      background: #33291b;
+      border: 1px solid #80602e;
+      color: #ffda92;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .card {
+      background: #151f30;
+      border: 1px solid #2b3850;
+      border-radius: 18px;
+      padding: 22px;
+    }
+    .temperature {
+      font-size: 65px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+    .orange { color: #ffb454; }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid #2b3850;
+    }
+    .row:last-child { border-bottom: none; }
+    .value { font-weight: bold; text-align: right; }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    button {
+      padding: 13px 20px;
+      background: #334155;
+      border: 1px solid #475569;
+      border-radius: 12px;
+      color: white;
+      font-size: 15px;
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .progress {
+      height: 10px;
+      background: #334155;
+      border-radius: 20px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      width: 50%;
+      height: 100%;
+      background: #60a5fa;
+    }
+    footer {
+      margin-top: 25px;
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    @media (max-width: 650px) {
+      .grid { grid-template-columns: 1fr; }
+      .temperature { font-size: 55px; }
+      h1 { font-size: 22px; }
+      .card { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <div>
+        <div class="muted">MARAKELLA · УМНЫЙ ДОМ</div>
+        <h1>🔥 REGLER Home</h1>
+      </div>
+      <span class="status">● Не подключён</span>
+    </header>
+
+    <div class="notice">
+      Демонстрационный режим. Все значения ниже —
+      примеры, а не реальные показания котла.
+      Управление пока отключено.
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="muted">Температура котла</div>
+        <div class="temperature orange">43°C</div>
+        <div class="muted">Пример показаний</div>
+      </section>
+
+      <section class="card">
+        <h2>Заданная температура</h2>
+        <div class="temperature">65°C</div>
+        <div class="controls">
+          <button disabled>− Убавить</button>
+          <button disabled>+ Прибавить</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Вентилятор</h2>
+        <div class="row">
+          <span>Состояние</span>
+          <span class="value">Нет данных</span>
+        </div>
+        <div class="row">
+          <span>Мин. скорость</span>
+          <span class="value">20% · пример</span>
+        </div>
+        <div class="row">
+          <span>Макс. скорость</span>
+          <span class="value">80% · пример</span>
+        </div>
+        <div class="progress">
+          <div class="progress-fill"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Продувка и насос</h2>
+        <div class="row">
+          <span>Время продувки</span>
+          <span class="value">10 сек · пример</span>
+        </div>
+        <div class="row">
+          <span>Интервал продувки</span>
+          <span class="value">Нет данных</span>
+        </div>
+        <div class="row">
+          <span>Насос</span>
+          <span class="value">Нет данных</span>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      REGLER Home · Демонстрационная панель.<br>
+      Для получения реальных показаний необходимо
+      подключить контроллер REGLER PRO Mini
+      через защищённый сервер.
+    </footer>
+  </main>
+</body>
+</html>
+
