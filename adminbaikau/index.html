@@ -258,6 +258,7 @@
       <button id="btnRefresh" class="btn btn-primary" onclick="fetchAndRenderData()">
         <span id="refreshIcon">🔄</span> <span id="refreshText">Обновить данные</span>
       </button>
+      <span id="dashboardUpdatedAt" role="status" style="align-self:center;color:var(--text-muted);font-size:.85rem"></span>
       <button id="btnExport" class="btn btn-outline" onclick="exportToExcel()">
         <span>📥</span> <span id="exportText">Выгрузить текущий список</span>
       </button>
@@ -495,7 +496,7 @@ async function callApi(action, payload) {
       method:'POST', mode:'cors', credentials:'omit', cache:'no-store',
       headers:{'Content-Type':'text/plain;charset=UTF-8'},
       body:JSON.stringify({action, payload}),
-      signal:AbortSignal.timeout(action === 'getDashboardData' ? 45000 : 18000)
+      signal:AbortSignal.timeout(action === 'getDashboardData' || payload.includeDashboard === true ? 60000 : 18000)
     });
   } catch (error) {
     if (error.name === 'TimeoutError') throw new Error('Сервер не ответил вовремя.');
@@ -514,10 +515,11 @@ async function callApi(action, payload) {
       "район Тереңкөл", "Успенский район", "Щербактинский район"
     ];
 
-    const REFRESH_COOLDOWN = DEMO ? 1 : 30;
+    const REFRESH_COOLDOWN = DEMO ? 1 : 10;
     const EXPORT_COOLDOWN = 15;
     const panelKey = DEMO ? 'maslikhat-panel-demo' : 'maslikhat-panel-live';
     let panelToken = '';
+    let refreshCooldownTimer = null;
     let panelRole = '';
     const territoryLogin = document.getElementById('loginInput');
     territoryLogin.add(new Option('Павлодарская область', 'Штаб'));
@@ -683,6 +685,8 @@ async function callApi(action, payload) {
     function logout() {
       sessionStorage.removeItem(panelKey);
       panelToken = panelRole = '';
+      resetRefreshButton();
+      document.getElementById('dashboardUpdatedAt').textContent = '';
       resetFilters(false);
       clearInterval(autoRefreshTimer);
       dashboardView.style.display = 'none';
@@ -761,8 +765,15 @@ async function callApi(action, payload) {
       }
 
       try {
-        if (!isAuto) panelToken = (await callServer('loginPanel', {login, password})).token;
-        const json = await callServer('getDashboardData', {token:panelToken});
+        let json;
+        if (isAuto) {
+          json = await callServer('getDashboardData', {token:panelToken});
+        } else {
+          const loginResult = await callServer('loginPanel', {login, password, includeDashboard:true});
+          panelToken = loginResult.token;
+          json = Array.isArray(loginResult.data)
+            ? loginResult : await callServer('getDashboardData', {token:panelToken});
+        }
         {
           panelRole = json.accessLevel;
           sessionStorage.setItem(panelKey, panelToken);
@@ -778,6 +789,7 @@ async function callApi(action, payload) {
           populateDynamicFilters();
           updateCoverageStats();
           applyAllFilters();
+          showDashboardTimestamp(json.generatedAt);
           showToast(`Успешный вход: ${displayRole}`);
 
           clearInterval(autoRefreshTimer);
@@ -937,41 +949,55 @@ async function callApi(action, payload) {
       });
     });
 
+    function showDashboardTimestamp(generatedAt) {
+      const time = Number.isFinite(generatedAt) ? generatedAt : Date.now();
+      const formatted = new Intl.DateTimeFormat('ru-RU', {
+        timeZone:'Asia/Almaty', hour:'2-digit', minute:'2-digit', second:'2-digit'
+      }).format(new Date(time));
+      document.getElementById('dashboardUpdatedAt').textContent =
+        (Number.isFinite(generatedAt) ? 'Сводка на ' : 'Получено в ') + formatted;
+    }
+
+    function resetRefreshButton() {
+      clearInterval(refreshCooldownTimer);
+      refreshCooldownTimer = null;
+      btnRefresh.disabled = false;
+      refreshText.textContent = 'Обновить данные';
+      isRefreshing = false;
+    }
+
+    function startRefreshCooldown() {
+      const deadline = Date.now() + REFRESH_COOLDOWN * 1000;
+      const tick = () => {
+        const seconds = Math.ceil((deadline - Date.now()) / 1000);
+        if (seconds <= 0) resetRefreshButton();
+        else refreshText.textContent = `Можно обновить через ${seconds} сек`;
+      };
+      tick();
+      refreshCooldownTimer = setInterval(tick, 250);
+    }
+
     async function fetchAndRenderData() {
-      if (isRefreshing) return;
+      if (isRefreshing || !panelToken) return;
       isRefreshing = true;
       btnRefresh.disabled = true;
-      refreshText.textContent = "Загрузка...";
-      
+      refreshText.textContent = 'Загрузка…';
+
       const requestToken = panelToken;
       try {
         const json = await callServer('getDashboardData', {token:requestToken});
-        if (panelToken === requestToken) {
-          globalData = json.data;
-          updateCoverageStats();
-          applyAllFilters();
-          showToast('Данные обновлены');
-        }
+        if (panelToken !== requestToken) return;
+        globalData = json.data;
+        updateCoverageStats();
+        applyAllFilters();
+        showDashboardTimestamp(json.generatedAt);
+        showToast('Данные обновлены');
       } catch (error) {
-        if (panelToken === requestToken) {
-          showToast(error.message, true);
-          if (error.code === 'AUTH') logout();
-        }
+        if (panelToken !== requestToken) return;
+        showToast(error.message, true);
+        if (error.code === 'AUTH') logout();
       } finally {
-        let countdown = REFRESH_COOLDOWN;
-        refreshText.textContent = `Обновляем данные... ${countdown} сек`;
-        
-        const timerId = setInterval(() => {
-          countdown--;
-          if (countdown > 0) {
-            refreshText.textContent = `Обновляем данные... ${countdown} сек`;
-          } else {
-            clearInterval(timerId);
-            btnRefresh.disabled = false;
-            refreshText.textContent = "Обновить данные";
-            isRefreshing = false;
-          }
-        }, 1000);
+        if (panelToken === requestToken) startRefreshCooldown();
       }
     }
 
