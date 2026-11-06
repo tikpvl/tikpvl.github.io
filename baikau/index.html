@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="ru" data-observers-mode="live">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f172a">
+  <title>УИК · Выборы депутатов маслихатов</title>
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23064e3b'/%3E%3Cstop offset='100%25' stop-color='%230f172a'/%3E%3C/linearGradient%3E%3ClinearGradient id='accent' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2334d399'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='115' fill='url(%23bg)'/%3E%3Crect x='110' y='90' width='292' height='332' rx='28' fill='%231e293b' stroke='%23334155' stroke-width='8'/%3E%3Crect x='180' y='65' width='152' height='45' rx='12' fill='%2334d399'/%3E%3Crect x='155' y='160' width='202' height='16' rx='8' fill='%23f8fafc' opacity='0.9'/%3E%3Crect x='155' y='205' width='150' height='16' rx='8' fill='%2394a3b8' opacity='0.7'/%3E%3Crect x='155' y='250' width='180' height='16' rx='8' fill='%2394a3b8' opacity='0.7'/%3E%3Ccircle cx='360' cy='350' r='58' fill='url(%23accent)'/%3E%3Cpath d='M335 350 l18 18 l34 -36' fill='none' stroke='%23ffffff' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <style>
+    :root {
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --bg-main: #0f172a; --bg-card: #1e293b; --bg-card-subtle: #334155; --bg-input: #0f172a;
+      --border-color: rgba(255, 255, 255, 0.1); --border-focus: #38bdf8;
+      --text-main: #f8fafc; --text-muted: #94a3b8; --text-dim: #64748b;
+      --color-arrive: #10b981; --color-leave: #f43f5e; --color-primary: #38bdf8; --color-warning: #f59e0b;
+      --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-full: 9999px;
+    }
+    [data-theme="light"] {
+      --bg-main: #e2e8f0;
+      --bg-card: #ffffff; 
+      --bg-card-subtle: #cbd5e1; 
+      --bg-input: #f1f5f9;
+      --border-color: #94a3b8;
+      --border-focus: #0284c7;
+      --text-main: #020617;
+      --text-muted: #334155;
+      --text-dim: #475569;
+      --color-arrive: #059669; --color-leave: #e11d48; --color-primary: #0284c7; --color-warning: #d97706;
+      --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { 
+      font-family: var(--font-family); background-color: var(--bg-main); color: var(--text-main); 
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; 
+      transition: background-color 0.25s, color 0.25s; padding-bottom: env(safe-area-inset-bottom, 20px);
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; 
+    }
+    .app-container { width: 100%; max-width: 480px; padding: 12px 16px; display: flex; flex-direction: column; gap: 14px; }
+    .app-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 4px 2px; }
+    .header-left { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .header-left h1 { font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
+    .user-profile-card { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--bg-card); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; max-width: 100%; }
+    .user-profile-card:hover { border-color: var(--color-leave); }
+    .user-info-text { display: flex; flex-direction: column; min-width: 0; }
+    .user-uik-line { font-size: 0.9rem; color: var(--color-primary); font-weight: 700; }
+    .header-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .header-actions-row { display: flex; align-items: center; gap: 6px; }
+    .header-timer { font-variant-numeric: tabular-nums; font-size: 0.72rem; font-weight: 600; color: var(--color-warning); background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 8px; border-radius: var(--radius-full); }
+    .theme-toggle { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); width: 32px; height: 32px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.95rem; }
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-full); font-size: 0.72rem; font-weight: 500; color: var(--text-muted); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background-color: var(--color-arrive); box-shadow: 0 0 8px var(--color-arrive); }
+    .status-dot.offline { background-color: var(--color-leave); box-shadow: 0 0 8px var(--color-leave); }
+    .status-dot.slow { background-color: var(--color-warning); box-shadow: none; }
+    .sync-card { display: grid; gap: 8px; }
+    #syncNow { min-height: 44px; border: 1px solid var(--border-color); color: var(--text-main); }
+    
+    .segmented-control { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg-card); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
+    .segment-btn { 
+      padding: 12px 16px; border: none; background: transparent; color: var(--text-muted); 
+      font-family: var(--font-family); font-size: 0.95rem; font-weight: 600; 
+      border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; 
+      justify-content: center; gap: 8px; transition: all 0.2s ease;
+      position: relative; overflow: hidden;
+    }
+    .segment-btn > span { position: relative; z-index: 2; }
+    .tab-progress { position: absolute; top: 0; left: 0; bottom: 0; width: 0%; background: rgba(255, 255, 255, 0.25); z-index: 1; }
+    [data-theme="light"] .tab-progress { background: rgba(0, 0, 0, 0.15); }
+    .segment-btn.cooldown { pointer-events: none; opacity: 0.8; }
+    .segment-btn.active.arrive { background: var(--color-arrive); color: #ffffff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35); }
+    .segment-btn.active.leave { background: var(--color-leave); color: #ffffff; box-shadow: 0 4px 12px rgba(244, 63, 94, 0.35); }
+
+    .form-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; position: relative; }
+    .form-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; }
+    .required { color: var(--color-leave); margin-left: auto; }
+    .form-input, .form-select { width: 100%; height: 48px; padding: 0 14px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-md); color: var(--text-main); font-size: 0.95rem; outline: none; transition: all 0.2s; }
+    .form-input:focus, .form-select:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+    .form-select:disabled { opacity: 0.6; cursor: not-allowed; }
+    .has-error { border-color: var(--color-leave) !important; box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.2) !important; background-color: rgba(225, 29, 72, 0.05) !important; }
+    .field-error { color: var(--color-leave); font-size: 0.82rem; font-weight: 600; margin-top: 2px; display: none; line-height: 1.2; }
+    .form-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 16px; padding-right: 40px; }
+
+    optgroup { font-weight: 700; text-decoration: underline; font-style: normal; }
+    optgroup option { font-weight: 500; text-decoration: none; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .submit-btn { 
+      width: 100%; height: 50px; border: none; border-radius: var(--radius-md); 
+      font-size: 1.02rem; font-weight: 700; color: #ffffff; cursor: pointer; 
+      display: flex; align-items: center; justify-content: center; gap: 10px; 
+      margin-top: 4px; position: relative; overflow: hidden; 
+    }
+    .submit-btn > * { position: relative; z-index: 2; }
+    .submit-btn.arrive { background: var(--color-arrive); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); }
+    .submit-btn.leave { background: var(--color-leave); box-shadow: 0 4px 14px rgba(244, 63, 94, 0.35); }
+    .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .submit-btn.is-loading::after {
+      content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 0%;
+      background: rgba(255, 255, 255, 0.25); animation: fillProgress 2s infinite ease-in-out;
+      pointer-events: none; z-index: 1;
+    }
+    @keyframes fillProgress { 0% { width: 0%; opacity: 1; } 80% { width: 100%; opacity: 1; } 100% { width: 100%; opacity: 0; } }
+
+    .btn-share { width: 100%; padding: 8px; background: transparent; border: 1px dashed var(--border-color); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+    .btn-share:hover { background: var(--bg-card); color: var(--text-main); }
+    
+    /* БОЛЬШОЙ ЗАМЕТНЫЙ ОФЛАЙН БАННЕР */
+    .offline-banner { 
+      background: rgba(245, 158, 11, 0.2); 
+      border: 2px solid var(--color-warning); 
+      color: #fde047; 
+      padding: 12px 14px; 
+      border-radius: var(--radius-md); 
+      font-size: 0.88rem; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 4px; 
+      font-weight: 600; 
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+      animation: pulseAlert 2s infinite ease-in-out;
+    }
+    [data-theme="light"] .offline-banner {
+      background: #fef3c7;
+      color: #b45309;
+      border-color: #f59e0b;
+    }
+    @keyframes pulseAlert {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.015); }
+    }
+    
+    .bottom-actions-container { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; width: 100%; }
+    .journal-btn { background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b; padding: 10px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
+    .tech-support-btn { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--color-primary); padding: 10px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
+    .journal-btn:hover, .tech-support-btn:hover { opacity: 0.8; }
+
+    .spinner { width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: #ffffff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .auth-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-main); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .auth-card { width: 100%; max-width: 400px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 24px; box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: 16px; }
+    .auth-header { text-align: center; margin-bottom: 4px; }
+    .auth-header h2 { font-size: 1.35rem; font-weight: 700; }
+    .auth-header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+    
+    .giant-success-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg-main); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .giant-success-overlay.show { opacity: 1; pointer-events: all; }
+    .giant-success-icon { font-size: 5rem; margin-bottom: 16px; transform: scale(0.5); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .giant-success-overlay.show .giant-success-icon { transform: scale(1); }
+    .giant-success-title { font-size: 1.6rem; font-weight: 800; color: var(--color-arrive); text-align: center; margin-bottom: 8px; }
+    .giant-success-text { font-size: 0.95rem; color: var(--text-muted); text-align: center; }
+    
+    .hourly-notification { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 440px; z-index: 10002; background: rgba(56, 189, 248, 0.15); backdrop-filter: blur(10px); border: 1px solid rgba(56, 189, 248, 0.4); border-left: 4px solid #38bdf8; color: var(--text-main); padding: 14px 16px; border-radius: var(--radius-md); box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; font-size: 0.85rem; font-weight: 500; line-height: 1.4; pointer-events: none; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .hourly-notification.show { top: 20px; }
+    .hourly-notification b { font-weight: 700; }
+
+    .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10001; width: 90%; max-width: 400px; pointer-events: none; }
+    .toast { background: var(--bg-card); border: 1px solid var(--border-color); padding: 14px 18px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 12px; font-size: 0.9rem; font-weight: 500; opacity: 0; transform: translateY(-20px); transition: all 0.3s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { border-left: 4px solid var(--color-leave); }
+    .toast.warning { border-left: 4px solid var(--color-warning); }
+    .toast.success { border-left: 4px solid var(--color-arrive); }
+    .hidden-field { display: none !important; }
+
+    .full-screen-modal { position: fixed; top: 0; left: 50%; bottom: 0; width: 100%; max-width: 480px; transform: translate(-50%, 100%); background: var(--bg-main); z-index: 10005; display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow-y: auto; padding: 16px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+    .full-screen-modal.show { transform: translate(-50%, 0); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-shrink: 0; }
+    .modal-header h2 { font-size: 1.3rem; font-weight: 700; color: var(--color-primary); }
+    .close-modal-btn { background: var(--bg-card-subtle); border: none; width: 36px; height: 36px; border-radius: 50%; color: var(--text-main); font-size: 1.2rem; cursor: pointer; display:flex; align-items:center; justify-content:center; }
+    
+    .journal-list { display: flex; flex-direction: column; gap: 10px; padding-bottom: 30px; }
+    .journal-item { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; display:flex; flex-direction: column; gap: 6px; box-shadow: var(--shadow-card); }
+    .journal-item-title { font-weight: 700; font-size: 0.95rem; }
+    .journal-item-org { font-size: 0.8rem; color: var(--color-primary); font-weight: 600; }
+    .journal-item-time { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 12px; }
+    
+    .journal-item-note { font-size: 0.8rem; color: var(--text-main); background-color: rgba(250, 204, 21, 0.15); border: 2px solid rgba(250, 204, 21, 0.6); padding: 6px 8px; border-radius: var(--radius-sm); margin-top: 4px; line-height: 1.3; }
+    [data-theme="light"] .journal-item-note { color: #0f172a; background-color: rgba(250, 204, 21, 0.3); border-color: #facc15; }
+
+    .journal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+    .btn-edit { background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: var(--color-primary); padding: 10px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+    .btn-delete { background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: var(--color-leave); padding: 10px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.85rem; cursor: pointer; }
+    .btn-edit:hover, .btn-delete:hover { opacity: 0.85; }
+
+    .center-message { text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+  <!-- Вход на участок -->
+  <div id="authModal" class="auth-overlay">
+    <form id="authForm" class="auth-card" autocomplete="off" novalidate>
+      <div class="auth-header">
+        <h2>Вход по номеру УИК</h2>
+        <p>Выборы депутатов маслихатов · Павлодарская область</p>
+        <p id="demoStationHint" hidden>Демонстрация · УИК № 1</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="authUik">
+          Номер участка (УИК) <span class="required">*</span>
+        </label>
+        <input type="number" id="authUik" name="auth_uik_no_cache" class="form-input" placeholder="Введите номер УИК" inputmode="numeric" min="1" max="999" autocomplete="off" required>
+        <div class="field-error">Пожалуйста, укажите номер участка</div>
+      </div>
+      <p id="stationAuthError" role="alert" style="color:var(--color-leave);margin:6px 0"></p>
+      <button type="submit" id="authSubmitBtn" class="submit-btn arrive" style="margin-top: 8px;">
+        <span id="authBtnText">Войти на участок</span>
+      </button>
+    </form>
+  </div>
+
+  <div class="toast-container">
+    <div id="toast" class="toast"><span id="toastIcon" class="toast-icon">✕</span><span id="toastMessage">Сообщение</span></div>
+  </div>
+
+  <!-- Журнал -->
+  <div id="journalModal" class="full-screen-modal">
+    <div class="modal-header">
+      <h2>📝 Журнал / Статистика</h2>
+      <button class="close-modal-btn" onclick="document.getElementById('journalModal').classList.remove('show')">✕</button>
+    </div>
+    <div id="journalStatsCard" style="display:none; margin-bottom:15px; padding:12px; background:var(--bg-card-subtle); border-radius:var(--radius-md); border:1px solid var(--border-color); text-align:center;">
+      <div style="font-size:0.95rem; font-weight:600; color:var(--text-main); margin-bottom:10px;">
+        📊 УИК №<span id="statUikNum"></span>:<br>
+        На участке: <b style="color:var(--color-arrive);" id="statPresent">0</b>. 
+        Ушло: <b style="color:var(--color-leave);" id="statLeft">0</b>. 
+        Всего: <b style="color:var(--color-primary);" id="statTotal">0</b>.
+      </div>
+      <button type="button" id="btnShareReport" class="btn-share" style="margin-top:0;">📋 Скопировать отчет</button>
+    </div>
+    <div id="journalLoader" class="center-message">
+      <div class="spinner" style="display:inline-block; border-top-color:var(--color-primary); width:30px; height:30px;"></div>
+      <div style="margin-top:10px;">Загрузка списка...</div>
+    </div>
+    <div id="journalList" class="journal-list"></div>
+  </div>
+
+  <!-- Редактирование -->
+  <div id="editModal" class="full-screen-modal" style="z-index: 10006;">
+    <div class="modal-header">
+      <h2>✏️ Исправление данных</h2>
+      <button class="close-modal-btn" onclick="document.getElementById('editModal').classList.remove('show')">✕</button>
+    </div>
+    <form id="editForm" class="form-card" style="box-shadow:none; padding:0; background:transparent; border:none;" autocomplete="off" novalidate>
+      <input type="hidden" id="editRecordId">
+      
+      <div class="form-group">
+        <label class="form-label">ФИО наблюдателя <span class="required">*</span></label>
+        <input type="text" id="editObserverInput" name="edit_fio_no_cache" class="form-input" autocomplete="off" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Организация / Партия <span class="required">*</span></label>
+        <select id="editOrganizationSelect" class="form-select" required>
+          <option value="" disabled selected>Выберите организацию...</option>
+          <optgroup label="📌 Особые">
+            <option value="СМИ">СМИ</option>
+            <option value="Наблюдатели от иностранных государств">Наблюдатели от иностранных государств</option>
+            <option value="Наблюдатели международных организаций">Наблюдатели международных организаций</option>
+          </optgroup>
+          <optgroup label="🔵 Политические партии">
+            <option value="Партия «Әділет»">Партия «Әділет»</option>
+            <option value="Общенациональная социал-демократическая партия">Партия «ОСДП»</option>
+            <option value="Казахстанская партия зелёных «Байтақ»">Партия «Байтақ»</option>
+            <option value="Народная партия Казахстана">Народная партия Казахстана</option>
+            <option value="Партия «Ауыл»">Партия «Ауыл»</option>
+            <option value="Демократическая Партия Казахстана «Ак Жол»">Партия «Ак жол»</option>
+            <option value="Партия «Respublica»">Партия «Respublica»</option>
+          </optgroup>
+          <optgroup label="🟢 НКО Павлодарской области">
+            <option value="ОЮЛ «Гражданский союз Павлодарской области»">ОЮЛ «Гражданский союз Павлодарской области»</option>
+            <option value="ОО «NAMYS-PVL»">ОО «NAMYS-PVL»</option>
+            <option value="ОФ «Ветеранов и Инвалидов Афганской войны...»">Общественный Фонд «Ветеранов и Инвалидов Афганской войны и локальных войн города Павлодар и Павлодарской области»</option>
+            <option value="КФ НПО «Республиканский Центр Экологических технологий»">Корпоративный фонд НПО «Республиканский Центр Экологических технологий»</option>
+            <option value="ОО «KAISAR-KZ»">Общественное объединение «KAISAR-KZ»</option>
+            <option value="ОО «ҮМІТ ҮЗБЕУ»">Общественный фонд «ҮМІТ ҮЗБЕУ»</option>
+            <option value="ОО «Berik qadam»">Общественное объединение «Berik qadam»</option>
+            <option value="ОБФ «Ертіс жүрегі»">Общественный благотворительный фонд «Ертіс жүрегі»</option>
+            <option value="МОО «Жас Ниет»">Молодежное Общественное Объединение «Жас Ниет»</option>
+          </optgroup>
+          <optgroup label="🟡 Республиканские ОО">
+            <option value="ОФ «Молодежная информационная Служба Казахстана»">Общественный фонд «Молодежная информационная Служба Казахстана»</option>
+            <option value="ОФ «Гражданская экспертиза»">Общественный Фонд «Гражданская экспертиза»</option>
+            <option value="РОО «Жастар үні»">Республиканское общественное объединение «Жастар үні»</option>
+            <option value="ОФ «Крылья свободы»">Общественный Фонд «Крылья свободы»</option>
+            <option value="ОФ «Ел Дауысы»">Общественный фонд «Ел Дауысы»</option>
+            <option value="ОФ «Белсенді Азамат»">Общественный Фонд «Белсенді Азамат»</option>
+            <option value="ОФ «Korgau» Human rights foundation»">Общественный фонд «Korgau» Human rights foundation»</option>
+            <option value="ОФ «TAUAN»">Общественный Фонд «TAUAN»</option>
+            <option value="РОО «МҰҚАЛМАС»">Республиканское общественное объединение «МҰҚАЛМАС»</option>
+            <option value="РОО Коалиция общественных наблюдателей «Дауыс»">Республиканское общественное объединение «Коалиция общественных наблюдателей «Дауыс»</option>
+            <option value="ОФ «ПРАВО»">Общественный фонд «ПРАВО»</option>
+            <option value="ОФ «AQ-zhelken»">Общественный фонд «AQ-zhelken»</option>
+          </optgroup>
+        </select>
+      </div>
+
+      <div class="form-group hidden-field" id="editOrgDetailsGroup">
+        <label class="form-label" id="editOrgDetailsLabel">Укажите ТОЛЬКО страну <span class="required">*</span></label>
+        <input type="text" id="editOrgDetailsInput" name="edit_country_no_cache" class="form-input" placeholder="Например: Россия" autocomplete="off">
+      </div>
+
+      <div class="form-group hidden-field" id="editIntlOrgDetailsGroup">
+        <label class="form-label">Международная организация <span class="required">*</span></label>
+        <select id="editIntlOrgSelect" class="form-select">
+          <option value="" disabled selected>Выберите организацию...</option>
+          <option value="Миссия наблюдателей от СНГ">Миссия наблюдателей от СНГ</option>
+          <option value="Межпарламентская Ассамблея СНГ (МПА СНГ)">Межпарламентская Ассамблея СНГ (МПА СНГ)</option>
+          <option value="Миссия БДИПЧ/ОБСЕ по наблюдению за выборами">Миссия БДИПЧ/ОБСЕ по наблюдению за выборами</option>
+          <option value="Парламентская Ассамблея ОБСЕ (ПА ОБСЕ)">Парламентская Ассамблея ОБСЕ (ПА ОБСЕ)</option>
+          <option value="Парламентская Ассамблея Совета Европы (ПАСE)">Парламентская Ассамблея Совета Европы (ПАСE)</option>
+          <option value="Парламентская Ассамблея ОДКБ (ПА ОДКБ)">Парламентская Ассамблея ОДКБ (ПА ОДКБ)</option>
+          <option value="Миссия Организации тюркских государств (ОТГ)">Миссия Организации тюркских государств (ОТГ)</option>
+          <option value="Парламентская Ассамблея тюркских государств (ТЮРКПА)">Парламентская Ассамблея тюркских государств (ТЮРКПА)</option>
+          <option value="Шанхайская организация сотрудничества (ШОС)">Шанхайская организация сотрудничества (ШОС)</option>
+          <option value="Совещание по взаимодействию и мерам доверия в Азии (СВМДА)">Совещание по взаимодействию и мерам доверия в Азии (СВМДА)</option>
+          <option value="Исламская организация по продовольственной безопасности">Исламская организация по продовольственной безопасности</option>
+          <option value="Тюркская академия">Тюркская академия</option>
+          <option value="Международный конгресс парламентариев (IPC)">Международный конгресс парламентариев (IPC)</option>
+        </select>
+      </div>
+
+      <div class="form-group hidden-field" id="editTranslatorGroup">
+        <label class="form-label" for="editTranslatorInput">Укажите если это переводчик</label>
+        <input type="text" id="editTranslatorInput" name="edit_trans_no_cache" class="form-input" placeholder="Заполняется только для Переводчика" autocomplete="off">
+      </div>
+
+      <div class="form-group hidden-field" id="editSmiDetailsGroup">
+        <label class="form-label">Название издания <span class="required">*</span></label>
+        <input type="text" id="editSmiInput" name="edit_smi_no_cache" class="form-input" list="editSmiList" autocomplete="off">
+        <datalist id="editSmiList"></datalist>
+      </div>
+
+      <div class="form-group" id="editStatusGroup">
+        <label class="form-label">Статус <span class="required">*</span></label>
+        <select id="editStatusSelect" class="form-select">
+          <option value="Доверенное лицо">Доверенное лицо</option>
+          <option value="Наблюдатель">Наблюдатель</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Время прихода <span class="required">*</span></label>
+          <input type="time" id="editArriveInput" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Время ухода</label>
+          <input type="time" id="editLeaveInput" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Примечание</label>
+        <input type="text" id="editNoteInput" name="edit_note_no_cache" class="form-input" autocomplete="off">
+      </div>
+
+      <button type="submit" id="editSubmitBtn" class="submit-btn arrive" style="margin-top: 10px;">
+        <div id="editBtnSpinner" class="spinner"></div>
+        <span id="editBtnText">Сохранить изменения</span>
+      </button>
+    </form>
+  </div>
+
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-left">
+        <h1>Мониторинг наблюдателей</h1>
+        <div style="font-size:.8rem;color:var(--text-dim)">Выборы депутатов маслихатов</div>
+        <div id="currentUserBadge" class="user-profile-card" title="Нажмите, чтобы сменить номер участка">
+          <div class="user-info-text">
+            <span class="user-uik-line">📍 Избирательный участок №<span id="currentUserUik">0</span></span>
+          </div>
+          <span style="font-size:0.8rem; color:var(--text-dim);">Сменить ✕</span>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <div id="countdownTimer" class="header-timer" title="29 ноября 2026 года, 20:00 по местному времени">29 ноября 2026</div>
+        <div class="header-actions-row">
+          <div class="status-badge">
+            <span id="networkDot" class="status-dot"></span>
+            <span id="networkText">В сети</span>
+          </div>
+          <button id="themeToggle" class="theme-toggle" title="Переключить тему">🌙</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="segmented-control">
+      <button type="button" id="tabArrive" class="segment-btn active arrive">
+        <span>🟢</span> <span id="tabArriveText">Приход</span>
+      </button>
+      <button type="button" id="tabLeave" class="segment-btn leave">
+        <span>🔴</span> <span id="tabLeaveText">Уход</span>
+        <div id="leaveProgress" class="tab-progress"></div>
+      </button>
+    </div>
+
+    <div class="form-card sync-card">
+      <div id="lastSync">Последняя синхронизация — ещё не было</div>
+      <button type="button" id="syncNow" class="segment-btn">Синхронизировать</button>
+    </div>
+    <div id="offlineBanner" class="offline-banner hidden-field">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.2rem;">⚠️</span>
+        <span><b id="queueStatus" aria-live="polite">Ожидают подтверждения</b> (<b id="offlineCount">0</b>)</span>
+      </div>
+      <div style="font-size: 0.85rem;">Отметки сохранены на телефоне. Повторно вводить их не нужно.</div>
+    </div>
+
+    <form id="trackingForm" class="form-card" autocomplete="off" novalidate>
+      <input type="hidden" id="actionField" name="action" value="ПРИШЕЛ">
+
+      <div class="form-group">
+        <label class="form-label" for="districtSelect">Район / Город <span class="required">*</span></label>
+        <select id="districtSelect" name="district" class="form-select">
+          <option value="" disabled selected>Выберите район или город...</option>
+          <option value="г. Павлодар">г. Павлодар</option>
+          <option value="г. Экибастуз">г. Экибастуз</option>
+          <option value="г. Аксу">г. Аксу</option>
+          <option value="Актогайский район">Актогайский район</option>
+          <option value="Баянаульский район">Баянаульский район</option>
+          <option value="Железинский район">Железинский район</option>
+          <option value="Иртышский район">Иртышский район</option>
+          <option value="Майский район">Майский район</option>
+          <option value="район Аққулы">район Аққулы</option>
+          <option value="район Тереңкөл">район Тереңкөл</option>
+          <option value="Павлодарский район">Павлодарский район</option>
+          <option value="Успенский район">Успенский район</option>
+          <option value="Щербактинский район">Щербактинский район</option>
+        </select>
+        <div class="field-error">Пожалуйста, выберите район</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="uikInput">УИК № <span class="required">*</span></label>
+          <input type="number" id="uikInput" name="uik_no_cache" class="form-input" placeholder="123" inputmode="numeric" min="1" max="999" autocomplete="off">
+          <div class="field-error">Укажите номер УИКа</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="timeInput">Время <span class="required">*</span></label>
+          <input type="time" id="timeInput" name="time_no_cache" class="form-input" autocomplete="off">
+          <div class="field-error">Укажите время</div>
+        </div>
+      </div>
+
+      <div class="form-group" id="observerGroup">
+        <label class="form-label" for="observerInput">ФИО наблюдателя <span class="required">*</span></label>
+        <input type="text" id="observerInput" name="fio_no_cache" class="form-input" placeholder="Иванов Иван Иванович" autocomplete="off">
+        <select id="presentObserverSelect" name="observer_leave_no_cache" class="form-select hidden-field">
+          <option value="" disabled selected>Сначала укажите Район и УИК...</option>
+        </select>
+        <div class="field-error" id="observerError">Пожалуйста, укажите наблюдателя</div>
+      </div>
+
+      <div class="form-group" id="orgGroup">
+        <label class="form-label" for="organizationSelect">Организация / Партия <span class="required">*</span></label>
+        <select id="organizationSelect" name="organization" class="form-select">
+          <option value="" disabled selected>Выберите организацию...</option>
+          <optgroup label="📌 Особые">
+            <option value="СМИ">СМИ</option>
+            <option value="Наблюдатели от иностранных государств">Наблюдатели от иностранных государств</option>
+            <option value="Наблюдатели международных организаций">Наблюдатели международных организаций</option>
+          </optgroup>
+          <optgroup label="🔵 Политические партии">
+            <option value="Партия «Әділет»">Партия «Әділет»</option>
+            <option value="Общенациональная социал-демократическая партия">Партия «ОСДП»</option>
+            <option value="Казахстанская партия зелёных «Байтақ»">Партия «Байтақ»</option>
+            <option value="Народная партия Казахстана">Народная партия Казахстана</option>
+            <option value="Партия «Ауыл»">Партия «Ауыл»</option>
+            <option value="Демократическая Партия Казахстана «Ак Жол»">Партия «Ак жол»</option>
+            <option value="Партия «Respublica»">Партия «Respublica»</option>
+          </optgroup>
+          <optgroup label="🟢 НКО Павлодарской области">
+            <option value="ОЮЛ «Гражданский союз Павлодарской области»">ОЮЛ «Гражданский союз Павлодарской области»</option>
+            <option value="ОО «NAMYS-PVL»">ОО «NAMYS-PVL»</option>
+            <option value="ОФ «Ветеранов и Инвалидов Афганской войны...»">Общественный Фонд «Ветеранов и Инвалидов Афганской войны и локальных войн города Павлодар и Павлодарской области»</option>
+            <option value="КФ НПО «Республиканский Центр Экологических технологий»">Корпоративный фонд НПО «Республиканский Центр Экологических технологий»</option>
+            <option value="ОО «KAISAR-KZ»">Общественное объединение «KAISAR-KZ»</option>
+            <option value="ОО «ҮМІТ ҮЗБЕУ»">Общественный фонд «ҮМІТ ҮЗБЕУ»</option>
+            <option value="ОО «Berik qadam»">Общественное объединение «Berik qadam»</option>
+            <option value="ОБФ «Ертіс жүрегі»">Общественный благотворительный фонд «Ертіс жүрегі»</option>
+            <option value="МОО «Жас Ниет»">Молодежное Общественное Объединение «Жас Ниет»</option>
+          </optgroup>
+          <optgroup label="🟡 Республиканские ОО">
+            <option value="ОФ «Молодежная информационная Служба Казахстана»">Общественный фонд «Молодежная информационная Служба Казахстана»</option>
+            <option value="ОФ «Гражданская экспертиза»">Общественный Фонд «Гражданская экспертиза»</option>
+            <option value="РОО «Жастар үні»">Республиканское общественное объединение «Жастар үні»</option>
+            <option value="ОФ «Крылья свободы»">Общественный Фонд «Крылья свободы»</option>
+            <option value="ОФ «Ел Дауысы»">Общественный фонд «Ел Дауысы»</option>
+            <option value="ОФ «Белсенді Азамат»">Общественный Фонд «Белсенді Азамат»</option>
+            <option value="ОФ «Korgau» Human rights foundation»">Общественный фонд «Korgau» Human rights foundation»</option>
+            <option value="ОФ «TAUAN»">Общественный Фонд «TAUAN»</option>
+            <option value="РОО «МҰҚАЛМАС»">Республиканское общественное объединение «МҰҚАЛМАС»</option>
+            <option value="РОО Коалиция общественных наблюдателей «Дауыс»">Республиканское общественное объединение «Коалиция общественных наблюдателей «Дауыс»</option>
+            <option value="ОФ «ПРАВО»">Общественный фонд «ПРАВО»</option>
+            <option value="ОФ «AQ-zhelken»">Общественный фонд «AQ-zhelken»</option>
+          </optgroup>
+        </select>
+        <div class="field-error">Пожалуйста, выберите организацию</div>
+      </div>
+
+      <div class="form-group hidden-field" id="orgDetailsGroup">
+        <label class="form-label" id="orgDetailsLabel" for="orgDetailsInput">Укажите ТОЛЬКО страну <span class="required">*</span></label>
+        <input type="text" id="orgDetailsInput" name="country_no_cache" class="form-input" placeholder="Например: Россия" autocomplete="off">
+        <div class="field-error">Пожалуйста, укажите страну</div>
+      </div>
+
+      <div class="form-group hidden-field" id="intlOrgDetailsGroup">
+        <label class="form-label" for="intlOrgSelect">Международная организация <span class="required">*</span></label>
+        <select id="intlOrgSelect" class="form-select">
+          <option value="" disabled selected>Выберите организацию...</option>
+          <option value="Миссия наблюдателей от СНГ">Миссия наблюдателей от СНГ</option>
+          <option value="Межпарламентская Ассамблея СНГ (МПА СНГ)">Межпарламентская Ассамблея СНГ (МПА СНГ)</option>
+          <option value="Миссия БДИПЧ/ОБСЕ по наблюдению за выборами">Миссия БДИПЧ/ОБСЕ по наблюдению за выборами</option>
+          <option value="Парламентская Ассамблея ОБСЕ (ПА ОБСЕ)">Парламентская Ассамблея ОБСЕ (ПА ОБСЕ)</option>
+          <option value="Парламентская Ассамблея Совета Европы (ПАСE)">Парламентская Ассамблея Совета Европы (ПАСE)</option>
+          <option value="Парламентская Ассамблея ОДКБ (ПА ОДКБ)">Парламентская Ассамблея ОДКБ (ПА ОДКБ)</option>
+          <option value="Миссия Организации тюркских государств (ОТГ)">Миссия Организации тюркских государств (ОТГ)</option>
+          <option value="Парламентская Ассамблея тюркских государств (ТЮРКПА)">Парламентская Ассамблея тюркских государств (ТЮРКПА)</option>
+          <option value="Шанхайская организация сотрудничества (ШОС)">Шанхайская организация сотрудничества (ШОС)</option>
+          <option value="Совещание по взаимодействию и мерам доверия в Азии (СВМДА)">Совещание по взаимодействию и мерам доверия в Азии (СВМДА)</option>
+          <option value="Исламская организация по продовольственной безопасности">Исламская организация по продовольственной безопасности</option>
+          <option value="Тюркская академия">Тюркская академия</option>
+          <option value="Международный конгресс парламентариев (IPC)">Международный конгресс парламентариев (IPC)</option>
+        </select>
+        <div class="field-error">Пожалуйста, выберите организацию</div>
+      </div>
+
+      <div class="form-group hidden-field" id="translatorGroup">
+        <label class="form-label" for="translatorInput">Укажите если это переводчик</label>
+        <input type="text" id="translatorInput" name="trans_no_cache" class="form-input" placeholder="Заполняется только для Переводчика" autocomplete="off">
+      </div>
+
+      <div class="form-group hidden-field" id="smiDetailsGroup">
+        <label class="form-label" for="smiInput">Название издания <span class="required">*</span></label>
+        <input type="text" id="smiInput" name="smi_no_cache" class="form-input" list="smiList" placeholder="Например: Хабар" autocomplete="off">
+        <datalist id="smiList"></datalist>
+        <div class="field-error">Пожалуйста, укажите издание</div>
+      </div>
+
+      <div class="form-group" id="statusGroup">
+        <label class="form-label" for="statusSelect">Статус <span class="required">*</span></label>
+        <select id="statusSelect" name="status" class="form-select">
+          <option value="" disabled selected>Выберите статус...</option>
+          <option value="Доверенное лицо">Доверенное лицо</option>
+          <option value="Наблюдатель">Наблюдатель</option>
+        </select>
+        <div class="field-error" id="statusError">Пожалуйста, выберите статус</div>
+      </div>
+
+      <div class="form-group hidden-field" id="noteGroup">
+        <label class="form-label" for="noteInput">Примечание</label>
+        <input type="text" id="noteInput" name="note_no_cache" class="form-input" placeholder="Например: без замечаний" autocomplete="off">
+      </div>
+
+      <button type="submit" id="submitBtn" class="submit-btn arrive">
+        <div id="btnSpinner" class="spinner"></div>
+        <span id="btnText">Зафиксировать ПРИХОД</span>
+      </button>
+
+      <div class="bottom-actions-container">
+        <button type="button" id="btnJournal" class="journal-btn">📝 Журнал / Статистика</button>
+        <a href="https://wa.me/77786206833?text=Здравствуйте!" target="_blank" class="tech-support-btn" id="techSupportLink">💬 Написать в техподдержку</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+const UIK_DATABASE = {"г. Павлодар":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,107,108,109,110,111,112,113,114,116,117,118,119,120,121,125,126,127,128,129,130,131,132,133,134,580,581,582,583,584,585,586,587,588,595,596],"г. Экибастуз":[513,514,515,516,517,518,519,520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,543,544,545,546,547,548,549,550,551,552,553,554,555,557,558,559,562,563,564,565,566,567,568,569,570,571,572,573,574,575,576,577,589,590,591],"г. Аксу":[474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500,501,502,503,504,505,506,508,509,510,511,512,578,597],"район Аққулы":[325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,349],"Актогайский район":[135,136,137,139,140,141,142,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,161,163,164,165,167,168],"Баянаульский район":[172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,203,204,205,206,207,208,209,210,211],"Железинский район":[212,213,214,215,216,217,218,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,241,242,243,245,246,249,250,251],"Иртышский район":[252,253,254,255,256,257,259,260,261,263,265,266,267,269,271,272,273,274,275,276,277,278,279,280,281,282,283],"Майский район":[352,353,354,356,357,358,359,360,361,363,365,368,372,375,592,593],"Павлодарский район":[376,377,378,379,380,381,382,383,385,386,387,388,389,390,391,392,393,394,396,397,401,402,403,404,405,406,407,408,409,410],"район Тереңкөл":[284,285,286,287,288,289,290,291,292,293,294,296,297,299,300,301,303,304,305,306,308,311,312,314,315,317,319,320,321,323,594],"Успенский район":[412,413,414,416,417,418,419,421,422,423,424,425,426,427,428,429,430,431,432,433,434,436,579],"Щербактинский район":[437,438,439,440,441,442,445,446,447,448,451,452,453,454,455,458,459,461,462,463,464,465,466,469,472,473]};
+function territoryFor(uik) {
+  const text = String(uik || '').trim();
+  if (!/^\d{1,3}$/.test(text)) return '';
+  return Object.keys(UIK_DATABASE).find(name => UIK_DATABASE[name].includes(Number(text))) || '';
+}
+
+function replayEvents(events, district, initial = []) {
+  const records = new Map(initial.map(item => [item.uik + ":" + item.id, {...item}]));
+  const seen = new Set();
+  for (const event of events) {
+    const key = event.uik + ':' + event.uid;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const recordKey = event.uik + ':' + event.id;
+    const item = records.get(recordKey);
+    if (event.action === 'ПРИШЕЛ' && !item) {
+      records.set(recordKey, {
+        id: event.id, uik: event.uik, district, observer: event.observer, org: event.organization,
+        obsStatus: event.status, arrive: event.time, leave: '', note: event.note, status: 'НА УЧАСТКЕ',
+        firstAt: event.acceptedAt, firstUid: event.uid
+      });
+    } else if (event.action === 'УШЕЛ' && item && !item.leave) {
+      item.leave = event.time;
+      if (event.note) item.note = [item.note, event.note].filter(Boolean).join(' / ');
+      item.status = 'УШЕЛ';
+    } else if (event.action === 'EDIT' && item) {
+      if (event.acceptedAt) item.edits = [...(item.edits || []), event.acceptedAt];
+      Object.assign(item, {
+        observer: event.observer, org: event.organization, obsStatus: event.status, note: event.note,
+        arrive: event.arrive, leave: event.leave, status: event.leave ? 'УШЕЛ' : 'НА УЧАСТКЕ'
+      });
+    } else if (event.action === 'DELETE') {
+      records.delete(recordKey);
+    }
+  }
+  return Array.from(records.values());
+}
+const DEMO = document.documentElement.dataset.observersMode === 'demo';
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c =>
+  ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
+const DEMO_KEY = 'maslikhat-demo-events-v1';
+const demoSeed = [
+  {uik:'1', uid:'demo-pvl-01', id:'demo-pvl-01', action:'ПРИШЕЛ', observer:'Наблюдатель Демо 1', organization:'ОЮЛ «Гражданский союз Павлодарской области»', status:'Наблюдатель', time:'07:15', note:''},
+  {uik:'513', uid:'demo-ekb-01', id:'demo-ekb-01', action:'ПРИШЕЛ', observer:'Наблюдатель Демо 2', organization:'СМИ (ТК Ирбис)', status:'Представитель СМИ', time:'08:30', note:''},
+  {uik:'172', uid:'demo-bay-01', id:'demo-bay-01', action:'ПРИШЕЛ', observer:'Наблюдатель Демо 3', organization:'Партия «Ауыл»', status:'Наблюдатель', time:'09:00', note:''}
+];
+
+function demoCall(action, p) {
+  let shared;
+  try { shared = window.parent.observersDemoStore; } catch (_) {}
+  const events = shared ? shared.events || demoSeed : JSON.parse(localStorage.getItem(DEMO_KEY) || 'null') || demoSeed;
+  if (action === 'loginUik' || action === 'loginPanel') {
+    const role = action === 'loginUik' ? territoryFor(p.uik) : p.login;
+    if ((action === 'loginPanel' && p.password !== '12345') || !role || (role !== 'Штаб' && !Object.prototype.hasOwnProperty.call(UIK_DATABASE, role))) {
+      return {success:false, code:'AUTH', message:action === 'loginUik' ? 'Проверьте номер УИК.' : 'Проверьте логин и пароль.'};
+    }
+    return {success:true, token: action === 'loginUik' ? 'uik:' + p.uik : 'panel:' + role, accessLevel:role};
+  }
+  if (action === 'getDashboardData' && p.token.startsWith('panel:')) {
+    const role = p.token.slice(6);
+    const districts = role === 'Штаб' ? Object.keys(UIK_DATABASE) : [role];
+    return {success:true, accessLevel:role, data:districts.flatMap(d => replayEvents(events.filter(e => territoryFor(e.uik) === d), d))};
+  }
+  const uik = p.token.startsWith('uik:') ? p.token.slice(4) : '';
+  const district = territoryFor(uik);
+  if (!district) return {success:false, code:'AUTH', message:'Войдите на участок.'};
+  if (action === 'snapshot') {
+    return {success:true, data:replayEvents(events.filter(e => e.uik === uik), district)};
+  }
+  if (action === 'write') {
+    const seen = new Set(events.filter(event => event.uik === uik).map(event => event.uid));
+    const next = events.slice();
+    for (const event of p.events) {
+      if (seen.has(event.uid)) continue;
+      seen.add(event.uid);
+      next.push({...event, uik});
+    }
+    if (shared) shared.events = next;
+    else localStorage.setItem(DEMO_KEY, JSON.stringify(next));
+    return {success:true};
+  }
+  return {success:false, message:'Действие недоступно.'};
+}
+
+async function callServer(action, payload) {
+  const result = DEMO ? demoCall(action, payload) : await callApi(action, payload);
+  if (!result || !result.success) {
+    const error = new Error(result?.message || 'Сервер не подтвердил операцию.');
+    error.code = result?.code;
+    throw error;
+  }
+  return result;
+}
+
+// Один раз вставьте HTTPS-адрес развёртывания Apps Script, который заканчивается на /exec.
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybo6KKcKlGpr1sTboTb8d1_KdLPe9kvvGNyO-aqS5dapKulbmviaDIUCOtdeknw0Ig4w/exec';
+
+async function callApi(action, payload) {
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(APPS_SCRIPT_URL)) {
+    throw new Error('Администратор ещё не настроил подключение.');
+  }
+  let response;
+  try {
+    response = await fetch(APPS_SCRIPT_URL, {
+      method:'POST', mode:'cors', credentials:'omit', cache:'no-store',
+      headers:{'Content-Type':'text/plain;charset=UTF-8'},
+      body:JSON.stringify({action, payload}),
+      signal:AbortSignal.timeout(action === 'getDashboardData' ? 45000 : 18000)
+    });
+  } catch (error) {
+    if (error.name === 'TimeoutError') throw new Error('Сервер не ответил вовремя.');
+    throw new Error('Нет связи с сервером. Повторите позже.');
+  }
+  if (!response.ok || !response.headers.get('Content-Type')?.includes('application/json')) {
+    throw new Error('Сервер недоступен. Сообщите администратору.');
+  }
+  return await response.json();
+}
+
+
+    function extractTime(val) {
+      if (!val) return "";
+      var str = String(val);
+      var match = str.match(/\b([01]\d|2[0-3]):([0-5]\d)\b/);
+      return match ? match[0] : str;
+    }
+
+    function generateUID() {
+      return crypto.randomUUID ? crypto.randomUUID() : Array.from(crypto.getRandomValues(new Uint8Array(16)), value => value.toString(16).padStart(2, '0')).join('');
+    }
+
+    const orgFullNameMap = {
+      "ОЮЛ «Гражданский союз Павлодарской области»": "Объединение юридических лиц «Гражданский союз Павлодарской области»",
+      "ОО «NAMYS-PVL»": "Общественное объединение  «NAMYS-PVL»",
+      "ОФ «Ветеранов и Инвалидов Афганской войны...»": "Общественный Фонд  «Ветеранов и Инвалидов Афганской войны и локальных войн города Павлодар и Павлодарской области»",
+      "КФ НПО «Республиканский Центр Экологических технологий»": "Корпоративный фонд НПО «Республиканский Центр Экологических технологий»",
+      "ОО «KAISAR-KZ»": "Общественное объединение «KAISAR-KZ»",
+      "ОО «ҮМІТ ҮЗБЕУ»": "Общественный фонд «ҮМІТ ҮЗБЕУ»",
+      "ОО «Berik qadam»": "Общественное объединение «Berik qadam»",
+      "ОБФ «Ертіс жүрегі»": "Общественный благотворительный фонд «Ертіс жүрегі»",
+      "ОФ «Молодежная информационная Служба Казахстана»": "Общественный фонд «Молодежная информационная Служба Казахстана»",
+      "ОФ «Гражданская экспертиза»": "Общественный Фонд «Гражданская экспертиза»",
+      "РОО «Жастар үні»": "Республиканское общественное объединение «Жастар үні»",
+      "ОФ «Крылья свободы»": "Общественный Фонд «Крылья свободы»",
+      "ОФ «Ел Дауысы»": "Общественный фонд «Ел Дауысы»",
+      "ОФ «Белсенді Азамат»": "Общественный Фонд «Белсенді Азамат»",
+      "ОФ «Korgau» Human rights foundation»": "Общественный фонд «Korgau» Human rights foundation»",
+      "ОФ «TAUAN»": "Общественный Фонд «TAUAN»",
+      "РОО «МҰҚАЛМАС»": "Республиканское общественное объединение «МҰҚАЛМАС»",
+      "РОО Коалиция общественных наблюдателей «Дауыс»": "Республиканское общественное объединение «Коалиция общественных наблюдателей «Дауыс»",
+      "ОФ «ПРАВО»": "Общественный фонд «ПРАВО»",
+      "ОФ «AQ-zhelken»": "Общественный фонд «AQ-zhelken»",
+      "МОО «Жас Ниет»": "Молодежное Общественное Объединение «Жас Ниет»"
+    };
+
+    const SMI_DATA = [
+      { name: "ТК 31 канал", aliases: ["31", "31 канал", "31канал"] },
+      { name: "ТК Астана", aliases: ["астана", "astana"] },
+      { name: "ТК Экибастузский городской телеканал", aliases: ["экибастузский", "экибастуз тв", "гор телеканал", "эгт"] },
+      { name: "ТК Хабар", aliases: ["хабар", "xabar"] },
+      { name: "ТК Евразия", aliases: ["евразия", "евразия тк", "1 канал", "первый канал", "evrazia"] },
+      { name: "ТК Ertis", aliases: ["ертис", "ертыс", "ertis", "тк ертис", "иртиш"] },
+      { name: "ТК Ирбис", aliases: ["ирбис", "irbis", "irbis tv", "ирбис тв"] },
+      { name: "Республиканский канал КТК", aliases: ["ктк", "ktk"] },
+      { name: "ИА Pavlodarnews", aliases: ["павлодарнюс", "павлодарньюс", "павлодар ньюс", "pavlodarnews"] },
+      { name: "Халық радиосы", aliases: ["халық", "халык", "радиосы", "халык радиосы", "халық радиосы"] },
+      { name: "газета Сарыарқа Самалы", aliases: ["сарыарка", "сарыарқа", "самалы", "сарыарка самалы"] },
+      { name: "газета Звезда Прииртышья", aliases: ["звезда", "прииртышья", "звезда прииртышья"] },
+      { name: "газета Ертіс нұры", aliases: ["ертис нуры", "ертіс нұры", "иртыш нуры", "ертис"] },
+      { name: "газета Отарқа", aliases: ["отарка", "отарқа"] },
+      { name: "газета Голос Экибастуза", aliases: ["голос", "экибастуза", "голос экибастуза"] },
+      { name: "газета SHAMSHYRAQ", aliases: ["shamshyraq", "шамшырак", "шамшырақ"] },
+      { name: "газета Казахстанская правда", aliases: ["казахстанская правда", "казправда", "казахстанская"] },
+      { name: "газета Ауыл тынысы", aliases: ["ауыл", "тынысы", "ауыл тынысы"] },
+      { name: "газета Aqqu uni", aliases: ["aqqu", "uni", "акку уни", "аққу үні"] },
+      { name: "газета Вести Аққулы", aliases: ["вести", "аккулы", "аққулы", "вести аккулы"] },
+      { name: "газета Заман тынысы", aliases: ["заман", "тынысы", "заман тынысы"] },
+      { name: "газета Нива", aliases: ["нива", "niva"] },
+      { name: "газета Заря", aliases: ["заря", "zarya"] },
+      { name: "газета Sharbaqty", aliases: ["sharbaqty", "шарбакты", "шарбақты"] },
+      { name: "газета Новый путь", aliases: ["новый путь", "новый", "путь"] },
+      { name: "газета Иртыш", aliases: ["иртыш", "irtysh"] },
+      { name: "газета Баянтау", aliases: ["баянтау", "bayantau"] },
+      { name: "газеты Туған өлке", aliases: ["туган", "туған", "өлке", "олке", "туған өлке", "туган олке"] },
+      { name: "газета Тереңкөл тынысы", aliases: ["теренкол", "тереңкөл", "тынысы", "теренкол тынысы", "тереңкөл тынысы"] },
+      { name: "газеты Аймақ ажары", aliases: ["аймак", "аймақ", "ажары", "аймақ ажары", "аймак ажары"] },
+      { name: "газета Огни села", aliases: ["огни", "села", "огни села"] },
+      { name: "Родные просторы", aliases: ["родные", "просторы", "родные просторы"] },
+      { name: "AQJOL", aliases: ["aqjol", "акжол", "ақжол"] },
+      { name: "ТОО Қазақ газеттері", aliases: ["казак", "қазақ", "газеттери", "газеттері", "қазақ газеттері"] },
+      { name: "АО \"Республиканская Телерадиокорпорация \"Казахстан\"", aliases: ["казахстан", "қазақстан", "казтрк", "телерадиокорпорация", "ртек"] }
+    ];
+
+    const authModal = document.getElementById('authModal');
+    const authForm = document.getElementById('authForm');
+    const authUik = document.getElementById('authUik');
+    const authSubmitBtn = document.getElementById('authSubmitBtn');
+    const authBtnText = document.getElementById('authBtnText');
+    const currentUserBadge = document.getElementById('currentUserBadge');
+    const currentUserUik = document.getElementById('currentUserUik');
+
+    const tabArrive = document.getElementById('tabArrive');
+    const tabLeave = document.getElementById('tabLeave');
+    const actionField = document.getElementById('actionField');
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = document.getElementById('btnText');
+    const trackingForm = document.getElementById('trackingForm');
+    const districtSelect = document.getElementById('districtSelect');
+    const uikInput = document.getElementById('uikInput');
+    const timeInput = document.getElementById('timeInput');
+    const offlineBanner = document.getElementById('offlineBanner');
+    const offlineCount = document.getElementById('offlineCount');
+    const countdownTimer = document.getElementById('countdownTimer');
+    const techSupportLink = document.getElementById('techSupportLink');
+    const btnJournal = document.getElementById('btnJournal');
+    
+    const observerInput = document.getElementById('observerInput');
+    const presentObserverSelect = document.getElementById('presentObserverSelect');
+    
+    const orgGroup = document.getElementById('orgGroup');
+    const organizationSelect = document.getElementById('organizationSelect');
+    
+    const orgDetailsGroup = document.getElementById('orgDetailsGroup');
+    const orgDetailsInput = document.getElementById('orgDetailsInput');
+    
+    const intlOrgDetailsGroup = document.getElementById('intlOrgDetailsGroup');
+    const intlOrgSelect = document.getElementById('intlOrgSelect');
+
+    const translatorGroup = document.getElementById('translatorGroup');
+    const translatorInput = document.getElementById('translatorInput');
+    
+    const smiDetailsGroup = document.getElementById('smiDetailsGroup');
+    const smiInput = document.getElementById('smiInput');
+    const smiList = document.getElementById('smiList');
+    
+    const statusGroup = document.getElementById('statusGroup');
+    const statusSelect = document.getElementById('statusSelect');
+    const noteGroup = document.getElementById('noteGroup');
+    const noteInput = document.getElementById('noteInput');
+    
+    const themeToggle = document.getElementById('themeToggle');
+    const networkDot = document.getElementById('networkDot');
+    const networkText = document.getElementById('networkText');
+    const toast = document.getElementById('toast');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastMessage = document.getElementById('toastMessage');
+
+    const prefix = DEMO ? 'maslikhat-demo:' : 'maslikhat-live:';
+    const authError = document.getElementById('stationAuthError');
+    const queueStatus = document.getElementById('queueStatus');
+    const lastSync = document.getElementById('lastSync');
+    const syncNow = document.getElementById('syncNow');
+    const syncTimeFormat = new Intl.DateTimeFormat('ru-KZ', {
+      timeZone:'Asia/Almaty', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
+    });
+    let station = '';
+    let token = '';
+    let confirmedRecords = [];
+    let snapshotRequest;
+    let knownRecords = false;
+    let revision = 0;
+    let retryTimer;
+    let retryDelay = 2500;
+    let isSyncing = false;
+    let serverUnavailable = false;
+
+    function queueKey() { return prefix + 'queue:' + station; }
+    function renderLastSync() {
+      const stamp = station && Number(localStorage.getItem(prefix + 'last-sync:' + station));
+      lastSync.textContent = 'Последняя синхронизация — ' + (stamp ? syncTimeFormat.format(stamp) : 'ещё не было');
+    }
+    function recordSync() {
+      localStorage.setItem(prefix + 'last-sync:' + station, String(Date.now()));
+      serverUnavailable = false;
+      renderNetworkStatus();
+      renderLastSync();
+    }
+    function getOfflineQueue() {
+      if (!station) return [];
+      const keyPrefix = queueKey() + ':';
+      return Object.keys(localStorage).filter(key => key.startsWith(keyPrefix))
+        .sort().map(key => {
+          const value = localStorage.getItem(key);
+          return value ? {...JSON.parse(value), storageKey:key} : null;
+        }).filter(Boolean);
+    }
+    let lastQueuedAt = 0;
+    function renderStation() {
+      const queue = getOfflineQueue();
+      offlineCount.textContent = queue.length;
+      offlineBanner.classList.toggle('hidden-field', !queue.length);
+      const district = territoryFor(station);
+      const records = replayEvents(queue, district, confirmedRecords);
+      const present = records.filter(item => item.status === 'НА УЧАСТКЕ');
+      document.getElementById('statUikNum').textContent = station;
+      document.getElementById('journalStatsCard').style.display = station ? 'block' : 'none';
+      document.getElementById('statPresent').textContent = knownRecords ? present.length : '—';
+      document.getElementById('statLeft').textContent = knownRecords ? records.length - present.length : '—';
+      document.getElementById('statTotal').textContent = knownRecords ? records.length : '—';
+      if (actionField.value === 'УШЕЛ') renderPresentObservers(present);
+      return records;
+    }
+    function renderPresentObservers(list) {
+      const selected = presentObserverSelect.value;
+      const placeholder = list.length ? 'Выберите наблюдателя…' :
+        knownRecords ? 'Нет наблюдателей на участке' : 'Список пока недоступен';
+      presentObserverSelect.replaceChildren(new Option(placeholder, '', true, true));
+      presentObserverSelect.options[0].disabled = true;
+      list.forEach(item => presentObserverSelect.add(new Option(
+        item.org ? item.observer + ' · ' + item.org : item.observer, item.id)));
+      if (list.some(item => item.id === selected)) presentObserverSelect.value = selected;
+    }
+
+    function showLogin(message = '') {
+      authError.textContent = message;
+      authModal.classList.remove('hidden-field');
+    }
+    function activateStation(uik, sessionToken) {
+      station = uik;
+      token = sessionToken;
+      serverUnavailable = false;
+      renderNetworkStatus();
+      authUik.value = uik;
+      currentUserUik.textContent = uik;
+      districtSelect.value = territoryFor(uik);
+      uikInput.value = uik;
+      uikInput.readOnly = true;
+      districtSelect.disabled = true;
+      confirmedRecords = [];
+      knownRecords = false;
+      try {
+        const snapshot = JSON.parse(sessionStorage.getItem(prefix + 'snapshot:' + station) || 'null');
+        if (Array.isArray(snapshot)) { confirmedRecords = snapshot; knownRecords = true; }
+      } catch (_) {}
+      authModal.classList.add('hidden-field');
+      updateTechSupportLink();
+      renderLastSync();
+      renderStation();
+      refreshStation();
+      scheduleSync();
+    }
+    authForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      authError.textContent = '';
+      const raw = authUik.value.trim();
+      const uik = String(Number(raw));
+      if (!territoryFor(raw)) {
+        authError.textContent = 'Введите номер УИК из справочника.';
+        return;
+      }
+      authSubmitBtn.disabled = true;
+      authBtnText.textContent = 'Проверка…';
+      try {
+        const result = await callServer('loginUik', {uik});
+        sessionStorage.setItem(prefix + 'session', JSON.stringify({uik, token:result.token}));
+        activateStation(uik, result.token);
+      } catch (error) { authError.textContent = error.message; }
+      finally {
+        authSubmitBtn.disabled = false;
+        authBtnText.textContent = 'Войти на участок';
+      }
+    });
+    currentUserBadge.addEventListener('click', () => {
+      if (getOfflineQueue().length || isSyncing) {
+        showToast('warning', '⏳', 'Дождитесь подтверждения отметок перед сменой участка.');
+        return;
+      }
+      sessionStorage.removeItem(prefix + 'session');
+      sessionStorage.removeItem(prefix + 'snapshot:' + station);
+      station = token = '';
+      renderLastSync();
+      authUik.value = '';
+      showLogin();
+    });
+
+    function refreshStation() {
+      if (!token || !navigator.onLine || getOfflineQueue().length) return Promise.resolve(false);
+      if (snapshotRequest?.token === token) return snapshotRequest.promise;
+      const request = {token, revision};
+      request.promise = (async () => {
+        try {
+          const result = await callServer('snapshot', {token:request.token});
+          if (token !== request.token || revision !== request.revision) return false;
+          confirmedRecords = result.data;
+          knownRecords = true;
+          sessionStorage.setItem(prefix + 'snapshot:' + station, JSON.stringify(confirmedRecords));
+          renderStation();
+          return true;
+        } catch (error) {
+          if (token === request.token && error.code === 'AUTH') { token = ''; showLogin(error.message); }
+          return false;
+        } finally {
+          if (snapshotRequest === request) snapshotRequest = null;
+        }
+      })();
+      snapshotRequest = request;
+      return request.promise;
+    }
+    function scheduleSync(delay) {
+      if (retryTimer || isSyncing || !token || !navigator.onLine || !getOfflineQueue().length) return;
+      const closingPeak = Math.abs(Date.now() - CLOSES_AT) < 10 * 60 * 1000;
+      const wait = delay ?? (DEMO ? 100 : 700 + Math.random() * (closingPeak ? 44000 : 1900));
+      retryTimer = setTimeout(() => { retryTimer = null; syncOfflineQueue(); }, wait);
+    }
+    async function syncOfflineQueue() {
+      if (isSyncing || !token || !navigator.onLine) return;
+      const batch = getOfflineQueue().slice(0, 12);
+      if (!batch.length) return;
+      isSyncing = true;
+      queueStatus.textContent = 'Отправляем отметки';
+      const statusTimer = setTimeout(() => {
+        serverUnavailable = true;
+        renderNetworkStatus();
+        queueStatus.textContent = 'Сохранено на телефоне · ждём подтверждения';
+      }, 4000);
+      let blocked = false;
+      let nextDelay;
+      try {
+        await callServer('write', {token, events:batch});
+        confirmedRecords = replayEvents(batch, territoryFor(station), confirmedRecords);
+        revision++;
+        batch.forEach(event => localStorage.removeItem(event.storageKey));
+        renderStation();
+        sessionStorage.setItem(prefix + 'snapshot:' + station, JSON.stringify(confirmedRecords));
+        recordSync();
+        retryDelay = 2500;
+        if (!getOfflineQueue().length) {
+          showToast('success', '✓', DEMO ? 'Отметки сохранены в деморежиме' : 'Сервер подтвердил сохранение отметок');
+          if (!knownRecords) refreshStation();
+        } else {
+          queueStatus.textContent = 'Остальные отметки сохранены на телефоне';
+          nextDelay = 500;
+        }
+      } catch (error) {
+        serverUnavailable = !error.code;
+        renderNetworkStatus();
+        queueStatus.textContent = error.code ? error.message : 'Сохранено на телефоне · отправим повторно';
+        blocked = error.code === 'AUTH' || error.code === 'INVALID';
+        if (error.code === 'AUTH') { token = ''; showLogin(error.message); }
+        nextDelay = retryDelay + Math.random() * retryDelay;
+        retryDelay = Math.min(retryDelay * 2, 30000);
+      } finally {
+        clearTimeout(statusTimer);
+        isSyncing = false;
+        if (!blocked) scheduleSync(nextDelay);
+      }
+    }
+    function queueMark(event) {
+      if (!station || !token) return false;
+      try {
+        revision++;
+        lastQueuedAt = Math.max(Date.now(), lastQueuedAt + 1);
+        const key = queueKey() + ':' + lastQueuedAt + ':' + event.uid;
+        localStorage.setItem(key, JSON.stringify({...event, uik:station}));
+        renderStation();
+        if (!isSyncing) queueStatus.textContent = 'Сохранено на телефоне · ждём отправки';
+        scheduleSync();
+        showToast('warning', '⏳', 'Отметка сохранена на устройстве и ожидает подтверждения');
+        return true;
+      } catch (_) {
+        showToast('error', '✕', 'Не удалось сохранить отметку на устройстве.');
+        return false;
+      }
+    }
+    function renderNetworkStatus() {
+      networkDot.classList.toggle('offline', !navigator.onLine);
+      networkDot.classList.toggle('slow', navigator.onLine && serverUnavailable);
+      networkText.textContent = !navigator.onLine ? 'Офлайн' : serverUnavailable ? 'Сервер не отвечает' :
+        DEMO ? 'Деморежим' : 'Сеть доступна';
+    }
+    function updateOnlineStatus() {
+      renderNetworkStatus();
+      scheduleSync();
+    }
+    syncNow.addEventListener('click', () => {
+      if (!navigator.onLine) {
+        showToast('warning', '⏳', 'Нет сети. Сохранённые отметки отправятся после восстановления связи.');
+        return;
+      }
+      if (isSyncing) {
+        showToast('warning', '⏳', 'Отметки сохранены на телефоне. Ждём подтверждения сервера.');
+        return;
+      }
+      if (getOfflineQueue().length) {
+        clearTimeout(retryTimer);
+        retryTimer = null;
+        syncOfflineQueue();
+        return;
+      }
+      showToast('success', '✓', 'Нет отметок, ожидающих отправки.');
+    });
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) updateOnlineStatus();
+    });
+    window.addEventListener('storage', event => {
+      if (station && event.key?.startsWith(queueKey() + ':')) { renderStation(); scheduleSync(); }
+      if (station && event.key === prefix + 'last-sync:' + station) renderLastSync();
+    });
+
+    document.querySelectorAll('.form-input, .form-select').forEach(el => {
+      el.addEventListener('input', function() {
+        this.classList.remove('has-error');
+        const err = this.closest('.form-group') ? this.closest('.form-group').querySelector('.field-error') : null;
+        if (err) err.style.display = 'none';
+      });
+    });
+
+    smiInput.addEventListener('input', function() {
+      smiList.innerHTML = '';
+      const val = this.value.trim().toLowerCase();
+      if (val.length >= 2) {
+        SMI_DATA.forEach(item => {
+          const isMatch = item.name.toLowerCase().includes(val) || item.aliases.some(alias => alias.includes(val));
+          if (isMatch) {
+            const opt = document.createElement('option');
+            opt.value = item.name;
+            smiList.appendChild(opt);
+          }
+        });
+      }
+    });
+    
+    document.getElementById('editSmiInput').addEventListener('input', function() {
+      const list = document.getElementById('editSmiList');
+      list.innerHTML = '';
+      const val = this.value.trim().toLowerCase();
+      if (val.length >= 2) {
+        SMI_DATA.forEach(item => {
+          if (item.name.toLowerCase().includes(val) || item.aliases.some(a => a.includes(val))) {
+            const opt = document.createElement('option'); opt.value = item.name; list.appendChild(opt);
+          }
+        });
+      }
+    });
+
+    function showError(inputEl, message) {
+      inputEl.classList.add('has-error');
+      let group = inputEl.closest('.form-group');
+      if (group) {
+        let errorEl = group.querySelector('.field-error');
+        if (errorEl) { errorEl.textContent = message; errorEl.style.display = 'block'; }
+      }
+    }
+
+    function clearAllErrors() {
+      document.querySelectorAll('.has-error').forEach(el => el.classList.remove('has-error'));
+      document.querySelectorAll('.field-error').forEach(el => el.style.display = 'none');
+    }
+
+    function validateUikDistrict(district, uikStr) {
+      return Boolean(district) && territoryFor(uikStr) === district && uikStr === station;
+    }
+
+    function updateTechSupportLink() {
+      const district = districtSelect.value || "район не выбран";
+      const uik = uikInput.value ? `УИК №${uikInput.value}` : "УИК не указан";
+      const message = encodeURIComponent(`Здравствуйте! Помощь по мониторингу: ${district}, ${uik}.`);
+      techSupportLink.href = `https://wa.me/77786206833?text=${message}`;
+    }
+
+    const CLOSES_AT = Date.parse('2026-11-29T20:00:00+05:00');
+    function updateCountdown() {
+      const seconds = Math.ceil((CLOSES_AT - Date.now()) / 1000);
+      if (seconds > 24 * 3600) countdownTimer.textContent = '29 ноября 2026';
+      else if (seconds <= 0) countdownTimer.textContent = '20:00 · отметки доступны';
+      else countdownTimer.textContent = 'До 20:00 · ' + [
+        Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60
+      ].map(value => String(value).padStart(2, '0')).join(':');
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    let timeEdited = false;
+    timeInput.addEventListener('input', () => { timeEdited = true; });
+    setInterval(() => {
+      if (!timeEdited && document.activeElement !== timeInput) setCurrentTime();
+    }, 15000);
+
+    function setCurrentTime() {
+      timeInput.value = new Intl.DateTimeFormat('en-GB', {
+        timeZone:'Asia/Almaty', hour:'2-digit', minute:'2-digit', hourCycle:'h23'
+      }).format(new Date());
+      timeInput.classList.remove('has-error');
+      const err = timeInput.closest('.form-group').querySelector('.field-error');
+      if (err) err.style.display = 'none';
+    }
+    setCurrentTime();
+
+    function setArrivalMode() {
+      timeEdited = false;
+      setCurrentTime();
+      clearAllErrors();
+      tabArrive.classList.add('active'); tabLeave.classList.remove('active');
+      actionField.value = 'ПРИШЕЛ'; submitBtn.className = 'submit-btn arrive'; btnText.textContent = 'Зафиксировать ПРИХОД';
+      noteGroup.classList.add('hidden-field'); noteInput.value = '';
+      orgGroup.classList.remove('hidden-field');
+      observerInput.classList.remove('hidden-field'); presentObserverSelect.classList.add('hidden-field');
+      translatorGroup.classList.add('hidden-field');
+      
+      if (organizationSelect.value === 'СМИ') {
+        smiDetailsGroup.classList.remove('hidden-field'); statusGroup.classList.add('hidden-field');
+      } else if (organizationSelect.value === 'Наблюдатели от иностранных государств') {
+        orgDetailsGroup.classList.remove('hidden-field'); statusGroup.classList.add('hidden-field');
+        translatorGroup.classList.remove('hidden-field');
+      } else if (organizationSelect.value === 'Наблюдатели международных организаций') {
+        intlOrgDetailsGroup.classList.remove('hidden-field'); statusGroup.classList.add('hidden-field');
+        translatorGroup.classList.remove('hidden-field');
+      } else {
+        statusGroup.classList.remove('hidden-field');
+      }
+    }
+
+    function setDepartureMode() {
+      timeEdited = false;
+      setCurrentTime();
+      clearAllErrors();
+      tabLeave.classList.add('active'); tabArrive.classList.remove('active');
+      actionField.value = 'УШЕЛ'; submitBtn.className = 'submit-btn leave'; btnText.textContent = 'Зафиксировать УХОД';
+      noteGroup.classList.remove('hidden-field'); orgGroup.classList.add('hidden-field');
+      orgDetailsGroup.classList.add('hidden-field'); 
+      intlOrgDetailsGroup.classList.add('hidden-field');
+      translatorGroup.classList.add('hidden-field');
+      smiDetailsGroup.classList.add('hidden-field'); statusGroup.classList.add('hidden-field');
+      observerInput.classList.add('hidden-field'); presentObserverSelect.classList.remove('hidden-field');
+      
+      renderStation();
+      refreshStation();
+    }
+
+    tabArrive.addEventListener('click', setArrivalMode); tabLeave.addEventListener('click', setDepartureMode);
+
+    organizationSelect.addEventListener('change', () => {
+      const val = organizationSelect.value;
+      smiDetailsGroup.classList.add('hidden-field');
+      orgDetailsGroup.classList.add('hidden-field');
+      intlOrgDetailsGroup.classList.add('hidden-field');
+      translatorGroup.classList.add('hidden-field');
+      statusGroup.classList.add('hidden-field');
+
+      if (val === 'СМИ') {
+        smiDetailsGroup.classList.remove('hidden-field');
+      } else if (val === 'Наблюдатели от иностранных государств') {
+        orgDetailsGroup.classList.remove('hidden-field');
+        translatorGroup.classList.remove('hidden-field');
+      } else if (val === 'Наблюдатели международных организаций') {
+        intlOrgDetailsGroup.classList.remove('hidden-field');
+        translatorGroup.classList.remove('hidden-field');
+      } else {
+        statusGroup.classList.remove('hidden-field');
+      }
+      
+      [smiInput, orgDetailsInput, intlOrgSelect, statusSelect].forEach(el => {
+         const err = el.closest('.form-group') ? el.closest('.form-group').querySelector('.field-error') : null;
+         if(err) err.style.display = 'none';
+         el.classList.remove('has-error');
+      });
+      organizationSelect.classList.remove('has-error');
+      const orgErr = organizationSelect.closest('.form-group') ? organizationSelect.closest('.form-group').querySelector('.field-error') : null;
+      if (orgErr) orgErr.style.display = 'none';
+    });
+    
+    document.getElementById('editOrganizationSelect').addEventListener('change', (e) => {
+      const val = e.target.value;
+      const orgDetails = document.getElementById('editOrgDetailsGroup');
+      const intlDetails = document.getElementById('editIntlOrgDetailsGroup');
+      const translatorDetails = document.getElementById('editTranslatorGroup');
+      const smiDetails = document.getElementById('editSmiDetailsGroup');
+      const statusGroup = document.getElementById('editStatusGroup');
+      
+      smiDetails.classList.add('hidden-field');
+      orgDetails.classList.add('hidden-field');
+      intlDetails.classList.add('hidden-field');
+      translatorDetails.classList.add('hidden-field');
+      statusGroup.classList.add('hidden-field');
+
+      if (val === 'СМИ') { 
+        smiDetails.classList.remove('hidden-field'); 
+      } 
+      else if (val === 'Наблюдатели от иностранных государств') { 
+        orgDetails.classList.remove('hidden-field'); 
+        translatorDetails.classList.remove('hidden-field');
+      } 
+      else if (val === 'Наблюдатели международных организаций') { 
+        intlDetails.classList.remove('hidden-field'); 
+        translatorDetails.classList.remove('hidden-field');
+      } 
+      else { 
+        statusGroup.classList.remove('hidden-field'); 
+      }
+    });
+
+    document.getElementById('btnShareReport').addEventListener('click', () => {
+      const district = districtSelect.value; const uik = uikInput.value.trim();
+      const present = document.getElementById('statPresent').textContent;
+      const left = document.getElementById('statLeft').textContent;
+      const total = document.getElementById('statTotal').textContent;
+      const reportText = `📊 Сводка по участку:\n📍 ${district}, УИК №${uik}\n🟢 На участке: ${present}\n🔴 Ушло: ${left}\n📋 Всего: ${total}`;
+      navigator.clipboard.writeText(reportText).then(() => { showToast('success', '✓', 'Отчет скопирован в буфер обмена!'); }).catch(() => { showToast('error', '✕', 'Не удалось скопировать отчет'); });
+    });
+
+    const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const savedTheme = localStorage.getItem('theme') || (userPrefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
+    });
+
+    let toastTimeout;
+    function showToast(type, icon, message) { clearTimeout(toastTimeout); toast.className = `toast ${type} show`; toastIcon.textContent = icon; toastMessage.textContent = message; toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 3500); }
+    function parseFullOrgToShort(fullOrg) {
+      if (fullOrg.startsWith("СМИ (")) return { short: "СМИ", details1: fullOrg.slice(5, -1), details2: "" };
+      if (fullOrg.startsWith("Наблюдатели от иностранных государств (")) {
+        let inner = fullOrg.slice(39, -1);
+        let parts = inner.split(" | ");
+        return { short: "Наблюдатели от иностранных государств", details1: parts[0] || "", details2: parts[1] || "" };
+      }
+      if (fullOrg.startsWith("Наблюдатели международных организаций (")) {
+        let inner = fullOrg.slice(39, -1);
+        let parts = inner.split(" | ");
+        return { short: "Наблюдатели международных организаций", details1: parts[0] || "", details2: parts[1] || "" };
+      }
+      
+      if (fullOrg === "ОО «Политическая партия «Әділет»") return { short: "Партия «Әділет»", details1: "", details2: "" };
+      if (fullOrg === "РОО «Общенациональная социал-демократическая партия»") return { short: "Общенациональная социал-демократическая партия", details1: "", details2: "" };
+      if (fullOrg === "ОО «Казахстанская партия зеленых «Байтақ»") return { short: "Казахстанская партия зелёных «Байтақ»", details1: "", details2: "" };
+      if (fullOrg === "ОО «Народная партия Казахстана»") return { short: "Народная партия Казахстана", details1: "", details2: "" };
+      if (fullOrg === "РОО «Партия «Ауыл»") return { short: "Партия «Ауыл»", details1: "", details2: "" };
+      if (fullOrg === "ОО «Демократическая Партия Казахстана  «Ак жол»") return { short: "Демократическая Партия Казахстана «Ак Жол»", details1: "", details2: "" };
+      if (fullOrg === "ОО «Партия «Respublica»") return { short: "Партия «Respublica»", details1: "", details2: "" };
+
+      for (let key in orgFullNameMap) { if (orgFullNameMap[key] === fullOrg) return { short: key, details1: "", details2: "" }; }
+      return { short: fullOrg, details1: "", details2: "" };
+    }
+
+    btnJournal.addEventListener('click', async () => {
+      const district = districtSelect.value; const uik = uikInput.value.trim();
+      if (!district || !uik) { showToast('error', '⚠️', 'Сначала укажите Район и УИК!'); return; }
+      
+      document.getElementById('journalModal').classList.add('show');
+      document.getElementById('journalLoader').style.display = 'block';
+      document.getElementById('journalList').innerHTML = '';
+      
+      try {
+        const fresh = await refreshStation();
+        const records = renderStation().slice().reverse();
+        document.getElementById('journalLoader').style.display = 'none';
+        if (!fresh && !knownRecords && !records.length) {
+          document.getElementById('journalList').textContent = 'Журнал недоступен. Повторите после восстановления связи.';
+          return;
+        }
+        if (!fresh) document.getElementById('journalList').textContent = 'Показаны данные на этом устройстве.';
+        if (records.length) {
+          records.forEach(item => {
+            const div = document.createElement('div'); div.className = 'journal-item';
+            
+            const noteHtml = item.note ? `<div class="journal-item-note">✍️ <b>Примечание:</b> ${escapeHtml(item.note)}</div>` : '';
+
+            div.innerHTML = `
+              <div class="journal-item-title">${escapeHtml(item.observer)}</div>
+              <div class="journal-item-org">${escapeHtml(item.org)}</div>
+              <div class="journal-item-time">
+                <span>Приход: <b style="color: var(--color-arrive);">${escapeHtml(extractTime(item.arrive) || '--:--')}</b></span>
+                <span>Уход: <b style="color: var(--color-leave);">${escapeHtml(extractTime(item.leave) || 'на участке')}</b></span>
+              </div>
+              ${noteHtml}
+              <div class="journal-actions">
+                <button type="button" class="btn-edit" data-id="${escapeHtml(item.id)}">✏️ Исправить</button>
+                <button type="button" class="btn-delete" data-id="${escapeHtml(item.id)}">🗑️ Удалить</button>
+              </div>
+            `;
+            div.querySelector('.btn-edit').addEventListener('click', () => openEditModal(item));
+            div.querySelector('.btn-delete').addEventListener('click', () => deleteObserverRecord(item));
+            document.getElementById('journalList').appendChild(div);
+          });
+        } else { document.getElementById('journalList').innerHTML = '<div class="center-message">Записей пока нет</div>'; }
+      } catch(e) { document.getElementById('journalLoader').style.display = 'none'; document.getElementById('journalList').innerHTML = '<div class="center-message" style="color:var(--color-leave)">Ошибка сети</div>'; }
+    });
+
+    function deleteObserverRecord(item) {
+      if (confirm('Удалить запись «' + item.observer + '»?') &&
+          queueMark({action:'DELETE', uid:generateUID(), id:item.id})) btnJournal.click();
+    }
+
+    function openEditModal(item) {
+      document.getElementById('editRecordId').value = item.id;
+      document.getElementById('editObserverInput').value = item.observer;
+      document.getElementById('editArriveInput').value = extractTime(item.arrive);
+      document.getElementById('editLeaveInput').value = extractTime(item.leave);
+      document.getElementById('editNoteInput').value = item.note;
+      
+      const parsedOrg = parseFullOrgToShort(item.org);
+      const sel = document.getElementById('editOrganizationSelect');
+      sel.value = parsedOrg.short;
+      
+      const orgDetails = document.getElementById('editOrgDetailsGroup');
+      const intlDetails = document.getElementById('editIntlOrgDetailsGroup');
+      const translatorDetails = document.getElementById('editTranslatorGroup');
+      const smiDetails = document.getElementById('editSmiDetailsGroup');
+      const statusGroup = document.getElementById('editStatusGroup');
+      
+      document.getElementById('editOrgDetailsInput').value = '';
+      document.getElementById('editIntlOrgSelect').value = '';
+      document.getElementById('editTranslatorInput').value = '';
+      document.getElementById('editSmiInput').value = '';
+
+      smiDetails.classList.add('hidden-field');
+      orgDetails.classList.add('hidden-field');
+      intlDetails.classList.add('hidden-field');
+      translatorDetails.classList.add('hidden-field');
+      statusGroup.classList.add('hidden-field');
+
+      if (parsedOrg.short === 'СМИ') {
+        smiDetails.classList.remove('hidden-field');
+        document.getElementById('editSmiInput').value = parsedOrg.details1;
+      } else if (parsedOrg.short === 'Наблюдатели от иностранных государств') {
+        orgDetails.classList.remove('hidden-field');
+        document.getElementById('editOrgDetailsInput').value = parsedOrg.details1;
+        translatorDetails.classList.remove('hidden-field');
+        document.getElementById('editTranslatorInput').value = parsedOrg.details2;
+      } else if (parsedOrg.short === 'Наблюдатели международных организаций') {
+        intlDetails.classList.remove('hidden-field');
+        document.getElementById('editIntlOrgSelect').value = parsedOrg.details1;
+        translatorDetails.classList.remove('hidden-field');
+        document.getElementById('editTranslatorInput').value = parsedOrg.details2;
+      } else {
+        statusGroup.classList.remove('hidden-field');
+        document.getElementById('editStatusSelect').value = item.obsStatus;
+      }
+      
+      document.getElementById('editModal').classList.add('show');
+    }
+
+    document.getElementById('editForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      let shortOrg = document.getElementById('editOrganizationSelect').value;
+      let finalOrg = orgFullNameMap[shortOrg] ? orgFullNameMap[shortOrg] : shortOrg;
+      let finalStatus = '';
+
+      if (shortOrg === 'СМИ') {
+        let typedSmi = document.getElementById('editSmiInput').value.trim(); const lowerTyped = typedSmi.toLowerCase();
+        SMI_DATA.forEach(item => { if (item.aliases.some(a => a === lowerTyped || lowerTyped.includes(a))) { typedSmi = item.name; } });
+        finalOrg = `${finalOrg} (${typedSmi})`; finalStatus = 'Представитель СМИ';
+      } 
+      else if (shortOrg === 'Наблюдатели от иностранных государств') {
+        let trans = document.getElementById('editTranslatorInput').value.trim();
+        finalOrg = `${finalOrg} (${document.getElementById('editOrgDetailsInput').value.trim()}${trans ? ' | ' + trans : ''})`; 
+        finalStatus = trans !== "" ? 'Переводчик' : 'Иностранный наблюдатель';
+      }
+      else if (shortOrg === 'Наблюдатели международных организаций') {
+        let trans = document.getElementById('editTranslatorInput').value.trim();
+        finalOrg = `${finalOrg} (${document.getElementById('editIntlOrgSelect').value}${trans ? ' | ' + trans : ''})`; 
+        finalStatus = trans !== "" ? 'Переводчик' : 'Иностранный наблюдатель';
+      } else {
+        finalStatus = document.getElementById('editStatusSelect').value;
+      }
+
+      const event = {
+        action:'EDIT', uid:generateUID(), id:document.getElementById('editRecordId').value,
+        observer:document.getElementById('editObserverInput').value.trim(), organization:finalOrg,
+        status:finalStatus, arrive:document.getElementById('editArriveInput').value,
+        leave:document.getElementById('editLeaveInput').value, note:document.getElementById('editNoteInput').value.trim()
+      };
+      if (!validMark(event) || !queueMark(event)) return;
+      document.getElementById('editModal').classList.remove('show');
+      btnJournal.click();
+    });
+
+    function validMark(event) {
+      const valid = event.note.length <= 500 &&
+        (event.action === 'УШЕЛ' || (event.observer.length > 0 && event.observer.length <= 160 &&
+         event.organization.length > 0 && event.organization.length <= 380 && event.status)) &&
+        (event.time || event.arrive);
+      if (!valid) showToast('error', '✕', 'Проверьте время, ФИО, организацию, статус и длину примечания.');
+      return valid;
+    }
+
+    trackingForm.addEventListener('submit', async (e) => {
+      e.preventDefault(); document.activeElement.blur(); clearAllErrors();
+      if (!timeEdited) setCurrentTime();
+      let isValid = true; let firstErrorEl = null;
+
+      function checkField(fieldEl, msg) {
+        if (fieldEl.closest('.form-group').classList.contains('hidden-field') || fieldEl.classList.contains('hidden-field')) { return; }
+        if (!fieldEl.value || !fieldEl.value.trim()) { showError(fieldEl, msg); if (!firstErrorEl) firstErrorEl = fieldEl; isValid = false; }
+      }
+
+      checkField(districtSelect, 'Пожалуйста, выберите район'); checkField(uikInput, 'Пожалуйста, укажите номер участка'); checkField(timeInput, 'Пожалуйста, укажите время');
+
+      if (districtSelect.value && uikInput.value.trim()) {
+        if (!validateUikDistrict(districtSelect.value, uikInput.value.trim())) {
+          showError(uikInput, `Участок №${uikInput.value.trim()} не относится к "${districtSelect.value}"`);
+          isValid = false;
+          if (!firstErrorEl) firstErrorEl = uikInput;
+        }
+      }
+
+      if (actionField.value === 'ПРИШЕЛ') {
+        checkField(observerInput, 'Пожалуйста, укажите ФИО наблюдателя'); checkField(organizationSelect, 'Пожалуйста, выберите организацию');
+        
+        if (organizationSelect.value === 'СМИ') { 
+          checkField(smiInput, 'Пожалуйста, укажите издание'); 
+        } else if (organizationSelect.value === 'Наблюдатели от иностранных государств') { 
+          checkField(orgDetailsInput, 'Пожалуйста, укажите страну'); 
+        } else if (organizationSelect.value === 'Наблюдатели международных организаций') { 
+          checkField(intlOrgSelect, 'Пожалуйста, выберите организацию'); 
+        }
+        
+        if (organizationSelect.value !== 'СМИ' && organizationSelect.value !== 'Наблюдатели от иностранных государств' && organizationSelect.value !== 'Наблюдатели международных организаций') { 
+          checkField(statusSelect, 'Пожалуйста, выберите статус'); 
+        }
+      } else { 
+        checkField(presentObserverSelect, 'Пожалуйста, выберите уходящего наблюдателя из списка'); 
+      }
+
+      if (!isValid) { firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+
+      let finalObserver = (actionField.value === 'УШЕЛ') ? presentObserverSelect.value : observerInput.value.trim();
+      let finalOrg = ''; let finalStatus = '';
+      
+      if (actionField.value === 'ПРИШЕЛ') {
+        let shortOrgName = organizationSelect.value;
+        finalOrg = orgFullNameMap[shortOrgName] ? orgFullNameMap[shortOrgName] : shortOrgName;
+        
+        if (shortOrgName === 'СМИ' && smiInput.value.trim()) {
+          let typedSmi = smiInput.value.trim(); const lowerTyped = typedSmi.toLowerCase();
+          SMI_DATA.forEach(item => { if (item.aliases.some(a => a === lowerTyped || lowerTyped.includes(a))) { typedSmi = item.name; } });
+          finalOrg = `${finalOrg} (${typedSmi})`;
+        } 
+        else if (shortOrgName === 'Наблюдатели от иностранных государств' && orgDetailsInput.value.trim()) {
+          let trans = translatorInput.value.trim();
+          finalOrg = `${finalOrg} (${orgDetailsInput.value.trim()}${trans ? ' | ' + trans : ''})`;
+        }
+        else if (shortOrgName === 'Наблюдатели международных организаций' && intlOrgSelect.value) {
+          let trans = translatorInput.value.trim();
+          finalOrg = `${finalOrg} (${intlOrgSelect.value}${trans ? ' | ' + trans : ''})`;
+        }
+        
+        if (shortOrgName === 'СМИ') { finalStatus = 'Представитель СМИ'; } 
+        else if (shortOrgName === 'Наблюдатели от иностранных государств' || shortOrgName === 'Наблюдатели международных организаций') { 
+          let trans = translatorInput.value.trim();
+          finalStatus = trans !== "" ? 'Переводчик' : 'Иностранный наблюдатель'; 
+        }
+        else { finalStatus = statusSelect.value; }
+      }
+
+      const uid = generateUID();
+      const event = {
+        action:actionField.value, uid, id:actionField.value === 'ПРИШЕЛ' ? generateUID() : finalObserver,
+        observer:finalObserver, organization:finalOrg, status:finalStatus, time:timeInput.value,
+        note:noteInput.value.trim()
+      };
+      if (!validMark(event) || !queueMark(event)) return;
+      observerInput.value = '';
+      noteInput.value = '';
+      timeEdited = false;
+      setCurrentTime();
+      if (event.action === 'ПРИШЕЛ') {
+        organizationSelect.selectedIndex = 0;
+        organizationSelect.dispatchEvent(new Event('change'));
+        statusSelect.selectedIndex = 0;
+        orgDetailsInput.value = smiInput.value = translatorInput.value = '';
+        intlOrgSelect.selectedIndex = 0;
+        observerInput.focus();
+      }
+    });
+
+    document.getElementById('demoStationHint').hidden = !DEMO;
+    const savedSession = JSON.parse(sessionStorage.getItem(prefix + 'session') || 'null');
+    if (savedSession && territoryFor(savedSession.uik)) activateStation(savedSession.uik, savedSession.token);
+    updateOnlineStatus();
+  </script>
+</body>
+</html>
