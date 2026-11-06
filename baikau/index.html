@@ -449,7 +449,7 @@
         </div>
         <div class="header-tools">
           <div class="header-status">
-            <span class="app-version" aria-label="Версия приложения 1.3">V1.3</span>
+            <span class="app-version" aria-label="Версия приложения 1.4">V1.4</span>
             <span id="networkIndicator" class="network-indicator" role="img" aria-label="Статус соединения">
               <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <defs>
@@ -922,6 +922,7 @@ async function callApi(action, payload) {
     const queueWaiting = 'В очереди на отправку';
     const queueOffline = 'Данные отправятся автоматически, когда появится связь.';
     let queueMessage = queueWaiting;
+    let queueRetrying = false;
 
     function networkIsOffline() {
       return !navigator.onLine || connection?.type === 'none';
@@ -929,10 +930,13 @@ async function callApi(action, payload) {
     function renderQueueStatus() {
       const offline = networkIsOffline();
       queueStatus.textContent = offline ? queueWaiting : queueMessage;
-      queueHelp.textContent = offline ? queueOffline : 'Повторно отправлять не нужно.';
+      queueHelp.textContent = offline ? queueOffline : queueRetrying
+        ? 'Отметки в очереди. Сайт повторит отправку автоматически.'
+        : 'Повторно отправлять не нужно.';
     }
-    function setQueueMessage(message) {
+    function setQueueMessage(message, retrying = false) {
       queueMessage = message;
+      queueRetrying = retrying;
       renderQueueStatus();
     }
     const lastSync = document.getElementById('lastSync');
@@ -1146,10 +1150,10 @@ async function callApi(action, payload) {
           nextDelay = 500;
         }
       } catch (error) {
-        serverUnavailable = !error.code;
-        renderNetworkStatus();
         blocked = error.code === 'AUTH' || error.code === 'INVALID';
-        setQueueMessage(blocked ? error.message : queueWaiting);
+        serverUnavailable = !blocked;
+        setQueueMessage(error.message || queueWaiting, !blocked);
+        renderNetworkStatus();
         if (error.code === 'AUTH') { token = ''; showLogin(error.message); }
         nextDelay = retryDelay + Math.random() * retryDelay;
         retryDelay = Math.min(retryDelay * 2, 30000);
@@ -1168,7 +1172,6 @@ async function callApi(action, payload) {
         const key = queueKey() + ':' + lastQueuedAt + ':' + event.uid;
         localStorage.setItem(key, JSON.stringify({...event, uik:station}));
         renderStation();
-        if (!isSyncing) setQueueMessage(queueWaiting);
         scheduleSync();
         showToast('warning', '⏳', networkIsOffline() ? queueOffline : 'Отметка в очереди на отправку.');
         return true;
