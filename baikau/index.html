@@ -2,9 +2,56 @@
 <html lang="ru" data-observers-mode="live">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0f172a">
   <title>УИК · Выборы депутатов маслихатов</title>
+  <script>
+    (function () {
+      var preference = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+      var toolbar = document.querySelector('meta[name="theme-color"]');
+      var storageKey = 'maslikhat:station-theme';
+      var mode = 'system';
+      var button;
+      try {
+        var saved = localStorage.getItem(storageKey);
+        if (saved === 'light' || saved === 'dark') mode = saved;
+      } catch (_) {}
+
+      function systemTheme() {
+        return preference && preference.matches ? 'dark' : 'light';
+      }
+
+      function applyTheme() {
+        var theme = mode === 'system' ? systemTheme() : mode;
+        document.documentElement.setAttribute('data-theme', theme);
+        toolbar.setAttribute('content', theme === 'dark' ? '#0f172a' : '#e2e8f0');
+        if (!button) return;
+        var label = 'Тема: ' + {system:'системная', light:'светлая', dark:'тёмная'}[mode];
+        button.textContent = {system:'◐', light:'☀', dark:'☾'}[mode];
+        button.title = label + '. Нажмите, чтобы переключить.';
+        button.setAttribute('aria-label', label + '. Переключить тему');
+        button.setAttribute('data-mode', mode);
+      }
+
+      applyTheme();
+      if (preference && preference.addEventListener) preference.addEventListener('change', applyTheme);
+      else if (preference && preference.addListener) preference.addListener(applyTheme);
+      document.addEventListener('DOMContentLoaded', function () {
+        button = document.getElementById('themeToggle');
+        applyTheme();
+        button.addEventListener('click', function () {
+          var preferred = systemTheme();
+          if (mode === 'system') mode = preferred === 'dark' ? 'light' : 'dark';
+          else mode = mode === preferred ? 'system' : preferred;
+          try {
+            if (mode === 'system') localStorage.removeItem(storageKey);
+            else localStorage.setItem(storageKey, mode);
+          } catch (_) {}
+          applyTheme();
+        });
+      });
+    })();
+  </script>
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23064e3b'/%3E%3Cstop offset='100%25' stop-color='%230f172a'/%3E%3C/linearGradient%3E%3ClinearGradient id='accent' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2334d399'/%3E%3Cstop offset='100%25' stop-color='%2310b981'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='115' fill='url(%23bg)'/%3E%3Crect x='110' y='90' width='292' height='332' rx='28' fill='%231e293b' stroke='%23334155' stroke-width='8'/%3E%3Crect x='180' y='65' width='152' height='45' rx='12' fill='%2334d399'/%3E%3Crect x='155' y='160' width='202' height='16' rx='8' fill='%23f8fafc' opacity='0.9'/%3E%3Crect x='155' y='205' width='150' height='16' rx='8' fill='%2394a3b8' opacity='0.7'/%3E%3Crect x='155' y='250' width='180' height='16' rx='8' fill='%2394a3b8' opacity='0.7'/%3E%3Ccircle cx='360' cy='350' r='58' fill='url(%23accent)'/%3E%3Cpath d='M335 350 l18 18 l34 -36' fill='none' stroke='%23ffffff' stroke-width='14' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
@@ -12,6 +59,7 @@
 
   <style>
     :root {
+      color-scheme: dark;
       --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       --bg-main: #0f172a; --bg-card: #1e293b; --bg-card-subtle: #334155; --bg-input: #0f172a;
       --border-color: rgba(255, 255, 255, 0.1); --border-focus: #38bdf8;
@@ -21,6 +69,7 @@
       --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-full: 9999px;
     }
     [data-theme="light"] {
+      color-scheme: light;
       --bg-main: #e2e8f0;
       --bg-card: #ffffff; 
       --bg-card-subtle: #cbd5e1; 
@@ -41,24 +90,42 @@
       -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; 
     }
     .app-container { width: 100%; max-width: 480px; padding: 12px 16px; display: flex; flex-direction: column; gap: 14px; }
-    .app-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 4px 2px; }
-    .header-left { display: flex; flex-direction: column; gap: 6px; flex: 1; }
-    .header-left h1 { font-size: 1.2rem; font-weight: 700; line-height: 1.2; }
+    .app-header { display: grid; gap: 6px; padding: 0 2px 4px; }
+    .header-main { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .header-copy { flex: 1; min-width: 0; }
+    .header-title { font-size: 1rem; font-weight: 700; line-height: 1.2; }
+    .header-subtitle { margin-top: 3px; font-size: 0.75rem; line-height: 1.25; color: var(--text-muted); }
+    .header-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+    .header-status { display: flex; align-items: center; gap: 2px; margin-right: 50px; }
+    .header-buttons { display: flex; gap: 10px; }
     .user-profile-card { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--bg-card); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: var(--radius-md); cursor: pointer; max-width: 100%; }
     .user-profile-card:hover { border-color: var(--color-leave); }
-    .user-info-text { display: flex; flex-direction: column; min-width: 0; }
+    .user-info-text { display: flex; flex-direction: column; min-width: 0; gap: 2px; }
     .user-uik-line { font-size: 0.9rem; color: var(--color-primary); font-weight: 700; }
-    .header-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
-    .header-actions-row { display: flex; align-items: center; gap: 6px; }
-    .header-timer { font-variant-numeric: tabular-nums; font-size: 0.72rem; font-weight: 600; color: var(--color-warning); background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 8px; border-radius: var(--radius-full); }
-    .theme-toggle { background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); width: 32px; height: 32px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.95rem; }
-    .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 8px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-full); font-size: 0.72rem; font-weight: 500; color: var(--text-muted); }
-    .status-dot { width: 7px; height: 7px; border-radius: 50%; background-color: var(--color-arrive); box-shadow: 0 0 8px var(--color-arrive); }
-    .status-dot.offline { background-color: var(--color-leave); box-shadow: 0 0 8px var(--color-leave); }
-    .status-dot.slow { background-color: var(--color-warning); box-shadow: none; }
-    .sync-card { display: grid; gap: 8px; }
-    #syncNow { min-height: 44px; border: 1px solid var(--border-color); color: var(--text-main); }
-    
+    .last-sync { font-size: 0.72rem; color: var(--text-muted); }
+    .app-version { font-size: 0.73rem; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+    .sync-button, .theme-toggle { display: flex; align-items: center; justify-content: center; color: var(--color-primary); width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; }
+    .sync-button:hover, .sync-button:focus-visible,
+    .theme-toggle:hover, .theme-toggle:focus-visible { border-color: var(--color-primary); }
+    .theme-toggle { color: var(--text-main); font-size: 1.1rem; line-height: 1; }
+    .sync-button svg, .network-indicator svg { width: 20px; height: 20px; }
+    .sync-button { position: relative; }
+    .sync-count {
+      position: absolute; top: -5px; right: -5px; min-width: 17px; padding: 0 3px;
+      border: 1px solid var(--bg-card); border-radius: var(--radius-full);
+      background: #b91c1c; color: #fff; font-size: 10px; font-weight: 700; line-height: 15px;
+      text-align: center; pointer-events: none;
+    }
+    .sync-button[aria-busy="true"] { color: var(--color-arrive); }
+    .sync-button[aria-busy="true"] svg { animation: sync-spin 1s linear infinite; }
+    @keyframes sync-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .sync-button[aria-busy="true"] svg { animation: none; }
+    }
+    .network-indicator { display: inline-flex; width: 40px; height: 22px; align-items: center; justify-content: center; color: var(--color-primary); }
+    .network-indicator[data-state="offline"] { color: var(--color-leave); }
+    .network-indicator[data-state="slow"] { color: var(--color-warning); }
+
     .segmented-control { display: grid; grid-template-columns: 1fr 1fr; background: var(--bg-card); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--border-color); }
     .segment-btn { 
       padding: 12px 16px; border: none; background: transparent; color: var(--text-muted); 
@@ -167,6 +234,12 @@
     .toast.error { border-left: 4px solid var(--color-leave); }
     .toast.warning { border-left: 4px solid var(--color-warning); }
     .toast.success { border-left: 4px solid var(--color-arrive); }
+    .journal-count-row {
+      margin: 8px 0 10px; padding: 8px 4px; border-top: 1px solid var(--border-color);
+      color: var(--text-main); font-size: 0.9rem; font-weight: 600;
+    }
+    #statRecords { color: #facc15; }
+    [data-theme="light"] #statRecords { color: #794c00; }
     .hidden-field { display: none !important; }
 
     .full-screen-modal { position: fixed; top: 0; left: 50%; bottom: 0; width: 100%; max-width: 480px; transform: translate(-50%, 100%); background: var(--bg-main); z-index: 10005; display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); overflow-y: auto; padding: 16px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
@@ -229,10 +302,11 @@
     <div id="journalStatsCard" style="display:none; margin-bottom:15px; padding:12px; background:var(--bg-card-subtle); border-radius:var(--radius-md); border:1px solid var(--border-color); text-align:center;">
       <div style="font-size:0.95rem; font-weight:600; color:var(--text-main); margin-bottom:10px;">
         📊 УИК №<span id="statUikNum"></span>:<br>
-        На участке: <b style="color:var(--color-arrive);" id="statPresent">0</b>. 
-        Ушло: <b style="color:var(--color-leave);" id="statLeft">0</b>. 
-        Всего: <b style="color:var(--color-primary);" id="statTotal">0</b>.
+        На участке: <b style="color:var(--color-arrive);" id="statPresent">0</b> ·
+        Ушло: <b style="color:var(--color-leave);" id="statLeft">0</b> ·
+        Всего: <b style="color:var(--color-primary);" id="statTotal">0</b>
       </div>
+      <div class="journal-count-row">Количество записей: <b id="statRecords">0</b></div>
       <button type="button" id="btnShareReport" class="btn-share" style="margin-top:0;">📋 Скопировать отчет</button>
     </div>
     <div id="journalLoader" class="center-message">
@@ -371,26 +445,43 @@
 
   <div class="app-container">
     <header class="app-header">
-      <div class="header-left">
-        <h1>Мониторинг наблюдателей</h1>
-        <div style="font-size:.8rem;color:var(--text-dim)">Выборы депутатов маслихатов</div>
-        <div id="currentUserBadge" class="user-profile-card" title="Нажмите, чтобы сменить номер участка">
-          <div class="user-info-text">
-            <span class="user-uik-line">📍 Избирательный участок №<span id="currentUserUik">0</span></span>
+      <div class="header-main">
+        <div class="header-copy">
+          <h1 class="header-title">Мониторинг наблюдателей</h1>
+          <div class="header-subtitle">Выборы депутатов маслихатов</div>
+        </div>
+        <div class="header-tools">
+          <div class="header-status">
+            <span class="app-version" aria-label="Версия приложения 1.2">V1.2</span>
+            <span id="networkIndicator" class="network-indicator" role="img" aria-label="Статус соединения">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                  <g id="net-wifi"><path d="M2 8.5a16 16 0 0 1 20 0M5.5 12a10.5 10.5 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></g>
+                  <g id="net-cellular" fill="currentColor" stroke="none"><rect x="2" y="15" width="3.5" height="6" rx="0.8"/><rect x="7.5" y="11" width="3.5" height="10" rx="0.8"/><rect x="13" y="7" width="3.5" height="14" rx="0.8"/><rect x="18.5" y="3" width="3.5" height="18" rx="0.8"/></g>
+                  <g id="net-online"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18m0-18a14 14 0 0 0 0 18"/></g>
+                  <g id="net-offline"><path d="M2 8.5a16 16 0 0 1 20 0M5.5 12a10.5 10.5 0 0 1 13 0M9 15.5a5 5 0 0 1 6 0M3 3l18 18"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></g>
+                </defs>
+                <use id="networkGlyph" href="#net-online"/>
+              </svg>
+            </span>
           </div>
-          <span style="font-size:0.8rem; color:var(--text-dim);">Сменить ✕</span>
+          <div class="header-buttons">
+            <button type="button" id="syncNow" class="sync-button" title="Синхронизировать отметки" aria-label="Синхронизировать отметки">
+              <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 10a8 8 0 0 0-14-4L3 9m0-5v5h5m-4 5a8 8 0 0 0 14 4l3-3m0 5v-5h-5"/>
+              </svg>
+              <span id="syncCount" class="sync-count" hidden aria-hidden="true"></span>
+            </button>
+            <button type="button" id="themeToggle" class="theme-toggle" title="Переключить тему" aria-label="Переключить тему">◐</button>
+          </div>
         </div>
       </div>
-      
-      <div class="header-actions">
-        <div id="countdownTimer" class="header-timer" title="29 ноября 2026 года, 20:00 по местному времени">29 ноября 2026</div>
-        <div class="header-actions-row">
-          <div class="status-badge">
-            <span id="networkDot" class="status-dot"></span>
-            <span id="networkText">В сети</span>
-          </div>
-          <button id="themeToggle" class="theme-toggle" title="Переключить тему">🌙</button>
+      <div id="currentUserBadge" class="user-profile-card" title="Нажмите, чтобы сменить номер участка">
+        <div class="user-info-text">
+          <span class="user-uik-line">📍 Избирательный участок №<span id="currentUserUik">0</span></span>
+          <span id="lastSync" class="last-sync">Последняя синхронизация — ещё не было</span>
         </div>
+        <span style="font-size:0.8rem; color:var(--text-dim);">Сменить ✕</span>
       </div>
     </header>
 
@@ -404,16 +495,12 @@
       </button>
     </div>
 
-    <div class="form-card sync-card">
-      <div id="lastSync">Последняя синхронизация — ещё не было</div>
-      <button type="button" id="syncNow" class="segment-btn">Синхронизировать</button>
-    </div>
     <div id="offlineBanner" class="offline-banner hidden-field">
       <div style="display:flex; align-items:center; gap:8px;">
         <span style="font-size:1.2rem;">⚠️</span>
-        <span><b id="queueStatus" aria-live="polite">Ожидают подтверждения</b> (<b id="offlineCount">0</b>)</span>
+        <span><b id="queueStatus" aria-live="polite">В очереди на отправку</b> (<b id="offlineCount">0</b>).</span>
       </div>
-      <div style="font-size: 0.85rem;">Отметки сохранены на телефоне. Повторно вводить их не нужно.</div>
+      <div id="queueHelp" style="font-size: 0.85rem;">Повторно отправлять не нужно.</div>
     </div>
 
     <form id="trackingForm" class="form-card" autocomplete="off" novalidate>
@@ -679,16 +766,24 @@ async function callApi(action, payload) {
     throw new Error('Администратор ещё не настроил подключение.');
   }
   let response;
+  const controller = typeof AbortController === 'function' ? new AbortController() : null;
+  let timedOut = false;
+  const timeout = controller && setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, action === 'getDashboardData' ? 45000 : 18000);
   try {
     response = await fetch(APPS_SCRIPT_URL, {
       method:'POST', mode:'cors', credentials:'omit', cache:'no-store',
       headers:{'Content-Type':'text/plain;charset=UTF-8'},
       body:JSON.stringify({action, payload}),
-      signal:AbortSignal.timeout(action === 'getDashboardData' ? 45000 : 18000)
+      signal:controller ? controller.signal : undefined
     });
   } catch (error) {
-    if (error.name === 'TimeoutError') throw new Error('Сервер не ответил вовремя.');
+    if (timedOut) throw new Error('Сервер не ответил вовремя.');
     throw new Error('Нет связи с сервером. Повторите позже.');
+  } finally {
+    clearTimeout(timeout);
   }
   if (!response.ok || !response.headers.get('Content-Type')?.includes('application/json')) {
     throw new Error('Сервер недоступен. Сообщите администратору.');
@@ -789,7 +884,6 @@ async function callApi(action, payload) {
     const timeInput = document.getElementById('timeInput');
     const offlineBanner = document.getElementById('offlineBanner');
     const offlineCount = document.getElementById('offlineCount');
-    const countdownTimer = document.getElementById('countdownTimer');
     const techSupportLink = document.getElementById('techSupportLink');
     const btnJournal = document.getElementById('btnJournal');
     
@@ -817,9 +911,9 @@ async function callApi(action, payload) {
     const noteGroup = document.getElementById('noteGroup');
     const noteInput = document.getElementById('noteInput');
     
-    const themeToggle = document.getElementById('themeToggle');
-    const networkDot = document.getElementById('networkDot');
-    const networkText = document.getElementById('networkText');
+    const networkIndicator = document.getElementById('networkIndicator');
+    const networkGlyph = document.getElementById('networkGlyph');
+    const connection = navigator.connection ?? navigator.mozConnection ?? navigator.webkitConnection;
     const toast = document.getElementById('toast');
     const toastIcon = document.getElementById('toastIcon');
     const toastMessage = document.getElementById('toastMessage');
@@ -827,8 +921,26 @@ async function callApi(action, payload) {
     const prefix = DEMO ? 'maslikhat-demo:' : 'maslikhat-live:';
     const authError = document.getElementById('stationAuthError');
     const queueStatus = document.getElementById('queueStatus');
+    const queueHelp = document.getElementById('queueHelp');
+    const queueWaiting = 'В очереди на отправку';
+    const queueOffline = 'Данные отправятся автоматически, когда появится связь.';
+    let queueMessage = queueWaiting;
+
+    function networkIsOffline() {
+      return !navigator.onLine || connection?.type === 'none';
+    }
+    function renderQueueStatus() {
+      const offline = networkIsOffline();
+      queueStatus.textContent = offline ? queueWaiting : queueMessage;
+      queueHelp.textContent = offline ? queueOffline : 'Повторно отправлять не нужно.';
+    }
+    function setQueueMessage(message) {
+      queueMessage = message;
+      renderQueueStatus();
+    }
     const lastSync = document.getElementById('lastSync');
     const syncNow = document.getElementById('syncNow');
+    const syncCount = document.getElementById('syncCount');
     const syncTimeFormat = new Intl.DateTimeFormat('ru-KZ', {
       timeZone:'Asia/Almaty', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
     });
@@ -842,6 +954,12 @@ async function callApi(action, payload) {
     let retryDelay = 2500;
     let isSyncing = false;
     let serverUnavailable = false;
+    let autofilledName = '';
+
+    function renderSyncActivity() {
+      const busy = isSyncing || snapshotRequest?.token === token;
+      syncNow.setAttribute('aria-busy', String(busy));
+    }
 
     function queueKey() { return prefix + 'queue:' + station; }
     function renderLastSync() {
@@ -864,19 +982,33 @@ async function callApi(action, payload) {
         }).filter(Boolean);
     }
     let lastQueuedAt = 0;
+
+    function stationRecords(queue = getOfflineQueue()) {
+      return replayEvents(queue, territoryFor(station), confirmedRecords);
+    }
+
     function renderStation() {
       const queue = getOfflineQueue();
       offlineCount.textContent = queue.length;
+      syncCount.textContent = queue.length;
+      syncCount.hidden = !queue.length;
+      const syncLabel = 'Синхронизировать отметки' + (queue.length ? ' · В очереди: ' + queue.length : '');
+      syncNow.setAttribute('aria-label', syncLabel);
+      syncNow.title = syncLabel;
       offlineBanner.classList.toggle('hidden-field', !queue.length);
-      const district = territoryFor(station);
-      const records = replayEvents(queue, district, confirmedRecords);
+      const records = stationRecords(queue);
       const present = records.filter(item => item.status === 'НА УЧАСТКЕ');
+      const observerName = item => String(item.observer ?? '').normalize('NFC').trim().replace(/\s+/g, ' ').toLowerCase();
+      const uniqueTotal = new Set(records.map(observerName)).size;
+      const uniquePresent = new Set(present.map(observerName)).size;
       document.getElementById('statUikNum').textContent = station;
       document.getElementById('journalStatsCard').style.display = station ? 'block' : 'none';
-      document.getElementById('statPresent').textContent = knownRecords ? present.length : '—';
-      document.getElementById('statLeft').textContent = knownRecords ? records.length - present.length : '—';
-      document.getElementById('statTotal').textContent = knownRecords ? records.length : '—';
+      document.getElementById('statPresent').textContent = knownRecords ? uniquePresent : '—';
+      document.getElementById('statLeft').textContent = knownRecords ? uniqueTotal - uniquePresent : '—';
+      document.getElementById('statTotal').textContent = knownRecords ? uniqueTotal : '—';
+      document.getElementById('statRecords').textContent = knownRecords ? records.length : '—';
       if (actionField.value === 'УШЕЛ') renderPresentObservers(present);
+      else if (!organizationSelect.value) autofillArrival(records);
       return records;
     }
     function renderPresentObservers(list) {
@@ -947,6 +1079,9 @@ async function callApi(action, payload) {
       sessionStorage.removeItem(prefix + 'session');
       sessionStorage.removeItem(prefix + 'snapshot:' + station);
       station = token = '';
+      observerInput.value = '';
+      if (autofilledName) resetArrivalDetails();
+      renderSyncActivity();
       renderLastSync();
       authUik.value = '';
       showLogin();
@@ -970,27 +1105,30 @@ async function callApi(action, payload) {
           return false;
         } finally {
           if (snapshotRequest === request) snapshotRequest = null;
+          renderSyncActivity();
         }
       })();
       snapshotRequest = request;
+      renderSyncActivity();
       return request.promise;
     }
     function scheduleSync(delay) {
-      if (retryTimer || isSyncing || !token || !navigator.onLine || !getOfflineQueue().length) return;
+      if (retryTimer || isSyncing || !token || networkIsOffline() || !getOfflineQueue().length) return;
       const closingPeak = Math.abs(Date.now() - CLOSES_AT) < 10 * 60 * 1000;
       const wait = delay ?? (DEMO ? 100 : 700 + Math.random() * (closingPeak ? 44000 : 1900));
       retryTimer = setTimeout(() => { retryTimer = null; syncOfflineQueue(); }, wait);
     }
     async function syncOfflineQueue() {
-      if (isSyncing || !token || !navigator.onLine) return;
+      if (isSyncing || !token || networkIsOffline()) return;
       const batch = getOfflineQueue().slice(0, 12);
       if (!batch.length) return;
       isSyncing = true;
-      queueStatus.textContent = 'Отправляем отметки';
+      renderSyncActivity();
+      setQueueMessage('Отправляем данные');
       const statusTimer = setTimeout(() => {
         serverUnavailable = true;
         renderNetworkStatus();
-        queueStatus.textContent = 'Сохранено на телефоне · ждём подтверждения';
+        setQueueMessage('Ждём подтверждения отправки');
       }, 4000);
       let blocked = false;
       let nextDelay;
@@ -1003,24 +1141,25 @@ async function callApi(action, payload) {
         sessionStorage.setItem(prefix + 'snapshot:' + station, JSON.stringify(confirmedRecords));
         recordSync();
         retryDelay = 2500;
+        setQueueMessage(queueWaiting);
         if (!getOfflineQueue().length) {
           showToast('success', '✓', DEMO ? 'Отметки сохранены в деморежиме' : 'Сервер подтвердил сохранение отметок');
           if (!knownRecords) refreshStation();
         } else {
-          queueStatus.textContent = 'Остальные отметки сохранены на телефоне';
           nextDelay = 500;
         }
       } catch (error) {
         serverUnavailable = !error.code;
         renderNetworkStatus();
-        queueStatus.textContent = error.code ? error.message : 'Сохранено на телефоне · отправим повторно';
         blocked = error.code === 'AUTH' || error.code === 'INVALID';
+        setQueueMessage(blocked ? error.message : queueWaiting);
         if (error.code === 'AUTH') { token = ''; showLogin(error.message); }
         nextDelay = retryDelay + Math.random() * retryDelay;
         retryDelay = Math.min(retryDelay * 2, 30000);
       } finally {
         clearTimeout(statusTimer);
         isSyncing = false;
+        renderSyncActivity();
         if (!blocked) scheduleSync(nextDelay);
       }
     }
@@ -1032,32 +1171,40 @@ async function callApi(action, payload) {
         const key = queueKey() + ':' + lastQueuedAt + ':' + event.uid;
         localStorage.setItem(key, JSON.stringify({...event, uik:station}));
         renderStation();
-        if (!isSyncing) queueStatus.textContent = 'Сохранено на телефоне · ждём отправки';
+        if (!isSyncing) setQueueMessage(queueWaiting);
         scheduleSync();
-        showToast('warning', '⏳', 'Отметка сохранена на устройстве и ожидает подтверждения');
+        showToast('warning', '⏳', networkIsOffline() ? queueOffline : 'Отметка в очереди на отправку.');
         return true;
       } catch (_) {
-        showToast('error', '✕', 'Не удалось сохранить отметку на устройстве.');
+        showToast('error', '✕', 'Не удалось добавить отметку в очередь.');
         return false;
       }
     }
     function renderNetworkStatus() {
-      networkDot.classList.toggle('offline', !navigator.onLine);
-      networkDot.classList.toggle('slow', navigator.onLine && serverUnavailable);
-      networkText.textContent = !navigator.onLine ? 'Офлайн' : serverUnavailable ? 'Сервер не отвечает' :
-        DEMO ? 'Деморежим' : 'Сеть доступна';
+      const type = connection?.type;
+      const offline = networkIsOffline();
+      const icon = offline ? 'offline' : type === 'wifi' ? 'wifi' : type === 'cellular' ? 'cellular' : 'online';
+      const label = {
+        offline:'Нет соединения', wifi:'Wi-Fi', cellular:'Мобильная сеть', online:'Тип сети не определён'
+      }[icon];
+      const status = !offline && serverUnavailable ? label + ' · сервер пока не ответил' : label;
+      networkGlyph.setAttribute('href', '#net-' + icon);
+      networkIndicator.dataset.state = offline ? 'offline' : serverUnavailable ? 'slow' : 'online';
+      networkIndicator.title = status;
+      networkIndicator.setAttribute('aria-label', status);
+      renderQueueStatus();
     }
     function updateOnlineStatus() {
       renderNetworkStatus();
       scheduleSync();
     }
-    syncNow.addEventListener('click', () => {
-      if (!navigator.onLine) {
-        showToast('warning', '⏳', 'Нет сети. Сохранённые отметки отправятся после восстановления связи.');
+    syncNow.addEventListener('click', async () => {
+      if (networkIsOffline()) {
+        showToast('warning', '⏳', 'Нет связи. ' + queueOffline);
         return;
       }
-      if (isSyncing) {
-        showToast('warning', '⏳', 'Отметки сохранены на телефоне. Ждём подтверждения сервера.');
+      if (isSyncing || snapshotRequest?.token === token) {
+        showToast('warning', '⏳', 'Синхронизация уже идёт.');
         return;
       }
       if (getOfflineQueue().length) {
@@ -1066,10 +1213,16 @@ async function callApi(action, payload) {
         syncOfflineQueue();
         return;
       }
-      showToast('success', '✓', 'Нет отметок, ожидающих отправки.');
+      if (await refreshStation()) {
+        recordSync();
+        showToast('success', '✓', 'Данные обновлены.');
+      } else if (token) {
+        showToast('warning', '⏳', 'Не удалось обновить данные. Попробуйте ещё раз.');
+      }
     });
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
+    connection?.addEventListener?.('change', updateOnlineStatus);
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) updateOnlineStatus();
     });
@@ -1140,16 +1293,6 @@ async function callApi(action, payload) {
     }
 
     const CLOSES_AT = Date.parse('2026-11-29T20:00:00+05:00');
-    function updateCountdown() {
-      const seconds = Math.ceil((CLOSES_AT - Date.now()) / 1000);
-      if (seconds > 24 * 3600) countdownTimer.textContent = '29 ноября 2026';
-      else if (seconds <= 0) countdownTimer.textContent = '20:00 · отметки доступны';
-      else countdownTimer.textContent = 'До 20:00 · ' + [
-        Math.floor(seconds / 3600), Math.floor(seconds / 60) % 60, seconds % 60
-      ].map(value => String(value).padStart(2, '0')).join(':');
-    }
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
 
     let timeEdited = false;
     timeInput.addEventListener('input', () => { timeEdited = true; });
@@ -1279,19 +1422,6 @@ async function callApi(action, payload) {
       navigator.clipboard.writeText(reportText).then(() => { showToast('success', '✓', 'Отчет скопирован в буфер обмена!'); }).catch(() => { showToast('error', '✕', 'Не удалось скопировать отчет'); });
     });
 
-    const userPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = localStorage.getItem('theme') || (userPrefersDark ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
-
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-      themeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
-    });
-
     let toastTimeout;
     function showToast(type, icon, message) { clearTimeout(toastTimeout); toast.className = `toast ${type} show`; toastIcon.textContent = icon; toastMessage.textContent = message; toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 3500); }
     function parseFullOrgToShort(fullOrg) {
@@ -1318,6 +1448,38 @@ async function callApi(action, payload) {
       for (let key in orgFullNameMap) { if (orgFullNameMap[key] === fullOrg) return { short: key, details1: "", details2: "" }; }
       return { short: fullOrg, details1: "", details2: "" };
     }
+
+    function resetArrivalDetails() {
+      autofilledName = '';
+      organizationSelect.value = '';
+      statusSelect.value = '';
+      smiInput.value = orgDetailsInput.value = intlOrgSelect.value = translatorInput.value = '';
+      if (actionField.value === 'ПРИШЕЛ') organizationSelect.dispatchEvent(new Event('change'));
+    }
+
+    function autofillArrival(records) {
+      if (!station || actionField.value !== 'ПРИШЕЛ') return;
+      const name = observerInput.value;
+      if (autofilledName === name) return;
+      if (autofilledName) resetArrivalDetails();
+      if (!name) return;
+
+      const firstVisit = records.find(item => item.observer === name);
+      if (!firstVisit?.org) return;
+      const {short, details1, details2} = parseFullOrgToShort(firstVisit.org);
+      if (!Array.from(organizationSelect.options).some(option => option.value === short)) return;
+
+      autofilledName = name;
+      organizationSelect.value = short;
+      statusSelect.value = firstVisit.obsStatus || '';
+      smiInput.value = short === 'СМИ' ? details1 : '';
+      orgDetailsInput.value = short === 'Наблюдатели от иностранных государств' ? details1 : '';
+      intlOrgSelect.value = short === 'Наблюдатели международных организаций' ? details1 : '';
+      translatorInput.value = details2;
+      organizationSelect.dispatchEvent(new Event('change'));
+    }
+
+    observerInput.addEventListener('input', () => autofillArrival(stationRecords()));
 
     btnJournal.addEventListener('click', async () => {
       const district = districtSelect.value; const uik = uikInput.value.trim();
@@ -1542,13 +1704,8 @@ async function callApi(action, payload) {
       noteInput.value = '';
       timeEdited = false;
       setCurrentTime();
-      if (event.action === 'ПРИШЕЛ') {
-        organizationSelect.selectedIndex = 0;
-        organizationSelect.dispatchEvent(new Event('change'));
-        statusSelect.selectedIndex = 0;
-        orgDetailsInput.value = smiInput.value = translatorInput.value = '';
-        intlOrgSelect.selectedIndex = 0;
-        observerInput.focus();
+      if (event.action === 'ПРИШЕЛ' || autofilledName) {
+        resetArrivalDetails();
       }
     });
 
