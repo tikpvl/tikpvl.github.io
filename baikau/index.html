@@ -268,6 +268,10 @@
     .install-dialog::backdrop { background: rgba(0,0,0,.6); }
     .install-dialog h2 { font-size: 1.05rem; }
     .install-dialog p { margin: 10px 0 16px; line-height: 1.5; }
+    .update-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .update-actions button { flex: 1 1 110px; min-height: 44px; }
+    #applyStationUpdate { background: var(--color-primary); color: #0f172a; }
+    [data-theme="light"] #applyStationUpdate { color: #fff; }
 
     .spinner { width: 20px; height: 20px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: #ffffff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -513,7 +517,7 @@
         </div>
         <div class="header-tools">
           <div class="header-status">
-            <span class="app-version" aria-label="Версия приложения 1.5">V1.5</span>
+            <span class="app-version" aria-label="Версия приложения 1.6">V1.6</span>
             <span id="networkIndicator" class="network-indicator" role="img" aria-label="Статус соединения">
               <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <defs>
@@ -729,6 +733,15 @@
     <p id="installInstructionsText"></p>
     <form method="dialog">
       <button type="submit" class="install-btn">Понятно</button>
+    </form>
+  </dialog>
+
+  <dialog id="stationUpdate" class="install-dialog" aria-labelledby="stationUpdateTitle">
+    <h2 id="stationUpdateTitle"></h2>
+    <p id="stationUpdateMessage">Откроется новая версия. Отметки в очереди сохранятся.</p>
+    <form method="dialog" class="update-actions">
+      <button type="submit" class="install-btn">Позже</button>
+      <button type="button" id="applyStationUpdate" class="install-btn">Обновить</button>
     </form>
   </dialog>
 
@@ -1015,6 +1028,16 @@ async function callApi(action, payload) {
     const lastSync = document.getElementById('lastSync');
     const syncNow = document.getElementById('syncNow');
     const syncCount = document.getElementById('syncCount');
+    const updateDialog = document.getElementById('stationUpdate');
+    const updateButton = document.getElementById('applyStationUpdate');
+    const updateTitle = document.getElementById('stationUpdateTitle');
+    const updateMessage = document.getElementById('stationUpdateMessage');
+    const updateDraftKey = prefix + 'update-draft';
+    const updateDraftFields = [
+      observerInput, organizationSelect, statusSelect, orgDetailsInput, intlOrgSelect,
+      translatorInput, smiInput, noteInput, presentObserverSelect
+    ];
+    const currentVersion = document.querySelector('.app-version').textContent.trim();
     const syncTimeFormat = new Intl.DateTimeFormat('ru-KZ', {
       timeZone:'Asia/Almaty', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'
     });
@@ -1029,10 +1052,13 @@ async function callApi(action, payload) {
     let isSyncing = false;
     let serverUnavailable = false;
     let autofilledName = '';
+    let checkingVersion = false;
+    let updateUrl;
 
     function renderSyncActivity() {
       const busy = isSyncing || snapshotRequest?.token === token;
       syncNow.setAttribute('aria-busy', String(busy));
+      updateButton.disabled = isSyncing;
     }
 
     function queueKey() { return prefix + 'queue:' + station; }
@@ -1271,11 +1297,69 @@ async function callApi(action, payload) {
       renderNetworkStatus();
       scheduleSync();
     }
+
+    function isNewerVersion(candidate) {
+      if (!/^V\d+\.\d+(?:\.\d+)?$/.test(candidate)) return false;
+      const numbers = version => version.slice(1).split('.').map(Number);
+      const latest = numbers(candidate);
+      const current = numbers(currentVersion);
+      for (let index = 0; index < 3; index++) {
+        const difference = (latest[index] || 0) - (current[index] || 0);
+        if (difference) return difference > 0;
+      }
+      return false;
+    }
+
+    async function checkForStationUpdate() {
+      if (checkingVersion || updateDialog.open || DEMO || !/^https?:$/.test(location.protocol)) return;
+      checkingVersion = true;
+      const controller = typeof AbortController === 'function' ? new AbortController() : null;
+      const timer = controller && setTimeout(() => controller.abort(), 6000);
+      try {
+        const url = new URL(location.pathname, location.origin);
+        url.searchParams.set('_release', String(Date.now()));
+        const response = await fetch(url, {cache:'no-store', signal:controller?.signal});
+        if (!response.ok || !response.headers.get('Content-Type')?.includes('text/html')) return;
+        const html = await response.text();
+        if (!html.trimEnd().endsWith('<!-- baikau-release-complete -->')) return;
+        const page = new DOMParser().parseFromString(html, 'text/html');
+        const latest = page.querySelector('.app-version')?.textContent.trim() || '';
+        if (!isNewerVersion(latest)) return;
+        updateUrl = url;
+        updateTitle.textContent = 'Обновить версию до ' + latest + '?';
+        updateMessage.textContent = 'Откроется новая версия. Отметки в очереди сохранятся.';
+        if (typeof updateDialog.showModal === 'function') updateDialog.showModal();
+        else if (window.confirm(updateTitle.textContent)) applyStationUpdate();
+      } catch (_) {
+        // Проверка версии не влияет на синхронизацию отметок.
+      } finally {
+        clearTimeout(timer);
+        checkingVersion = false;
+      }
+    }
+
+    function applyStationUpdate() {
+      if (!updateUrl || isSyncing) return;
+      try {
+        sessionStorage.setItem(updateDraftKey, JSON.stringify({
+          station, action:actionField.value, time:timeEdited ? timeInput.value : null,
+          fields:updateDraftFields.map(field => field.value)
+        }));
+      } catch (_) {
+        updateMessage.textContent = 'Не удалось сохранить текущую форму. Завершите отметку перед обновлением.';
+        return;
+      }
+      location.replace(updateUrl.href);
+    }
+
+    updateButton.addEventListener('click', applyStationUpdate);
+
     syncNow.addEventListener('click', async () => {
       if (networkIsOffline()) {
         showToast('warning', '⏳', 'Нет связи. ' + queueOffline);
         return;
       }
+      checkForStationUpdate();
       if (isSyncing || snapshotRequest?.token === token) {
         showToast('warning', '⏳', 'Синхронизация уже идёт.');
         return;
@@ -1785,7 +1869,21 @@ async function callApi(action, payload) {
     document.getElementById('demoStationHint').hidden = !DEMO;
     const savedSession = JSON.parse(sessionStorage.getItem(prefix + 'session') || 'null');
     if (savedSession && territoryFor(savedSession.uik)) activateStation(savedSession.uik, savedSession.token);
+    try {
+      const draft = JSON.parse(sessionStorage.getItem(updateDraftKey) || 'null');
+      sessionStorage.removeItem(updateDraftKey);
+      if (station && draft?.station === station && Array.isArray(draft.fields)) {
+        if (draft.action === 'УШЕЛ') setDepartureMode();
+        updateDraftFields.forEach((field, index) => { field.value = draft.fields[index] ?? ''; });
+        if (draft.action !== 'УШЕЛ') organizationSelect.dispatchEvent(new Event('change'));
+        if (draft.time !== null) {
+          timeInput.value = draft.time;
+          timeEdited = true;
+        }
+      }
+    } catch (_) {}
     updateOnlineStatus();
   </script>
 </body>
 </html>
+<!-- baikau-release-complete -->
