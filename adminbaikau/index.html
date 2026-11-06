@@ -4,20 +4,79 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Центр мониторинга · Выборы депутатов маслихатов</title>
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230f172a%22%2F%3E%3Cpath%20d%3D%22M7%2024h18%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%2F%3E%3Crect%20x%3D%228%22%20y%3D%2215%22%20width%3D%224%22%20height%3D%227%22%20rx%3D%221%22%20fill%3D%22%2338bdf8%22%2F%3E%3Crect%20x%3D%2214%22%20y%3D%2211%22%20width%3D%224%22%20height%3D%2211%22%20rx%3D%221%22%20fill%3D%22%2338bdf8%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%227%22%20width%3D%224%22%20height%3D%2215%22%20rx%3D%221%22%20fill%3D%22%2334d399%22%2F%3E%3C%2Fsvg%3E">
+  <script>
+    (function () {
+      var preference = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+      var toolbar = document.querySelector('meta[name="theme-color"]');
+      var theme = systemTheme();
+      var manuallyChanged = false;
+      var button;
+
+      function systemTheme() {
+        return preference && preference.matches ? 'dark' : 'light';
+      }
+
+      function applyTheme() {
+        document.documentElement.setAttribute('data-theme', theme);
+        toolbar.setAttribute('content', theme === 'dark' ? '#0f172a' : '#e2e8f0');
+        if (!button) return;
+        var label = theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему';
+        button.textContent = theme === 'dark' ? '🌙' : '☀️';
+        button.title = label;
+        button.setAttribute('aria-label', label);
+      }
+
+      function followDeviceTheme() {
+        if (manuallyChanged) return;
+        theme = systemTheme();
+        applyTheme();
+      }
+
+      applyTheme();
+      if (preference && preference.addEventListener) preference.addEventListener('change', followDeviceTheme);
+      else if (preference && preference.addListener) preference.addListener(followDeviceTheme);
+      document.addEventListener('DOMContentLoaded', function () {
+        button = document.getElementById('themeToggle');
+        applyTheme();
+        button.addEventListener('click', function () {
+          manuallyChanged = true;
+          theme = theme === 'dark' ? 'light' : 'dark';
+          applyTheme();
+        });
+      });
+    })();
+  </script>
 
   
   <!-- Библиотека для создания полноценных Excel (.xlsx) файлов -->
 
   <style>
     :root {
+      color-scheme: dark;
       --bg-main: #0f172a; --bg-card: #1e293b; --bg-hover: #334155;
       --text-main: #f8fafc; --text-muted: #94a3b8; --text-dim: #64748b;
       --border-color: #334155; --primary: #38bdf8;
       --green: #10b981; --red: #f43f5e; --orange: #f59e0b;
+      --primary-text: #0f172a; --row-hover: rgba(255,255,255,.04);
+      --uik-present: #123834; --uik-mixed: #3e3225; --uik-left: #3b2837;
       --radius: 12px;
+    }
+    [data-theme="light"] {
+      color-scheme: light;
+      --bg-main: #e2e8f0; --bg-card: #fff; --bg-hover: #dbe5f0;
+      --text-main: #0f172a; --text-muted: #334155; --text-dim: #475569;
+      --border-color: #a0aec0; --primary: #0369a1; --primary-text: #fff;
+      --green: #047857; --red: #be123c; --orange: #92400e;
+      --row-hover: #f1f5f9; --uik-present: #d1fae5; --uik-mixed: #fef3c7; --uik-left: #ffe4e6;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
     body { background-color: var(--bg-main); color: var(--text-main); min-height: 100vh; }
+    .page-tools { display: flex; justify-content: flex-end; align-items: center; gap: 10px; max-width: 1500px; margin: 0 auto; padding: 10px 20px 0; }
+    .app-version { color: var(--text-muted); font-size: .78rem; font-weight: 700; }
+    .theme-toggle { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-card); color: var(--text-main); font-size: 1.1rem; cursor: pointer; }
+    .theme-toggle:hover, .theme-toggle:focus-visible { border-color: var(--primary); }
     
     #initLoader {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -30,16 +89,16 @@
       margin-bottom: 20px;
     }
 
-    #loginView { display: none; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    #loginView { display: none; align-items: center; justify-content: center; min-height: calc(100vh - 50px); padding: 20px; }
     .login-card { background: var(--bg-card); padding: 30px; border-radius: var(--radius); border: 1px solid var(--border-color); width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     .login-card h2 { margin-bottom: 20px; color: var(--primary); }
     .input-group { margin-bottom: 15px; text-align: left; }
     .input-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted); }
-    .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-main); color: white; outline: none; }
+    .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-main); outline: none; }
     .input-group input:focus { border-color: var(--primary); }
     
     .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
-    .btn-primary { background: var(--primary); color: #0f172a; }
+    .btn-primary { background: var(--primary); color: var(--primary-text); }
     .btn-primary:hover { opacity: 0.9; }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
@@ -56,7 +115,7 @@
     .btn-reset:hover:not(:disabled) { background: rgba(244, 63, 94, 0.25); border-color: var(--red); }
     .btn-reset:disabled { background: rgba(148, 163, 184, 0.08); border-color: rgba(148, 163, 184, 0.18); color: var(--text-dim); opacity: 0.45; cursor: not-allowed; }
 
-    #dashboardView { display: none; padding: 20px; max-width: 1500px; margin: 0 auto; }
+    #dashboardView { display: none; padding: 8px 20px 20px; max-width: 1500px; margin: 0 auto; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
     .user-badge { background: var(--bg-card); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 0.9rem; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 10px; }
     .logout-btn { background: var(--red); color: white; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
@@ -90,14 +149,14 @@
     .controls { display: flex; gap: 12px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
     .controls .btn { width: auto; padding: 10px 16px; font-size: 0.88rem; }
     .search-box { flex-grow: 1; min-width: 250px; }
-    .search-box input { width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); color: white; outline: none; }
+    .search-box input { width: 100%; padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main); outline: none; }
     
     .table-container { background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border-color); overflow-x: auto; max-height: calc(100vh - 350px); overflow-y: auto; }
     table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; }
     thead { position: sticky; top: 0; background: var(--bg-card); z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
     th { padding: 12px 10px; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border-color); white-space: nowrap; }
     td { padding: 10px; border-bottom: 1px solid var(--border-color); }
-    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    tbody tr:hover { background: var(--row-hover); }
     
     .th-filter { margin-top: 6px; }
     .th-filter input { width: 100%; padding: 5px 8px; font-size: 0.78rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-main); color: var(--text-main); outline: none; font-family: inherit; box-sizing: border-box; }
@@ -117,9 +176,9 @@
       margin: 2px 6px; transition: background 0.2s, color 0.2s;
     }
     .ms-option input { display: none; } 
-    .ms-option:hover { background: rgba(255,255,255,0.05); }
+    .ms-option:hover { background: var(--row-hover); }
     .ms-option.selected { background: rgba(56, 189, 248, 0.15); color: var(--primary); font-weight: 600; }
-    .ms-optgroup { padding: 6px 12px; font-size: 0.75rem; font-weight: 700; color: var(--primary); background: rgba(0,0,0,0.2); margin-top: 4px; margin-bottom: 2px; text-align: left; }
+    .ms-optgroup { padding: 6px 12px; font-size: 0.75rem; font-weight: 700; color: var(--primary); background: var(--bg-main); margin-top: 4px; margin-bottom: 2px; text-align: left; }
 
     .status-badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: inline-block; white-space: nowrap; }
     .bg-green { background: rgba(16, 185, 129, 0.2); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.4); }
@@ -138,6 +197,15 @@
     .org-respublica { background: rgba(30,58,138,0.25); color: #93c5fd; border-color: #60a5fa; }
     .org-npo { background: rgba(251,146,60,0.15); color: #fdba74; border-color: #fdba74; }
     .org-rep { background: rgba(56,189,248,0.15); color: #7dd3fc; border-color: #7dd3fc; }
+    [data-theme="light"] .org-badge { border-color: currentColor; }
+    [data-theme="light"] .org-smi { color: #9d174d; }
+    [data-theme="light"] .org-foreign { color: #374151; }
+    [data-theme="light"] .org-adilet { color: #6b21a8; }
+    [data-theme="light"] :is(.org-osdp, .org-akzhol, .org-respublica) { color: #1e3a8a; }
+    [data-theme="light"] .org-baitak { color: #166534; }
+    [data-theme="light"] .org-npk { color: #991b1b; }
+    [data-theme="light"] :is(.org-auyl, .org-npo) { color: #854d0e; }
+    [data-theme="light"] .org-rep { color: #075985; }
 
     .note-marker { background-color: #fde047; color: #0f172a; padding: 3px 6px; border-radius: 4px; font-weight: 500; display: inline-block; line-height: 1.3; }
 
@@ -154,12 +222,12 @@
     .uik-cube { min-width:48px; display:grid; gap:4px; text-align:center; }
     .uik-cube:hover, .empty-uik-item:hover { border-color:var(--primary); }
     .uik-counts { display:flex; justify-content:center; gap:4px; font-size:.67rem; }
-    .uik-counts span:nth-child(1) { color:#34d399; }
-    .uik-counts span:nth-child(2) { color:#fb7185; }
+    .uik-counts span:nth-child(1) { color:var(--green); }
+    .uik-counts span:nth-child(2) { color:var(--red); }
     .uik-counts span:nth-child(3) { color:var(--primary); }
-    .uik-cube.present { background:#123834; }
-    .uik-cube.some-left, .empty-uik-item.never-visited { background:#3e3225; }
-    .uik-cube.all-left, .empty-uik-item.all-left { background:#3b2837; }
+    .uik-cube.present { background:var(--uik-present); }
+    .uik-cube.some-left, .empty-uik-item.never-visited { background:var(--uik-mixed); }
+    .uik-cube.all-left, .empty-uik-item.all-left { background:var(--uik-left); }
     .dist-cov-item { color:var(--text-main); text-align:left; }
     .empty-uik-modal { position:fixed; inset:0; margin:auto; padding:18px; max-height:85vh; width:min(640px, calc(100vw - 24px)); background:var(--bg-card); color:var(--text-main); border:1px solid var(--border-color); border-radius:var(--radius); overflow:auto; }
     .empty-uik-modal::backdrop { background:rgba(0,0,0,.7); }
@@ -167,11 +235,15 @@
     .empty-uik-header h2 { font-size:1.2rem; }
     .empty-uik-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(128px, 1fr)); gap:7px; }
     .empty-uik-item { display:grid; gap:3px; text-align:left; }
-    .th-filter input[type="time"] { min-width:92px; color-scheme:dark; }
+    .th-filter input[type="time"] { min-width:92px; }
     [hidden] { display:none !important; }
   </style>
 </head>
 <body>
+  <div class="page-tools">
+    <span class="app-version" aria-label="Версия панели 1.1">V1.1</span>
+    <button type="button" id="themeToggle" class="theme-toggle" aria-label="Переключить тему">🌙</button>
+  </div>
 
   <div id="initLoader">
     <div class="big-spinner"></div>
@@ -341,996 +413,4 @@
                   <option value="Наблюдатель">Наблюдатель</option>
                   <option value="Доверенное лицо">Доверенное лицо</option>
                   <option value="Представитель СМИ">Представитель СМИ</option>
-                  <option value="Иностранный наблюдатель">Иностранный наблюдатель</option>
-                  <option value="Переводчик">Переводчик</option>
-                </select>
-              </div>
-            </th>
-            <th style="width: 110px;">Пришёл
-              <div class="th-filter"><input type="time" id="filterArrive" aria-label="Пришёл не раньше" title="Пришёл в это время или позже" onchange="applyAllFilters()"></div>
-            </th>
-            <th style="width: 110px;">Ушёл
-              <div class="th-filter"><input type="time" id="filterLeave" aria-label="Ушёл не раньше или ещё на участке" title="Ушёл в это время или позже, либо ещё на участке" onchange="applyAllFilters()"></div>
-            </th>
-            <th style="min-width: 110px;">
-              Наличие
-              <div class="th-filter">
-                <select id="filterStatus">
-                  <option value="НА УЧАСТКЕ">НА УЧАСТКЕ</option>
-                  <option value="УШЕЛ">УШЕЛ</option>
-                  <option value="НЕ БЫЛО">НЕ БЫЛО</option>
-                </select>
-              </div>
-            </th>
-            <th style="min-width: 150px;">
-              Примечание
-              <div class="th-filter">
-                <select id="filterNote">
-                  <option value="есть">Есть запись</option>
-                  <option value="нет">Нет записи</option>
-                </select>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <dialog class="empty-uik-modal" id="emptyUiksModal" aria-labelledby="emptyUiksTitle">
-    <div class="empty-uik-header">
-      <h2 id="emptyUiksTitle">Проблемные участки</h2>
-      <form method="dialog"><button class="btn-toggle-cov" type="submit">Закрыть</button></form>
-    </div>
-    <p id="emptyUiksTotalText"></p>
-    <div id="emptyUiksContent"></div>
-  </dialog>
-  <div id="toast" class="toast">Уведомление</div>
-
-  <script>
-const UIK_DATABASE = {"г. Павлодар":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,107,108,109,110,111,112,113,114,116,117,118,119,120,121,125,126,127,128,129,130,131,132,133,134,580,581,582,583,584,585,586,587,588,595,596],"г. Экибастуз":[513,514,515,516,517,518,519,520,521,522,523,524,525,526,527,528,529,530,531,532,533,534,535,536,537,538,539,540,541,542,543,544,545,546,547,548,549,550,551,552,553,554,555,557,558,559,562,563,564,565,566,567,568,569,570,571,572,573,574,575,576,577,589,590,591],"г. Аксу":[474,475,476,477,478,479,480,481,482,483,484,485,486,487,488,489,490,491,492,493,494,495,496,497,498,499,500,501,502,503,504,505,506,508,509,510,511,512,578,597],"район Аққулы":[325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,349],"Актогайский район":[135,136,137,139,140,141,142,144,145,146,147,148,149,150,151,152,154,155,156,157,158,159,161,163,164,165,167,168],"Баянаульский район":[172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,192,193,194,195,196,197,198,199,200,201,203,204,205,206,207,208,209,210,211],"Железинский район":[212,213,214,215,216,217,218,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,241,242,243,245,246,249,250,251],"Иртышский район":[252,253,254,255,256,257,259,260,261,263,265,266,267,269,271,272,273,274,275,276,277,278,279,280,281,282,283],"Майский район":[352,353,354,356,357,358,359,360,361,363,365,368,372,375,592,593],"Павлодарский район":[376,377,378,379,380,381,382,383,385,386,387,388,389,390,391,392,393,394,396,397,401,402,403,404,405,406,407,408,409,410],"район Тереңкөл":[284,285,286,287,288,289,290,291,292,293,294,296,297,299,300,301,303,304,305,306,308,311,312,314,315,317,319,320,321,323,594],"Успенский район":[412,413,414,416,417,418,419,421,422,423,424,425,426,427,428,429,430,431,432,433,434,436,579],"Щербактинский район":[437,438,439,440,441,442,445,446,447,448,451,452,453,454,455,458,459,461,462,463,464,465,466,469,472,473]};
-function territoryFor(uik) {
-  const text = String(uik || '').trim();
-  if (!/^\d{1,3}$/.test(text)) return '';
-  return Object.keys(UIK_DATABASE).find(name => UIK_DATABASE[name].includes(Number(text))) || '';
-}
-
-function replayEvents(events, district, initial = []) {
-  const records = new Map(initial.map(item => [item.uik + ":" + item.id, {...item}]));
-  const seen = new Set();
-  for (const event of events) {
-    const key = event.uik + ':' + event.uid;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    const recordKey = event.uik + ':' + event.id;
-    const item = records.get(recordKey);
-    if (event.action === 'ПРИШЕЛ' && !item) {
-      records.set(recordKey, {
-        id: event.id, uik: event.uik, district, observer: event.observer, org: event.organization,
-        obsStatus: event.status, arrive: event.time, leave: '', note: event.note, status: 'НА УЧАСТКЕ',
-        firstAt: event.acceptedAt, firstUid: event.uid
-      });
-    } else if (event.action === 'УШЕЛ' && item && !item.leave) {
-      item.leave = event.time;
-      if (event.note) item.note = [item.note, event.note].filter(Boolean).join(' / ');
-      item.status = 'УШЕЛ';
-    } else if (event.action === 'EDIT' && item) {
-      if (event.acceptedAt) item.edits = [...(item.edits || []), event.acceptedAt];
-      Object.assign(item, {
-        observer: event.observer, org: event.organization, obsStatus: event.status, note: event.note,
-        arrive: event.arrive, leave: event.leave, status: event.leave ? 'УШЕЛ' : 'НА УЧАСТКЕ'
-      });
-    } else if (event.action === 'DELETE') {
-      records.delete(recordKey);
-    }
-  }
-  return Array.from(records.values());
-}
-const DEMO = document.documentElement.dataset.observersMode === 'demo';
-const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c =>
-  ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
-const DEMO_KEY = 'maslikhat-demo-events-v1';
-const demoSeed = [
-  {uik:'1', uid:'demo-pvl-01', id:'demo-pvl-01', action:'ПРИШЕЛ', observer:'Наблюдатель Демо 1', organization:'ОЮЛ «Гражданский союз Павлодарской области»', status:'Наблюдатель', time:'07:15', note:''},
-  {uik:'513', uid:'demo-ekb-01', id:'demo-ekb-01', action:'ПРИШЕЛ', observer:'Наблюдатель Демо 2', organization:'СМИ (ТК Ирбис)', status:'Представитель СМИ', time:'08:30', note:''},
-  {uik:'172', uid:'demo-bay-01', id:'demo-bay-01', action:'ПРИШЕЛ', observer:'Наблюдатель Демо 3', organization:'Партия «Ауыл»', status:'Наблюдатель', time:'09:00', note:''}
-];
-
-function demoCall(action, p) {
-  let shared;
-  try { shared = window.parent.observersDemoStore; } catch (_) {}
-  const events = shared ? shared.events || demoSeed : JSON.parse(localStorage.getItem(DEMO_KEY) || 'null') || demoSeed;
-  if (action === 'loginUik' || action === 'loginPanel') {
-    const role = action === 'loginUik' ? territoryFor(p.uik) : p.login;
-    if ((action === 'loginPanel' && p.password !== '12345') || !role || (role !== 'Штаб' && !Object.prototype.hasOwnProperty.call(UIK_DATABASE, role))) {
-      return {success:false, code:'AUTH', message:action === 'loginUik' ? 'Проверьте номер УИК.' : 'Проверьте логин и пароль.'};
-    }
-    return {success:true, token: action === 'loginUik' ? 'uik:' + p.uik : 'panel:' + role, accessLevel:role};
-  }
-  if (action === 'getDashboardData' && p.token.startsWith('panel:')) {
-    const role = p.token.slice(6);
-    const districts = role === 'Штаб' ? Object.keys(UIK_DATABASE) : [role];
-    return {success:true, accessLevel:role, data:districts.flatMap(d => replayEvents(events.filter(e => territoryFor(e.uik) === d), d))};
-  }
-  const uik = p.token.startsWith('uik:') ? p.token.slice(4) : '';
-  const district = territoryFor(uik);
-  if (!district) return {success:false, code:'AUTH', message:'Войдите на участок.'};
-  if (action === 'snapshot') {
-    return {success:true, data:replayEvents(events.filter(e => e.uik === uik), district)};
-  }
-  if (action === 'write') {
-    const next = events.concat(p.events.map(event => ({...event, uik})));
-    if (shared) shared.events = next;
-    else localStorage.setItem(DEMO_KEY, JSON.stringify(next));
-    return {success:true};
-  }
-  return {success:false, message:'Действие недоступно.'};
-}
-
-async function callServer(action, payload) {
-  const result = DEMO ? demoCall(action, payload) : await callApi(action, payload);
-  if (!result || !result.success) {
-    const error = new Error(result?.message || 'Сервер не подтвердил операцию.');
-    error.code = result?.code;
-    throw error;
-  }
-  return result;
-}
-
-// Один раз вставьте HTTPS-адрес развёртывания Apps Script, который заканчивается на /exec.
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybo6KKcKlGpr1sTboTb8d1_KdLPe9kvvGNyO-aqS5dapKulbmviaDIUCOtdeknw0Ig4w/exec';
-
-async function callApi(action, payload) {
-  if (!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(APPS_SCRIPT_URL)) {
-    throw new Error('Администратор ещё не настроил подключение.');
-  }
-  let response;
-  try {
-    response = await fetch(APPS_SCRIPT_URL, {
-      method:'POST', mode:'cors', credentials:'omit', cache:'no-store',
-      headers:{'Content-Type':'text/plain;charset=UTF-8'},
-      body:JSON.stringify({action, payload}),
-      signal:AbortSignal.timeout(action === 'getDashboardData' ? 45000 : 18000)
-    });
-  } catch (error) {
-    if (error.name === 'TimeoutError') throw new Error('Сервер не ответил вовремя.');
-    throw new Error('Нет связи с сервером. Повторите позже.');
-  }
-  if (!response.ok || !response.headers.get('Content-Type')?.includes('application/json')) {
-    throw new Error('Сервер недоступен. Сообщите администратору.');
-  }
-  return await response.json();
-}
-
-
-    const DISTRICT_ORDER = [
-      "г. Павлодар", "г. Экибастуз", "г. Аксу", "Актогайский район", "район Аққулы", "Баянаульский район",
-      "Железинский район", "Иртышский район", "Майский район", "Павлодарский район",
-      "район Тереңкөл", "Успенский район", "Щербактинский район"
-    ];
-
-    const REFRESH_COOLDOWN = DEMO ? 1 : 30;
-    const EXPORT_COOLDOWN = 15;
-    const panelKey = DEMO ? 'maslikhat-panel-demo' : 'maslikhat-panel-live';
-    let panelToken = '';
-    let panelRole = '';
-    const territoryLogin = document.getElementById('loginInput');
-    territoryLogin.add(new Option('Павлодарская область', 'Штаб'));
-    DISTRICT_ORDER.forEach(name => territoryLogin.add(new Option(name, name)));
-    document.getElementById('demoPanelHint').hidden = !DEMO;
-    document.getElementById('demoPanelBadge').hidden = !DEMO;
-    let globalData = []; 
-    let filteredData = []; 
-    let isRefreshing = false;
-    let autoRefreshTimer = null;
-
-    // --- КЛАСС ДЛЯ МУЛЬТИ-ФИЛЬТРОВ ---
-    class MultiSelect {
-      constructor(selectId, placeholder) {
-        this.select = document.getElementById(selectId);
-        this.placeholder = placeholder;
-        this.values = [];
-        this.build();
-      }
-
-      build() {
-        if (this.select.nextElementSibling && this.select.nextElementSibling.classList.contains('ms-wrapper')) {
-          this.select.nextElementSibling.remove();
-        }
-        this.select.style.display = 'none';
-
-        this.wrapper = document.createElement('div');
-        this.wrapper.className = 'ms-wrapper';
-
-        this.btn = document.createElement('div');
-        this.btn.className = 'ms-btn';
-        this.btnText = document.createElement('span');
-        this.btnText.className = 'ms-text';
-        this.btnText.textContent = this.placeholder;
-        this.btn.appendChild(this.btnText);
-        this.btn.insertAdjacentHTML('beforeend', '<span>▾</span>');
-
-        this.dropdown = document.createElement('div');
-        this.dropdown.className = 'ms-dropdown';
-
-        this.populateDropdown();
-
-        this.btn.onclick = (e) => {
-          e.stopPropagation();
-          const isOpen = this.dropdown.classList.contains('show');
-          document.querySelectorAll('.ms-dropdown').forEach(d => d.classList.remove('show'));
-          if (!isOpen) this.dropdown.classList.add('show');
-        };
-
-        this.wrapper.appendChild(this.btn);
-        this.wrapper.appendChild(this.dropdown);
-        this.select.parentNode.insertBefore(this.wrapper, this.select.nextSibling);
-      }
-
-      populateDropdown() {
-        this.dropdown.innerHTML = '';
-        Array.from(this.select.children).forEach(child => {
-          if (child.tagName === 'OPTGROUP') {
-            const group = document.createElement('div');
-            group.className = 'ms-optgroup';
-            group.textContent = child.label;
-            this.dropdown.appendChild(group);
-            Array.from(child.children).forEach(opt => this.addOption(opt));
-          } else if (child.tagName === 'OPTION' && child.value) {
-            this.addOption(child);
-          }
-        });
-      }
-
-      addOption(opt) {
-        const lbl = document.createElement('label');
-        lbl.className = 'ms-option';
-        
-        const chk = document.createElement('input');
-        chk.type = 'checkbox';
-        chk.value = opt.value;
-        chk.checked = this.values.includes(opt.value);
-        
-        if (chk.checked) lbl.classList.add('selected');
-
-        chk.onchange = (e) => {
-          if (e.target.checked) {
-            lbl.classList.add('selected');
-            if (!this.values.includes(opt.value)) this.values.push(opt.value);
-          } else {
-            lbl.classList.remove('selected');
-            this.values = this.values.filter(v => v !== opt.value);
-          }
-          this.updateBtn();
-          applyAllFilters();
-        };
-
-        lbl.appendChild(chk);
-        lbl.appendChild(document.createTextNode(opt.textContent));
-        this.dropdown.appendChild(lbl);
-      }
-
-      updateBtn() {
-        if (this.values.length === 0) {
-          this.btnText.textContent = this.placeholder;
-        } else if (this.values.length === 1) {
-          const opt = this.select.querySelector(`option[value="${this.values[0]}"]`);
-          this.btnText.textContent = opt ? opt.textContent : this.values[0];
-        } else {
-          this.btnText.textContent = `Выбрано: ${this.values.length}`;
-        }
-      }
-
-      clear() {
-        this.values = [];
-        this.dropdown.querySelectorAll('input[type="checkbox"]').forEach(c => {
-          c.checked = false;
-          c.parentElement.classList.remove('selected');
-        });
-        this.updateBtn();
-      }
-
-      selectOnly(value) {
-        this.values = [value];
-        this.populateDropdown();
-        this.updateBtn();
-      }
-
-      getValues() { return this.values; }
-    }
-
-    let msDistrict, msOrg, msObsStatus, msStatus, msNote;
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.ms-wrapper')) {
-        document.querySelectorAll('.ms-dropdown').forEach(d => d.classList.remove('show'));
-      }
-    });
-
-    const loginView = document.getElementById('loginView');
-    const dashboardView = document.getElementById('dashboardView');
-    const loginForm = document.getElementById('loginForm');
-    const btnRefresh = document.getElementById('btnRefresh');
-    const refreshText = document.getElementById('refreshText');
-    const btnExport = document.getElementById('btnExport');
-    const exportText = document.getElementById('exportText');
-    const btnResetFilters = document.getElementById('btnResetFilters');
-
-    window.onload = () => {
-      msOrg = new MultiSelect('filterOrg', 'Все организации');
-      msObsStatus = new MultiSelect('filterObsStatus', 'Все статусы');
-      msStatus = new MultiSelect('filterStatus', 'Все наличия');
-      msNote = new MultiSelect('filterNote', 'Все примечания');
-
-      panelToken = sessionStorage.getItem(panelKey) || '';
-      if (panelToken) doLogin('', '', true);
-      else loginView.style.display = 'flex';
-    };
-
-    function showToast(msg, isError = false) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.borderLeftColor = isError ? 'var(--red)' : 'var(--primary)';
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function logout() {
-      sessionStorage.removeItem(panelKey);
-      panelToken = panelRole = '';
-      resetFilters(false);
-      clearInterval(autoRefreshTimer);
-      dashboardView.style.display = 'none';
-      loginView.style.display = 'flex';
-      document.getElementById('loginInput').value = '';
-      document.getElementById('passwordInput').value = '';
-    }
-
-    function timeInMinutes(value) {
-      const match = String(value ?? '').match(/(?:^|[T\s])(\d{1,2}):([0-5]\d)(?=:|\s|Z|[+-]|$)/);
-      if (!match || Number(match[1]) > 23) return null;
-      return Number(match[1]) * 60 + Number(match[2]);
-    }
-
-    function formatTime(val) {
-      const minutes = timeInMinutes(val);
-      if (minutes === null) return val || '-';
-      return [Math.floor(minutes / 60), minutes % 60].map(n => String(n).padStart(2, '0')).join(':');
-    }
-
-    function formatTimeExcel(val) {
-      return val ? formatTime(val) : '';
-    }
-
-    function getOrgBadgeHtml(org) {
-      if (!org || org === "—") return org || "—";
-      
-      if (org.toLowerCase().includes("переводчик")) {
-        let displayOrg = org.replace(/(переводчик)/gi, '🔊 $1');
-        return `<span style="font-weight: 500; color: var(--text-main); line-height: 1.3;">${escapeHtml(displayOrg)}</span>`;
-      }
-
-      let cls = '';
-      if (org.startsWith("СМИ")) cls = 'org-smi';
-      else if (org.startsWith("Наблюдатели от иностранных государств") || org.startsWith("Наблюдатели международных организаций")) cls = 'org-foreign';
-      else if (org.includes("Әділет")) cls = 'org-adilet';
-      else if (org.includes("социал-демократическая")) cls = 'org-osdp';
-      else if (org.includes("Байтақ")) cls = 'org-baitak';
-      else if (org.includes("Народная партия")) cls = 'org-npk';
-      else if (org.includes("Ауыл")) cls = 'org-auyl';
-      else if (org.includes("Ак жол")) cls = 'org-akzhol';
-      else if (org.includes("Respublica")) cls = 'org-respublica';
-      else {
-        cls = 'org-rep'; 
-      }
-      
-      return `<span class="org-badge ${cls}">${escapeHtml(org)}</span>`;
-    }
-
-    function toggleCoverage(contentId, buttonId) {
-      const content = document.getElementById(contentId);
-      const button = document.getElementById(buttonId);
-      content.hidden = !content.hidden;
-      button.setAttribute('aria-expanded', String(!content.hidden));
-      button.textContent = content.hidden ? 'Развернуть ▾' : 'Свернуть ▴';
-    }
-
-    function toggleDistrictCoverage() { toggleCoverage('districtCoverageGrid', 'btnToggleCov'); }
-    function toggleMatrixCoverage() { toggleCoverage('matrixCoverageContent', 'btnToggleMatrix'); }
-
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const l = document.getElementById('loginInput').value.trim();
-      const p = document.getElementById('passwordInput').value.trim();
-      doLogin(l, p, false);
-    });
-
-    async function doLogin(login, password, isAuto = false) {
-      const btn = document.getElementById('btnLogin');
-      const spinner = document.getElementById('loginSpinner');
-      const text = document.getElementById('loginText');
-      const errBox = document.getElementById('loginError');
-      
-      if (!isAuto) {
-        btn.disabled = true; spinner.style.display = 'block'; text.textContent = 'Проверка...'; errBox.style.display = 'none';
-      }
-
-      try {
-        if (!isAuto) panelToken = (await callServer('loginPanel', {login, password})).token;
-        const json = await callServer('getDashboardData', {token:panelToken});
-        {
-          panelRole = json.accessLevel;
-          sessionStorage.setItem(panelKey, panelToken);
-          document.getElementById('passwordInput').value = '';
-          const displayRole = json.accessLevel === "Штаб" ? "Центр мониторинга" : json.accessLevel;
-          document.getElementById('userRoleText').textContent = displayRole;
-
-          document.getElementById('initLoader').style.display = 'none';
-          loginView.style.display = 'none';
-          dashboardView.style.display = 'block';
-          
-          globalData = json.data;
-          populateDynamicFilters();
-          updateCoverageStats();
-          applyAllFilters();
-          showToast(`Успешный вход: ${displayRole}`);
-
-          clearInterval(autoRefreshTimer);
-          autoRefreshTimer = setInterval(() => {
-            if (document.visibilityState === 'visible') fetchAndRenderData();
-          }, 90000 + Math.random() * 20000);
-        }
-      } catch (error) {
-        if (error.code === 'AUTH') {
-          panelToken = panelRole = '';
-          sessionStorage.removeItem(panelKey);
-        }
-        document.getElementById('initLoader').style.display = 'none';
-        loginView.style.display = 'flex';
-        errBox.textContent = error.message;
-        errBox.style.display = 'block';
-      } finally {
-        if (!isAuto) {
-          btn.disabled = false; spinner.style.display = 'none'; text.textContent = 'Войти';
-        }
-      }
-    }
-
-    function populateDynamicFilters() {
-      const distSelect = document.getElementById('filterDistrict');
-      const userRole = panelRole;
-      
-      const currentValues = msDistrict ? msDistrict.getValues() : [];
-
-      distSelect.innerHTML = '';
-      DISTRICT_ORDER.forEach(d => {
-        if (userRole === "Штаб" || d === userRole) {
-          distSelect.innerHTML += `<option value="${d}">${d}</option>`;
-        }
-      });
-
-      if (!msDistrict) {
-         msDistrict = new MultiSelect('filterDistrict', 'Все районы');
-      } else {
-         msDistrict.build();
-         msDistrict.values = currentValues.filter(v => Array.from(distSelect.options).some(o => o.value === v));
-         msDistrict.populateDropdown();
-         msDistrict.updateBtn();
-      }
-    }
-
-    function coverageDistricts() {
-      return panelRole === 'Штаб' ? DISTRICT_ORDER : [panelRole];
-    }
-
-    function coverageStats() {
-      const counts = new Map();
-      for (const item of getUniqueRecords(globalData)) {
-        const key = stationKey(item.district, item.uik);
-        const stats = counts.get(key) || {active:0, left:0, total:0};
-        stats.active += Number(item.status === 'НА УЧАСТКЕ');
-        stats.left += Number(item.status === 'УШЕЛ');
-        stats.total++;
-        counts.set(key, stats);
-      }
-      return coverageDistricts().map(district => ({
-        district,
-        stations:(UIK_DATABASE[district] || []).map(uik => ({
-          uik, ...(counts.get(stationKey(district, uik)) || {active:0, left:0, total:0})
-        }))
-      }));
-    }
-
-    function stationKey(district, uik) {
-      return JSON.stringify([String(district ?? '').trim(), String(uik ?? '').trim()]);
-    }
-
-    function personKey(item) {
-      return JSON.stringify([
-        stationKey(item.district, item.uik), String(item.observer ?? '').trim().replace(/\s+/g, ' ').toLowerCase()
-      ]);
-    }
-
-    function coverageTile(district, {uik, active, left, total}) {
-      const color = !total ? '' : !active ? ' all-left' : active < left ? ' some-left' : ' present';
-      const label = `${district}, УИК № ${uik}. На участке: ${active}. Ушли: ${left}. Всего: ${total}.`;
-      return `<button type="button" class="uik-cube${color}" data-district="${escapeHtml(district)}" data-uik="${uik}"
-        title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}">
-        <strong>${uik}</strong><span class="uik-counts"><span>${active}</span><span>${left}</span><span>${total}</span></span>
-      </button>`;
-    }
-
-    function updateCoverageStats() {
-      const areas = coverageStats();
-      const grid = document.getElementById('districtCoverageGrid');
-      const matrix = document.getElementById('matrixCoverageCard');
-      const isRegional = panelRole === 'Штаб';
-      matrix.classList.toggle('hidden-field', !isRegional);
-      document.getElementById('districtCoverageLegend').hidden = isRegional;
-      grid.className = isRegional ? 'district-coverage-grid' : 'uik-cubes';
-      let total = 0;
-      let covered = 0;
-      const summaries = [];
-      const groups = [];
-      for (const {district, stations} of areas) {
-        const known = stations.filter(station => station.total > 0).length;
-        total += stations.length;
-        covered += known;
-        if (isRegional) {
-          const percent = stations.length ? Math.round(known / stations.length * 100) : 0;
-          summaries.push(`<button type="button" class="dist-cov-item" data-district="${escapeHtml(district)}">
-            <span class="dist-cov-name">${escapeHtml(district)}</span>
-            <span class="dist-cov-stats">
-              <span class="dist-cov-covered"><span aria-hidden="true">🟢</span> <b>${known}</b> / ${stations.length} (${percent}%)</span>
-              <span class="dist-cov-empty"><span aria-hidden="true">🟡</span> <b>${stations.length - known}</b> без набл.</span>
-            </span>
-          </button>`);
-        }
-        groups.push(`${isRegional ? `<h3 class="uik-area-title">${escapeHtml(district)}</h3>` : ''}
-          <div class="uik-cubes">${stations.map(station => coverageTile(district, station)).join('')}</div>`);
-      }
-      grid.innerHTML = (isRegional ? summaries : groups).join('');
-      document.getElementById('matrixCoverageContent').innerHTML = isRegional ? groups.join('') : '';
-      document.getElementById('covActiveTotal').textContent = `Задействовано: ${covered} / ${total} (${total ? Math.round(covered / total * 100) : 0}%)`;
-      document.getElementById('covEmptyTotal').textContent = `Без отметок: ${total - covered}`;
-    }
-
-    function showEmptyUiksModal() {
-      let neverVisited = 0;
-      let allLeft = 0;
-      const sections = coverageStats().map(({district, stations}) => {
-        const tiles = stations.filter(station => !station.active).map(({uik, left, total}) => {
-          const status = total ? 'УШЕЛ' : 'НЕ БЫЛО';
-          if (total) allLeft++;
-          else neverVisited++;
-          return `<button type="button" class="empty-uik-item ${total ? 'all-left' : 'never-visited'}"
-            data-district="${escapeHtml(district)}" data-uik="${uik}" data-status="${status}">
-            <strong>УИК № ${uik}</strong><span>${total ? `Все ушли: ${left}` : 'Никто не пришёл'}</span>
-          </button>`;
-        });
-        return tiles.length ? `<h3 class="uik-area-title">${escapeHtml(district)}</h3><div class="empty-uik-grid">${tiles.join('')}</div>` : '';
-      });
-      document.getElementById('emptyUiksTotalText').textContent =
-        `Без наблюдателей сейчас: ${allLeft + neverVisited}. Все ушли: ${allLeft}. Никто не пришёл: ${neverVisited}.`;
-      document.getElementById('emptyUiksContent').innerHTML = sections.join('') || '<p>На всех участках есть наблюдатели.</p>';
-      document.getElementById('emptyUiksModal').showModal();
-    }
-
-    ['districtCoverageGrid', 'matrixCoverageContent', 'emptyUiksContent'].forEach(id => {
-      document.getElementById(id).addEventListener('click', event => {
-        const button = event.target.closest('button[data-district]');
-        if (!button) return;
-        const {district, uik = '', status} = button.dataset;
-        if (status) {
-          resetFilters(false);
-          msStatus.selectOnly(status);
-          document.getElementById('emptyUiksModal').close();
-        }
-        msDistrict.selectOnly(district);
-        document.getElementById('filterUik').value = uik;
-        applyAllFilters();
-      });
-    });
-
-    async function fetchAndRenderData() {
-      if (isRefreshing) return;
-      isRefreshing = true;
-      btnRefresh.disabled = true;
-      refreshText.textContent = "Загрузка...";
-      
-      const requestToken = panelToken;
-      try {
-        const json = await callServer('getDashboardData', {token:requestToken});
-        if (panelToken === requestToken) {
-          globalData = json.data;
-          updateCoverageStats();
-          applyAllFilters();
-          showToast('Данные обновлены');
-        }
-      } catch (error) {
-        if (panelToken === requestToken) {
-          showToast(error.message, true);
-          if (error.code === 'AUTH') logout();
-        }
-      } finally {
-        let countdown = REFRESH_COOLDOWN;
-        refreshText.textContent = `Обновляем данные... ${countdown} сек`;
-        
-        const timerId = setInterval(() => {
-          countdown--;
-          if (countdown > 0) {
-            refreshText.textContent = `Обновляем данные... ${countdown} сек`;
-          } else {
-            clearInterval(timerId);
-            btnRefresh.disabled = false;
-            refreshText.textContent = "Обновить данные";
-            isRefreshing = false;
-          }
-        }, 1000);
-      }
-    }
-
-    function countUniquePersons(dataArray) {
-      return getUniqueRecords(dataArray).length + dataArray.filter(item => item.status === 'НЕ БЫЛО').length;
-    }
-
-    // A person can have more than one visit at the same polling station.
-    function getUniqueRecords(records) {
-      const people = new Map();
-      for (const record of records) {
-        if (record.status === 'НЕ БЫЛО') continue;
-        const key = personKey(record);
-        const existing = people.get(key);
-        if (!existing) {
-          people.set(key, {...record});
-          continue;
-        }
-        if (record.status === 'НА УЧАСТКЕ') existing.status = record.status;
-        const note = String(record.note ?? '').trim();
-        const existingNote = String(existing.note ?? '');
-        if (note && !existingNote.includes(note)) {
-          existing.note = [existingNote, note].filter(Boolean).join('; ');
-        }
-      }
-      return [...people.values()];
-    }
-
-    function updateResetButtonState() {
-      const searchVal = document.getElementById('searchInput').value.trim();
-      const distVals = msDistrict ? msDistrict.getValues() : [];
-      const uikVal = document.getElementById('filterUik').value.trim();
-      const fioVal = document.getElementById('filterFio').value.trim();
-      const orgVals = msOrg ? msOrg.getValues() : [];
-      const obsStatusVals = msObsStatus ? msObsStatus.getValues() : [];
-      const statusVals = msStatus ? msStatus.getValues() : [];
-      const noteVals = msNote ? msNote.getValues() : [];
-
-      const hasActiveFilters = Boolean(searchVal || distVals.length || uikVal || fioVal || orgVals.length ||
-        obsStatusVals.length || statusVals.length || noteVals.length ||
-        document.getElementById('filterArrive').value || document.getElementById('filterLeave').value);
-      
-      const uniquePersonsCount = countUniquePersons(filteredData);
-      btnResetFilters.disabled = !hasActiveFilters;
-      btnResetFilters.innerHTML = `<span>🗑️</span> Сбросить фильтры (${uniquePersonsCount})`;
-    }
-
-    function applyAllFilters() {
-      const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
-      const distVals = msDistrict ? msDistrict.getValues() : [];
-      const uikVal = document.getElementById('filterUik').value.trim();
-      const fioVal = document.getElementById('filterFio').value.toLowerCase().trim();
-      const orgVals = msOrg ? msOrg.getValues() : [];
-      const obsStatusVals = msObsStatus ? msObsStatus.getValues() : [];
-      const statusVals = msStatus ? msStatus.getValues() : [];
-      const noteVals = msNote ? msNote.getValues() : [];
-      
-      const userRole = panelRole;
-      const arriveAfter = timeInMinutes(document.getElementById('filterArrive').value);
-      const leaveAfter = timeInMinutes(document.getElementById('filterLeave').value);
-
-      const matchesOtherFilters = (item) => {
-        if (searchVal) {
-          const matchSearch = item.uik.toLowerCase().includes(searchVal) ||
-                              item.observer.toLowerCase().includes(searchVal) ||
-                              item.district.toLowerCase().includes(searchVal) ||
-                              item.org.toLowerCase().includes(searchVal);
-          if (!matchSearch) return false;
-        }
-
-        if (distVals.length > 0 && !distVals.includes(item.district)) return false;
-        if (uikVal && String(item.uik).trim() !== uikVal) return false;
-        if (fioVal && !item.observer.toLowerCase().includes(fioVal)) return false;
-
-        if (orgVals.length > 0) {
-          let matchOrg = false;
-          for(let o of orgVals) {
-            if (o === "СМИ" && item.org.startsWith("СМИ")) matchOrg = true;
-            else if (o === "Наблюдатели от иностранных государств" && item.org.startsWith("Наблюдатели от иностранных государств")) matchOrg = true;
-            else if (o === "Наблюдатели международных организаций" && item.org.startsWith("Наблюдатели международных организаций")) matchOrg = true;
-            else if (item.org.includes(o)) matchOrg = true;
-          }
-          if (!matchOrg) return false;
-        }
-
-        if (obsStatusVals.length > 0 && !obsStatusVals.includes(item.obsStatus)) return false;
-
-        if (noteVals.length > 0) {
-          const hasNote = item.note && String(item.note).trim() !== "";
-          let matchNote = false;
-          if (noteVals.includes("есть") && hasNote) matchNote = true;
-          if (noteVals.includes("нет") && !hasNote) matchNote = true;
-          if (!matchNote) return false;
-        }
-
-        if (arriveAfter !== null) {
-          const arrive = timeInMinutes(item.arrive);
-          if (arrive === null || arrive < arriveAfter) return false;
-        }
-        if (leaveAfter !== null && item.status !== 'НА УЧАСТКЕ') {
-          const leave = timeInMinutes(item.leave);
-          if (leave === null || leave < leaveAfter) return false;
-        }
-        return true;
-      };
-
-      let filteredRecords = globalData.filter(item => {
-        if (item.status === "НЕ БЫЛО") return false;
-        return matchesOtherFilters(item);
-      });
-
-      filteredData = [];
-
-      filteredRecords.forEach(item => {
-        if (statusVals.length === 0 || statusVals.includes(item.status)) {
-          filteredData.push(item);
-        }
-      });
-
-      if (arriveAfter === null && leaveAfter === null && statusVals.includes("НЕ БЫЛО")) {
-        let districtsToCheck = distVals.length > 0 ? distVals : (userRole !== "Штаб" ? [userRole] : DISTRICT_ORDER);
-        
-        districtsToCheck.forEach(dist => {
-          const allUiksInDist = UIK_DATABASE[dist] || [];
-          allUiksInDist.forEach(uikNum => {
-            const strUik = String(uikNum);
-            if (uikVal && strUik !== uikVal) return;
-            
-            const hasRecord = filteredRecords.some(r => r.district === dist && String(r.uik).trim() === strUik);
-            
-            if (!hasRecord) {
-              filteredData.push({
-                district: dist,
-                uik: strUik,
-                observer: "—",
-                org: "—",
-                obsStatus: "—",
-                arrive: "—",
-                leave: "—",
-                status: "НЕ БЫЛО",
-                note: ""
-              });
-            }
-          });
-        });
-      }
-
-      filteredData.sort((a, b) => (parseInt(a.uik, 10) || 0) - (parseInt(b.uik, 10) || 0));
-      renderTable(filteredData);
-      updateResetButtonState();
-    }
-
-    function resetFilters(render = true) {
-      document.getElementById('filterArrive').value = '';
-      document.getElementById('filterLeave').value = '';
-      document.getElementById('searchInput').value = '';
-      document.getElementById('filterUik').value = '';
-      document.getElementById('filterFio').value = '';
-      if(msDistrict) msDistrict.clear();
-      if(msOrg) msOrg.clear();
-      if(msObsStatus) msObsStatus.clear();
-      if(msStatus) msStatus.clear();
-      if(msNote) msNote.clear();
-      if (render) applyAllFilters();
-    }
-
-    // РЕНДЕР ТАБЛИЦЫ С УЧЕТОМ УНИКАЛЬНОСТИ ЧЕЛОВЕКА НА УИКЕ
-    function renderTable(dataArray) {
-      let html = "";
-      const people = getUniqueRecords(globalData);
-      const active = people.filter(item => item.status === 'НА УЧАСТКЕ').length;
-      const left = people.filter(item => item.status === 'УШЕЛ').length;
-      const uniqueObservers = people.length;
-
-      if (dataArray.length === 0) {
-        html = `<tr><td colspan="10" style="text-align: center; padding: 50px 20px; font-size: 1.1rem; color: var(--text-dim); background: var(--bg-main);">🔍 По выбранным фильтрам ничего не найдено</td></tr>`;
-      } else {
-        const personKeyMap = new Map();
-        let uniqueNumberCounter = 0;
-
-        dataArray.forEach((item) => {
-          let badgeClass = "bg-green";
-          if (item.status === "УШЕЛ") badgeClass = "bg-red";
-          else if (item.status === "НЕ БЫЛО") badgeClass = "bg-orange";
-
-          const noteDisplay = item.note ? `<span class="note-marker">${escapeHtml(item.note)}</span>` : '';
-          const orgDisplay = getOrgBadgeHtml(item.org);
-
-          // ЛОГИКА ПРИСВОЕНИЯ НОМЕРА №:
-          let rowNumber;
-          if (item.status === "НЕ БЫЛО") {
-            uniqueNumberCounter++;
-            rowNumber = uniqueNumberCounter;
-          } else {
-            const key = personKey(item);
-            if (personKeyMap.has(key)) {
-              rowNumber = personKeyMap.get(key);
-            } else {
-              uniqueNumberCounter++;
-              personKeyMap.set(key, uniqueNumberCounter);
-              rowNumber = uniqueNumberCounter;
-            }
-          }
-
-          html += `<tr>
-            <td><b>${rowNumber}</b></td>
-            <td><b>${escapeHtml(item.district)}</b></td>
-            <td><b>${escapeHtml(item.uik)}</b></td>
-            <td>${escapeHtml(item.observer)}</td>
-            <td style="font-size:0.8rem;">${orgDisplay}</td>
-            <td>${escapeHtml(item.obsStatus)}</td>
-            <td>${escapeHtml(formatTime(item.arrive))}</td>
-            <td>${escapeHtml(formatTime(item.leave))}</td>
-            <td><span class="status-badge ${badgeClass}">${escapeHtml(item.status)}</span></td>
-            <td style="font-size:0.8rem;">${noteDisplay}</td>
-          </tr>`;
-        });
-      }
-
-      document.getElementById('tableBody').innerHTML = html;
-      document.getElementById('statActive').textContent = active;
-      document.getElementById('statLeft').textContent = left;
-      document.getElementById('statUnique').textContent = uniqueObservers;
-    }
-
-    // ==========================================
-    // ЛОГИКА ГЕНЕРАЦИИ ТАБЛИЦЫ ДЛЯ ТИК
-    // ==========================================
-    let excelRequest;
-    async function loadExcel() {
-      if (window.ExcelJS) return true;
-      if (!excelRequest) excelRequest = new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js';
-        const timeout = setTimeout(() => { script.remove(); reject(); }, 8000);
-        script.onload = () => { clearTimeout(timeout); resolve(); };
-        script.onerror = () => { clearTimeout(timeout); script.remove(); reject(); };
-        document.head.appendChild(script);
-      });
-      try {
-        await excelRequest;
-        return Boolean(window.ExcelJS);
-      } catch (_) {
-        excelRequest = null;
-        showToast('Для выгрузки Excel требуется подключение к интернету.', true);
-        return false;
-      }
-    }
-
-    // ==========================================
-    // СТАНДАРТНЫЙ ЭКСПОРТ ТАБЛИЦЫ
-    // ==========================================
-    async function exportToExcel() {
-      if (!await loadExcel()) return;
-      btnExport.disabled = true;
-
-      try {
-        const distVals = msDistrict ? msDistrict.getValues() : [];
-        const userRole = panelRole;
-        
-        let areaName = "Область_Список";
-        if (distVals.length === 1) areaName = distVals[0];
-        else if (userRole !== "Штаб") areaName = userRole;
-
-        const now = new Date();
-        const hh = String(now.getHours()).padStart(2, '0');
-        const mm = String(now.getMinutes()).padStart(2, '0');
-        const fileName = `${areaName}_${hh}-${mm}.xlsx`;
-
-        const workbook = new ExcelJS.Workbook();
-
-        function addSheetWithData(sheetName, data) {
-          const ws = workbook.addWorksheet(sheetName);
-          
-          ws.columns = [
-            { header: '№', key: 'index', width: 5 },
-            { header: 'Район / Город', key: 'district', width: 20 },
-            { header: 'УИК', key: 'uik', width: 10 },
-            { header: 'ФИО Наблюдателя', key: 'observer', width: 30 },
-            { header: 'Организация', key: 'org', width: 35 },
-            { header: 'Статус', key: 'obsStatus', width: 22 },
-            { header: 'Пришел', key: 'arrive', width: 10 },
-            { header: 'Ушел', key: 'leave', width: 10 },
-            { header: 'Наличие', key: 'status', width: 15 },
-            { header: 'Примечание', key: 'note', width: 35 }
-          ];
-
-          data.forEach((item, idx) => {
-            ws.addRow({
-              index: idx + 1,
-              district: item.district,
-              uik: item.uik,
-              observer: item.observer,
-              org: item.org,
-              obsStatus: item.obsStatus,
-              arrive: formatTimeExcel(item.arrive),
-              leave: formatTimeExcel(item.leave),
-              status: item.status,
-              note: item.note || ''
-            });
-          });
-
-          ws.eachRow({ includeEmpty: false }, function(row, rowNumber) {
-            row.eachCell({ includeEmpty: false }, function(cell, colNumber) {
-              cell.border = { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } };
-              if (rowNumber === 1) {
-                cell.font = { bold: true };
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2EFDA' } };
-              }
-            });
-          });
-        }
-
-        addSheetWithData('Главная', filteredData);
-
-        if (userRole === "Штаб" && distVals.length === 0) {
-          const distSet = new Set();
-          filteredData.forEach(item => { if (item.district && item.district !== "—") distSet.add(item.district); });
-          Array.from(distSet).forEach(dist => {
-            const distData = filteredData.filter(item => item.district === dist);
-            if (distData.length > 0) addSheetWithData(dist.substring(0, 31), distData);
-          });
-        } else {
-          const uikSet = new Set();
-          filteredData.forEach(item => { if (item.uik && item.uik !== "—") uikSet.add(item.uik); });
-          Array.from(uikSet).sort((a, b) => parseInt(a, 10) - parseInt(b, 10)).forEach(uikNum => {
-            const uikData = filteredData.filter(item => item.uik === String(uikNum));
-            if (uikData.length > 0) addSheetWithData(`УИК ${uikNum}`, uikData);
-          });
-        }
-
-        const buffer = await workbook.xlsx.writeBuffer();
-        const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        showToast("Файл Excel успешно скачан!");
-      } catch(e) {
-        console.error(e);
-        showToast("Ошибка при выгрузке", true);
-      } finally {
-        let countdown = EXPORT_COOLDOWN;
-        exportText.textContent = `Загрузка... ${countdown} сек`;
-        
-        const timerId = setInterval(() => {
-          countdown--;
-          if (countdown > 0) {
-            exportText.textContent = `Загрузка... ${countdown} сек`;
-          } else {
-            clearInterval(timerId);
-            btnExport.disabled = false;
-            exportText.textContent = "Выгрузить текущий список";
-          }
-        }, 1000);
-      }
-    }
-  </script>
-</body>
-</html>
+                  <option value="Иностранный
