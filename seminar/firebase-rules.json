@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "seminar6v2": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.uid === 'REPLACE_WITH_ADMIN_UID'",
+      "groups": {
+        "$groupId": {
+          "answer": {
+            ".write": "auth != null && auth.isAnonymous === true && newData.isString() && newData.val().length <= 20000"
+          }
+        }
+      }
+    }
+  }
+}
