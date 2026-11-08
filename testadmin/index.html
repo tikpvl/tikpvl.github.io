@@ -2,445 +2,332 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Мониторинг тестирования — Павлодарская область</title>
 <style>
-:root {
-  --blue:#104d80;
-  --dark:#0a345b;
-  --bg:#e3eaf2;
-  --line:#d2dce8;
-  --muted:#63758b;
-  --ink:#16293f;
+:root{
+ --blue:#104d80;--dark:#0a345b;--bg:#e3eaf2;
+ --line:#d2dce8;--muted:#63758b;--ink:#16293f
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;
+ margin:0;background:var(--bg);color:var(--ink);
+ font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif
 }
 header{
-  padding:16px 24px;
-  background:linear-gradient(110deg,#0a355c,#146295);
-  color:white;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
+ padding:16px 24px;
+ background:linear-gradient(110deg,#0a355c,#146295);
+ color:white;display:flex;justify-content:space-between;
+ align-items:center;gap:15px
 }
 header b{font-size:19px}
 header small{display:block;opacity:.85;margin-top:3px}
 main{padding:20px 24px 40px}
 .card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:19px;
-  margin-bottom:17px;
-  box-shadow:0 2px 6px #16293f0b;
+ background:#fff;border:1px solid var(--line);
+ border-radius:12px;padding:19px;margin-bottom:17px;
+ box-shadow:0 2px 6px #16293f0b
 }
 h2{font-size:16px;color:var(--dark);margin:0 0 12px}
 .hide{display:none!important}
 button,input,select{
-  font:inherit;
-  min-height:39px;
-  padding:8px 11px;
-  border:1px solid #c7d5e4;
-  border-radius:8px;
-  background:white;
-  color:var(--ink);
+ font:inherit;min-height:39px;padding:8px 11px;
+ border:1px solid #c7d5e4;border-radius:8px;
+ background:white;color:var(--ink)
 }
 button{cursor:pointer;font-weight:650}
 button.primary{
-  background:var(--blue);
-  border-color:var(--blue);
-  color:white;
+ background:var(--blue);border-color:var(--blue);color:white
 }
 button:hover:not(:disabled){filter:brightness(.97)}
 button:disabled{opacity:.5;cursor:not-allowed}
 label{
-  display:block;
-  font-size:12px;
-  font-weight:650;
-  color:#52677e;
-  margin-bottom:4px;
+ display:block;font-size:12px;font-weight:650;
+ color:#52677e;margin-bottom:4px
 }
 .filters{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
-  gap:11px;
-  align-items:end;
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+ gap:11px;align-items:end
 }
 .filters input,.filters select,.filters button{width:100%}
 .datebox{
-  margin-top:15px;
-  background:#f7fafe;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:13px;
+ margin-top:15px;background:#f7fafe;border:1px solid var(--line);
+ border-radius:10px;padding:13px
 }
 .datebar{display:flex;align-items:end;gap:9px;flex-wrap:wrap}
 .datebar input{min-width:185px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
 .chip{
-  display:inline-flex;
-  gap:8px;
-  align-items:center;
-  background:#dbeaff;
-  color:var(--dark);
-  border-radius:99px;
-  padding:3px 7px 3px 12px;
-  font-size:12px;
-  font-weight:650;
+ display:inline-flex;gap:8px;align-items:center;background:#dbeaff;
+ color:var(--dark);border-radius:99px;
+ padding:3px 7px 3px 12px;font-size:12px;font-weight:650
 }
 .chip button{
-  min-height:22px;
-  border:0;
-  background:transparent;
-  padding:0 5px;
-  font-size:18px;
+ min-height:22px;border:0;background:transparent;
+ padding:0 5px;font-size:18px
 }
 .sub{color:var(--muted);font-size:12px;margin:9px 0 0}
-.warning{color:#b91c1c!important}
 .kpis{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:12px;
-  margin-bottom:17px;
+ display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+ gap:12px;margin-bottom:17px
 }
 .kpi{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:11px;
-  padding:16px;
+ background:#fff;border:1px solid var(--line);
+ border-radius:11px;padding:16px
 }
 .kpi b{display:block;color:var(--dark);font-size:27px}
 .kpi span{color:var(--muted);font-size:12px}
-.layout{display:grid;grid-template-columns:1fr 1fr;gap:17px}
 .flex{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:12px;
+ display:flex;align-items:center;justify-content:space-between;
+ gap:12px;margin-bottom:12px;flex-wrap:wrap
 }
 .flex h2{margin:0}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:9px}
 table{
-  border-collapse:collapse;
-  width:100%;
-  min-width:960px;
-  font-size:12px;
+ border-collapse:collapse;width:100%;min-width:1050px;
+ font-size:12px
 }
 th,td{
-  padding:10px;
-  border-bottom:1px solid var(--line);
-  text-align:left;
-  white-space:nowrap;
+ padding:11px 10px;border-bottom:1px solid var(--line);
+ text-align:left;vertical-align:middle
 }
 th{
-  background:#f3f7fc;
-  color:var(--dark);
-  cursor:pointer;
+ background:#f3f7fc;color:var(--dark);
+ white-space:nowrap;cursor:pointer
 }
-td.wrong{
-  white-space:normal;
-  min-width:175px;
-  max-width:300px;
-  overflow-wrap:anywhere;
+tbody tr:hover{background:#f8fbff}
+td:nth-child(1){white-space:nowrap}
+td:nth-child(3),td:nth-child(4){
+ text-align:center;white-space:nowrap;font-weight:650
 }
-td.fio{
-  min-width:200px;
-  white-space:normal;
-  overflow-wrap:anywhere;
+td:nth-child(5){min-width:200px}
+td:nth-child(6),td:nth-child(7),td:nth-child(8){
+ text-align:center
 }
-td.num{min-width:80px}
+td:nth-child(9){min-width:155px;max-width:280px;overflow-wrap:anywhere}
+td:last-child{text-align:center}
 .pill{padding:4px 8px;border-radius:5px;font-weight:800}
 .green{color:#147341;background:#d9f9e6}
 .yellow{color:#a35b0c;background:#fff0bd}
 .red{color:#b62626;background:#ffe0e0}
 .delete{
-  min-height:29px;
-  padding:2px 9px;
-  color:#c52626;
-  border-color:#ffc6c6;
+ min-height:29px;padding:2px 9px;
+ color:#c52626;border-color:#ffc6c6
 }
 .pager{
-  display:flex;
-  gap:8px;
-  justify-content:flex-end;
-  align-items:center;
-  margin-top:10px;
+ display:flex;gap:8px;justify-content:flex-end;
+ align-items:center;margin-top:10px
 }
 .pager button{min-height:32px}
+.layout{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:17px
+}
 .barrow{
-  display:grid;
-  grid-template-columns:160px 1fr 115px;
-  gap:10px;
-  align-items:center;
-  margin:10px 0;
-  font-size:12px;
+ display:grid;grid-template-columns:160px 1fr 115px;
+ gap:10px;align-items:center;margin:10px 0;font-size:12px
 }
 .track{
-  height:13px;
-  border-radius:99px;
-  background:#e2e8f0;
-  overflow:hidden;
+ height:13px;border-radius:99px;
+ background:#e2e8f0;overflow:hidden
 }
 .track i{
-  display:block;
-  height:100%;
-  background:linear-gradient(90deg,#104d80,#228ac3);
+ display:block;height:100%;
+ background:linear-gradient(90deg,#104d80,#228ac3)
 }
 .value{text-align:right}
 #login{max-width:370px;margin:65px auto;padding:28px}
 #login input,#login button{
-  display:block;
-  width:100%;
-  margin-bottom:10px;
+ display:block;width:100%;margin-bottom:10px
 }
 #login h2{text-align:center;margin-bottom:18px}
 .error{color:#c72525;font-size:12px}
 
-/* ПОЛНОЭКРАННАЯ ЗАГРУЗКА */
-#loader-overlay{
-  position:fixed;
-  inset:0;
-  z-index:99999;
-  background:rgba(9,22,42,.85);
-  backdrop-filter:blur(9px);
-  -webkit-backdrop-filter:blur(9px);
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  user-select:none;
+/* ЗАГРУЗКА */
+#loader{
+ position:fixed;inset:0;z-index:99999;
+ background:rgba(9,22,42,.85);
+ backdrop-filter:blur(9px);
+ display:none;flex-direction:column;
+ align-items:center;justify-content:center;
+ user-select:none
 }
-#loader-overlay.active{display:flex}
+#loader.active{display:flex}
 .loader-num{
-  font-size:clamp(95px,19vw,235px);
-  font-weight:900;
-  font-style:italic;
-  letter-spacing:-7px;
-  line-height:1;
-  font-variant-numeric:tabular-nums;
-  background:linear-gradient(
-    135deg,#fff 12%,#f59e0b 75%,#fcd34d
-  );
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-  filter:drop-shadow(0 9px 20px #0005);
+ font-size:clamp(95px,19vw,235px);
+ font-weight:900;font-style:italic;letter-spacing:-7px;
+ line-height:1;font-variant-numeric:tabular-nums;
+ background:linear-gradient(135deg,#fff 12%,#f59e0b 75%,#fcd34d);
+ -webkit-background-clip:text;background-clip:text;color:transparent
 }
 .loader-caption{
-  margin-top:22px;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:3px;
-  color:#f1f5f9;
-  text-align:center;
+ margin-top:22px;font-size:13px;font-weight:700;
+ letter-spacing:3px;color:#f1f5f9;text-align:center
 }
 .loader-track{
-  width:min(440px,82vw);
-  height:7px;
-  background:#34455e;
-  margin-top:22px;
-  border-radius:20px;
-  overflow:hidden;
+ width:min(440px,82vw);height:7px;
+ background:#34455e;margin-top:22px;
+ border-radius:20px;overflow:hidden
 }
 #loader-progress{
-  width:0%;
-  height:100%;
-  background:linear-gradient(90deg,#f59e0b,#fde68a);
-  border-radius:20px;
-  transition:width .2s ease;
+ width:0;height:100%;border-radius:20px;
+ background:linear-gradient(90deg,#f59e0b,#fde68a);
+ transition:width .2s ease
 }
-.loader-detail{
-  color:#aabbcf;
-  font-size:12px;
-  margin-top:12px;
-  text-align:center;
+#loader-detail{
+ margin-top:12px;color:#aabbcf;font-size:12px
+}
+@media(max-width:1000px){
+ .kpis{grid-template-columns:repeat(3,1fr)}
 }
 @media(max-width:850px){
-  .layout{grid-template-columns:1fr}
-  header{padding:14px}
-  main{padding:12px}
-  .barrow{grid-template-columns:110px 1fr 90px}
-  .card{padding:13px}
+ .layout{grid-template-columns:1fr}
+ .kpis{grid-template-columns:repeat(2,1fr)}
+ header{padding:14px}main{padding:12px}
+ .barrow{grid-template-columns:110px 1fr 90px}
+ .card{padding:13px}
 }
 </style>
 </head>
-
 <body>
 
-<div id="loader-overlay" role="status" aria-live="off">
-  <div class="loader-num" id="loader-percent">0%</div>
-  <div class="loader-caption">СИНХРОНИЗАЦИЯ ДАННЫХ</div>
-  <div class="loader-track">
-    <div id="loader-progress"></div>
-  </div>
-  <div class="loader-detail" id="loader-detail">
-    Подключение к серверу
-  </div>
+<div id="loader" role="status">
+ <div class="loader-num" id="loader-percent">0%</div>
+ <div class="loader-caption">СИНХРОНИЗАЦИЯ ДАННЫХ</div>
+ <div class="loader-track"><div id="loader-progress"></div></div>
+ <div id="loader-detail">Подключение к серверу</div>
 </div>
 
 <header>
-  <div>
-    <b>Мониторинг тестирования</b>
-    <small>
-      Территориальная избирательная комиссия
-      Павлодарской области
-    </small>
-  </div>
-  <button id="logout" class="hide">Выйти</button>
+ <div>
+  <b>Мониторинг тестирования</b>
+  <small>Территориальная избирательная комиссия Павлодарской области</small>
+ </div>
+ <button id="logout" class="hide">Выйти</button>
 </header>
 
 <main>
-  <section id="login" class="card">
-    <h2>Вход в админ-панель</h2>
-    <input id="key" type="password"
-           placeholder="Пароль администратора">
-    <button id="login-button" class="primary">Войти</button>
-    <p class="error" id="login-error"></p>
+ <section id="login" class="card">
+  <h2>Вход в админ-панель</h2>
+  <input id="key" type="password" placeholder="Пароль администратора">
+  <button class="primary" id="login-button">Войти</button>
+  <p id="login-error" class="error"></p>
+ </section>
+
+ <div id="app" class="hide">
+  <section class="card">
+   <div class="filters">
+    <div>
+     <label>Район / город</label>
+     <select id="district"><option value="">Все</option></select>
+    </div>
+    <div>
+     <label>Тип комиссии</label>
+     <select id="kind">
+      <option value="">УИК и ОИК</option>
+      <option value="УИК">УИК</option>
+      <option value="ОИК">ОИК</option>
+     </select>
+    </div>
+    <div>
+     <label>Результат от, %</label>
+     <input id="min" type="number" min="0" max="100" placeholder="0">
+    </div>
+    <div>
+     <label>Результат до, %</label>
+     <input id="max" type="number" min="0" max="100" placeholder="100">
+    </div>
+    <div>
+     <label>Поиск по ФИО / №</label>
+     <input id="search" placeholder="Фамилия или номер">
+    </div>
+    <button id="reset">Сбросить</button>
+    <button id="reload" class="primary">Обновить данные</button>
+   </div>
+
+   <div class="datebox">
+    <div class="datebar">
+     <div>
+      <label>Дата тестирования</label>
+      <input id="date" type="date" lang="ru">
+     </div>
+     <button id="add-date" class="primary">Добавить дату</button>
+     <button id="all-dates">Все даты</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <p class="sub" id="date-label">Показаны результаты за все даты</p>
+   </div>
+   <p class="sub" id="updated"></p>
+   <p class="sub" id="freshness"></p>
   </section>
 
-  <div id="app" class="hide">
-    <section class="card">
-      <div class="filters">
-        <div>
-          <label>Район / город</label>
-          <select id="district">
-            <option value="">Все</option>
-          </select>
-        </div>
-        <div>
-          <label>Тип комиссии</label>
-          <select id="kind">
-            <option value="">УИК и ОИК</option>
-            <option>УИК</option>
-            <option>ОИК</option>
-          </select>
-        </div>
-        <div>
-          <label>Результат от, %</label>
-          <input type="number" min="0" max="100"
-                 id="min" placeholder="0">
-        </div>
-        <div>
-          <label>Результат до, %</label>
-          <input type="number" min="0" max="100"
-                 id="max" placeholder="100">
-        </div>
-        <div>
-          <label>Поиск по ФИО / №</label>
-          <input id="search" placeholder="Фамилия или номер">
-        </div>
-        <button id="reset">Сбросить</button>
-        <button class="primary" id="reload">
-          Обновить данные
-        </button>
-      </div>
+  <div class="kpis" id="kpis"></div>
 
-      <div class="datebox">
-        <div class="datebar">
-          <div>
-            <label>Дата тестирования</label>
-            <input id="date" type="date" lang="ru">
-          </div>
-          <button class="primary" id="add-date">
-            Добавить дату
-          </button>
-          <button id="all-dates">Все даты</button>
-        </div>
-        <div id="chips" class="chips"></div>
-        <p class="sub" id="date-label">
-          Показаны результаты за все даты
-        </p>
-      </div>
+  <section class="card">
+   <div class="flex">
+    <h2>Сдавшие <span id="count"></span></h2>
+    <button id="csv">Скачать CSV</button>
+   </div>
+   <div class="scroll">
+    <table>
+     <thead><tr id="head"></tr></thead>
+     <tbody id="rows"></tbody>
+    </table>
+   </div>
+   <div class="pager">
+    <span id="pages-label" class="sub"></span>
+    <button id="prev">Назад</button>
+    <button id="next">Вперёд</button>
+   </div>
+  </section>
 
-      <p class="sub" id="updated"></p>
-      <p class="sub" id="freshness"></p>
-    </section>
-
-    <div class="kpis" id="kpis"></div>
-
-    <section class="card">
-      <div class="flex">
-        <h2>
-          Сдавшие <span id="count"></span>
-        </h2>
-        <button id="csv">Скачать CSV</button>
-      </div>
-
-      <div class="scroll">
-        <table>
-          <thead><tr id="head"></tr></thead>
-          <tbody id="rows"></tbody>
-        </table>
-      </div>
-
-      <div class="pager">
-        <span class="sub" id="pages-label"></span>
-        <button id="prev">Назад</button>
-        <button id="next">Вперёд</button>
-      </div>
-    </section>
-
-    <div class="layout">
-      <section class="card">
-        <h2>Средний результат по районам и городам</h2>
-        <div id="by-district"></div>
-      </section>
-      <section class="card">
-        <h2>Распределение результатов</h2>
-        <div id="hist"></div>
-        <h2 style="margin-top:23px">УИК и ОИК</h2>
-        <div id="by-kind"></div>
-      </section>
-    </div>
-
-    <section class="card">
-      <h2>Чаще всего ошибались (по выбранным фильтрам)</h2>
-      <ol id="wrong"></ol>
-    </section>
+  <div class="layout">
+   <section class="card">
+    <h2>Средний результат по районам и городам</h2>
+    <div id="by-district"></div>
+   </section>
+   <section class="card">
+    <h2>Распределение результатов</h2>
+    <div id="hist"></div>
+    <h2 style="margin-top:23px">УИК и ОИК</h2>
+    <div id="by-kind"></div>
+   </section>
   </div>
+
+  <section class="card">
+   <h2>Чаще всего ошибались (по выбранным фильтрам)</h2>
+   <ol id="wrong"></ol>
+  </section>
+ </div>
 </main>
 
 <script>
 "use strict";
 
 const SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbyHILsdW6BNbhgG9w0acbCBeQyVJ1a7CrK_bUJKcKts3_tJao_ujzS7VYObPfa9oquP/exec";
+"https://script.google.com/macros/s/AKfycbyHILsdW6BNbhgG9w0acbCBeQyVJ1a7CrK_bUJKcKts3_tJao_ujzS7VYObPfa9oquP/exec";
 
 const $ = id => document.getElementById(id);
-
-const esc = value => String(value ?? "").replace(
-  /[&<>"']/g,
-  c => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[c]
+const esc = v => String(v ?? "").replace(
+ /[&<>"']/g,
+ c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])
 );
 
 const selected = new Set();
 
 const HEADERS = [
-  ["date","Дата"],
-  ["district","Район / город"],
-  ["kind","Тип"],
-  ["num","№"],
-  ["fio","ФИО"],
-  ["ok","Верно"],
-  ["bad","Неверно"],
-  ["pct","%"],
-  ["wrong","Неверные вопросы"],
-  ["delete","Удалить"]
+ ["date","Дата"],
+ ["district","Район / город"],
+ ["kind","Тип"],
+ ["num","№"],
+ ["fio","ФИО"],
+ ["ok","Верно"],
+ ["bad","Неверно"],
+ ["pct","%"],
+ ["wrong","Неверные вопросы"],
+ ["delete","Удалить"]
 ];
 
 let records = [];
@@ -454,679 +341,447 @@ let loading = false;
 const PAGESIZE = 100;
 const FETCH_SIZE = 200;
 
-// ЗАГРУЗКА 0–100%
-function setProgress(value, detail) {
-  const p = Math.max(
-    0,Math.min(100,Math.round(value))
-  );
-  $("loader-percent").textContent = p + "%";
-  $("loader-progress").style.width = p + "%";
-  if (detail !== undefined) {
-    $("loader-detail").textContent = detail;
-  }
+// ЗАГРУЗКА
+function setProgress(value,detail) {
+ const p = Math.max(0,Math.min(100,Math.round(value)));
+ $("loader-percent").textContent = p + "%";
+ $("loader-progress").style.width = p + "%";
+ if (detail !== undefined) $("loader-detail").textContent = detail;
 }
-
 function startLoader() {
-  $("loader-overlay").classList.add("active");
-  setProgress(0,"Подключение к серверу");
-  $("reload").disabled = true;
-  $("reload").textContent = "Загрузка…";
+ $("loader").classList.add("active");
+ setProgress(0,"Подключение к серверу");
+ $("reload").disabled = true;
+ $("reload").textContent = "Загрузка…";
 }
-
 async function finishLoader() {
-  setProgress(100,"Данные обновлены");
-  await new Promise(resolve => setTimeout(resolve,450));
-  $("loader-overlay").classList.remove("active");
-  $("reload").disabled = false;
-  $("reload").textContent = "Обновить данные";
+ setProgress(100,"Данные обновлены");
+ await new Promise(resolve => setTimeout(resolve,400));
+ stopLoader();
 }
-
 function stopLoader() {
-  $("loader-overlay").classList.remove("active");
-  $("reload").disabled = false;
-  $("reload").textContent = "Обновить данные";
+ $("loader").classList.remove("active");
+ $("reload").disabled = false;
+ $("reload").textContent = "Обновить данные";
 }
 
+// ДАТЫ
 function iso(value) {
-  const s = String(value ?? "").trim();
-
-  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-  if (m) {
-    return m[1] + "-" +
-      m[2].padStart(2,"0") + "-" +
-      m[3].padStart(2,"0");
-  }
-
-  m = s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);
-  return m
-    ? m[3] + "-" + m[2].padStart(2,"0") +
-      "-" + m[1].padStart(2,"0")
-    : "";
+ const s = String(value ?? "").trim();
+ let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+ if (m) return m[1]+"-"+m[2].padStart(2,"0")+"-"+m[3].padStart(2,"0");
+ m = s.match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})/);
+ return m ? m[3]+"-"+m[2].padStart(2,"0")+"-"+m[1].padStart(2,"0") : "";
+}
+function dateMs(value) {
+ const d = iso(value);
+ if (!d) return 0;
+ const m = String(value).match(/(?:\s|T)(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+ const t = m ? m[1].padStart(2,"0")+":"+m[2]+":"+(m[3]||"00") : "00:00:00";
+ return new Date(d+"T"+t).getTime() || 0;
 }
 
-function dateMs(value) {
-  const d = iso(value);
-  if (!d) return 0;
-
-  const m = String(value).match(
-    /(?:\s|T)(\d{1,2}):(\d{2})(?::(\d{2}))?/
-  );
-
-  const time = m
-    ? m[1].padStart(2,"0") + ":" +
-      m[2] + ":" + (m[3] || "00")
-    : "00:00:00";
-
-  return new Date(d + "T" + time).getTime() || 0;
+// РАСПОЗНАВАНИЕ УИК И ОИК
+// Работает для "ОИК №12", "УИК 25", "ОИК№3".
+// Здесь нет ошибочного \b перед кириллицей.
+function commissionParts(value) {
+ const s = String(value ?? "").trim();
+ const m = s.match(/(?:^|\s)(УИК|ОИК)\s*№?\s*(\d+)/i);
+ if (m) return {kind:m[1].toUpperCase(),num:m[2]};
+ const k = s.match(/УИК|ОИК/i);
+ const n = s.match(/№\s*(\d+)/);
+ return {
+  kind:k ? k[0].toUpperCase() : "",
+  num:n ? n[1] : ""
+ };
 }
 
 function parse(v) {
-  const commission = String(
-    v.commission || v.kind || ""
-  ).trim();
+ const commission = String(v.commission || v.kind || "");
+ const parts = commissionParts(commission);
+ const ok = Number(v.ok) || 0;
+ const bad = Number(v.bad) || 0;
+ const ts = String(v.ts || "");
 
-  const m = commission.match(
-    /\b(УИК|ОИК)\s*№?\s*(\d*)/i
-  );
-
-  const ok = Number(v.ok) || 0;
-  const bad = Number(v.bad) || 0;
-  const ts = String(v.ts || "");
-
-  return {
-    ts,
-    date:dateMs(ts),
-    iso:iso(ts),
-    district:String(v.district || ""),
-    kind:m ? m[1].toUpperCase() : "",
-    num:m ? m[2] : String(v.num || ""),
-    fio:String(v.fio || ""),
-    ok,
-    bad,
-    pct:Math.round(100 * ok / Math.max(1,ok + bad)),
-    wrong:String(
-      v.wrong && v.wrong !== "—" ? v.wrong : ""
-    )
-  };
+ return {
+  ts,
+  date:dateMs(ts),
+  iso:iso(ts),
+  district:String(v.district || ""),
+  kind:parts.kind,
+  num:parts.num || String(v.num || ""),
+  fio:String(v.fio || ""),
+  ok,
+  bad,
+  pct:ok+bad > 0 ? Math.round(100*ok/(ok+bad)) : 0,
+  wrong:String(v.wrong && v.wrong !== "—" ? v.wrong : "")
+ };
 }
 
 function jsonp(params) {
-  return new Promise((resolve,reject) => {
-    const cb = "tikcb" + Date.now() + (++serial);
-    const script = document.createElement("script");
-    let finished = false;
-
-    const timer = setTimeout(() => {
-      finish(new Error("Нет ответа от сервера"));
-    },45000);
-
-    function finish(error,data) {
-      if (finished) return;
-      finished = true;
-      clearTimeout(timer);
-      delete window[cb];
-      script.remove();
-      error ? reject(error) : resolve(data);
-    }
-
-    window[cb] = data => finish(null,data);
-
-    script.onerror = () => finish(
-      new Error("Не удалось соединиться с Apps Script")
-    );
-
-    script.src = SCRIPT_URL + "?" +
-      new URLSearchParams({
-        ...params,
-        callback:cb,
-        _:String(Date.now())
-      });
-
-    document.head.appendChild(script);
+ return new Promise((resolve,reject) => {
+  const cb = "tikcb"+Date.now()+(++serial);
+  const script = document.createElement("script");
+  let done = false;
+  const timer = setTimeout(
+   () => finish(new Error("Нет ответа от сервера")),45000
+  );
+  function finish(error,data) {
+   if (done) return;
+   done = true;
+   clearTimeout(timer);
+   delete window[cb];
+   script.remove();
+   error ? reject(error) : resolve(data);
+  }
+  window[cb] = data => finish(null,data);
+  script.onerror = () => finish(new Error("Ошибка Apps Script"));
+  script.src = SCRIPT_URL+"?"+new URLSearchParams({
+   ...params,callback:cb,_:String(Date.now())
   });
+  document.head.appendChild(script);
+ });
 }
 
 async function load(key) {
-  if (loading) return false;
-  loading = true;
-  startLoader();
+ if (loading) return false;
+ loading = true;
+ startLoader();
 
-  try {
-    let raw = [];
-    let offset = 0;
-    let total = 0;
+ try {
+  let raw = [],offset = 0,total = 0;
 
-    do {
-      const result = await jsonp({
-        action:"list",
-        key,
-        offset:String(offset),
-        limit:String(FETCH_SIZE)
-      });
+  do {
+   const j = await jsonp({
+    action:"list",
+    key,
+    offset:String(offset),
+    limit:String(FETCH_SIZE)
+   });
 
-      if (!result || result.ok !== true) {
-        throw new Error(
-          result?.error || "Ошибка сервера"
-        );
-      }
+   if (!j || j.ok !== true)
+    throw new Error(j?.error || "Ошибка сервера");
 
-      if (!Array.isArray(result.rows)) {
-        throw new Error("Сервер не вернул записи");
-      }
+   if (!Array.isArray(j.rows))
+    throw new Error("Нет списка результатов");
 
-      total = Number(result.total);
-      if (!Number.isFinite(total) || total < 0) {
-        throw new Error(
-          "Сервер не сообщил количество записей"
-        );
-      }
+   total = Number(j.total);
+   if (!Number.isFinite(total) || total < 0)
+    throw new Error("Сервер не сообщил общее количество строк");
 
-      raw.push(...result.rows);
+   raw.push(...j.rows);
+   const limit = Number(j.limit) || FETCH_SIZE;
+   offset += limit;
 
-      const limit = Number(result.limit) || FETCH_SIZE;
-      offset += limit;
+   setProgress(
+    total ? Math.min(99,offset/total*99) : 99,
+    "Обработано "+Math.min(offset,total)+" из "+total+" строк"
+   );
 
-      setProgress(
-        total > 0
-          ? Math.min(99,offset / total * 99)
-          : 99,
-        "Получено " + Math.min(offset,total) +
-        " из " + total + " строк"
-      );
+   if (offset < total && !j.rows.length)
+    throw new Error("Сервер не вернул следующую страницу");
 
-      if (offset < total && result.rows.length === 0) {
-        throw new Error(
-          "Сервер не возвращает следующую страницу"
-        );
-      }
+   if (offset > 200000)
+    throw new Error("Превышен предел загрузки");
+  } while(offset < total);
 
-      if (offset > 200000) {
-        throw new Error("Превышен предел загрузки");
-      }
+  const newRecords = raw.map(parse).filter(r => r.fio);
+  const old = $("district").value;
+  const districts = [...new Set(newRecords.map(r=>r.district))]
+    .filter(Boolean).sort((a,b)=>a.localeCompare(b,"ru"));
 
-    } while(offset < total);
+  records = newRecords;
 
-    setProgress(99,"Обработка результатов");
+  $("district").innerHTML = '<option value="">Все</option>'+
+   districts.map(d=>
+    '<option value="'+esc(d)+'">'+esc(d)+'</option>'
+   ).join("");
 
-    const updatedRecords = raw
-      .map(parse)
-      .filter(r => r.fio);
+  $("district").value = districts.includes(old) ? old : "";
 
-    const oldDistrict = $("district").value;
+  const latest = records.reduce(
+   (last,r)=>Math.max(last,r.date),0
+  );
 
-    const districts = [...new Set(
-      updatedRecords.map(r => r.district)
-    )].filter(Boolean).sort(
-      (a,b) => a.localeCompare(b,"ru")
-    );
+  $("updated").textContent =
+   "Обновлено: "+new Date().toLocaleString("ru-RU")+
+   " · Получено записей: "+records.length;
 
-    const latest = updatedRecords.reduce(
-      (last,r) => Math.max(last,r.date),0
-    );
+  $("freshness").textContent = latest
+   ? "Последний результат: "+new Date(latest).toLocaleString("ru-RU")
+   : "Результатов нет";
 
-    // Обновляем данные только после полной загрузки
-    records = updatedRecords;
-
-    $("district").innerHTML =
-      '<option value="">Все</option>' +
-      districts.map(d =>
-        '<option value="' + esc(d) + '">' +
-        esc(d) + "</option>"
-      ).join("");
-
-    $("district").value = districts.includes(oldDistrict)
-      ? oldDistrict : "";
-
-    $("updated").textContent =
-      "Обновлено: " +
-      new Date().toLocaleString("ru-RU") +
-      " · Получено записей: " + records.length;
-
-    $("freshness").textContent = latest
-      ? "Последний результат: " +
-        new Date(latest).toLocaleString("ru-RU")
-      : "Результатов нет";
-
-    page = 0;
-    draw();
-
-    await finishLoader();
-    return true;
-
-  } catch(error) {
-    stopLoader();
-    throw error;
-  } finally {
-    loading = false;
-  }
+  page = 0;
+  draw();
+  await finishLoader();
+  return true;
+ } catch(e) {
+  stopLoader();
+  throw e;
+ } finally {
+  loading = false;
+ }
 }
 
 function dates() {
-  const arr = [...selected].sort();
+ const arr = [...selected].sort();
+ $("chips").innerHTML = arr.map(d=>
+  '<span class="chip">'+d.split("-").reverse().join(".")+
+  '<button data-date="'+d+'" title="Убрать">×</button></span>'
+ ).join("");
 
-  $("chips").innerHTML = arr.map(d =>
-    '<span class="chip">' +
-    d.split("-").reverse().join(".") +
-    '<button data-date="' + d +
-    '" title="Убрать">×</button></span>'
-  ).join("");
+ $("date-label").textContent = arr.length
+  ? "Выбрано дат: "+arr.length+
+    ". Статистика объединена за выбранные дни."
+  : "Показаны результаты за все даты";
 
-  $("date-label").textContent = arr.length
-    ? "Выбрано дат: " + arr.length +
-      ". Статистика объединена за выбранные дни."
-    : "Показаны результаты за все даты";
-
-  $("chips").querySelectorAll("button").forEach(btn => {
-    btn.onclick = () => {
-      selected.delete(btn.dataset.date);
-      dates();
-      page = 0;
-      draw();
-    };
-  });
+ $("chips").querySelectorAll("button").forEach(b=>{
+  b.onclick=()=>{
+   selected.delete(b.dataset.date);
+   dates();page=0;draw();
+  };
+ });
 }
 
 function addDate() {
-  if (!$("date").value) return;
-  selected.add($("date").value);
-  dates();
-  page = 0;
-  draw();
+ if (!$("date").value) return;
+ selected.add($("date").value);
+ dates();page=0;draw();
 }
 
 function bars(id,data,max,format) {
-  $(id).innerHTML = data.length
-    ? data.map(item =>
-        '<div class="barrow"><span>' +
-        esc(item[0]) +
-        '</span><span class="track"><i style="width:' +
-        Math.min(100,100 * item[1] / Math.max(1,max)) +
-        '%"></i></span><span class="value">' +
-        esc(format(item)) +
-        '</span></div>'
-      ).join("")
-    : '<p class="sub">Нет данных</p>';
+ $(id).innerHTML = data.length
+  ? data.map(item=>
+    '<div class="barrow"><span>'+esc(item[0])+
+    '</span><span class="track"><i style="width:'+
+    Math.min(100,100*item[1]/Math.max(1,max))+
+    '%"></i></span><span class="value">'+
+    esc(format(item))+'</span></div>'
+   ).join("")
+  : '<p class="sub">Нет данных</p>';
 }
 
 function draw() {
-  const district = $("district").value;
-  const kind = $("kind").value;
-  const min = $("min").value;
-  const max = $("max").value;
-  const q = $("search").value.toLowerCase().trim();
+ const district=$("district").value;
+ const kind=$("kind").value;
+ const min=$("min").value;
+ const max=$("max").value;
+ const q=$("search").value.toLowerCase().trim();
 
-  visible = records.filter(r =>
-    (!selected.size || selected.has(r.iso)) &&
-    (!district || r.district === district) &&
-    (!kind || r.kind === kind) &&
-    (min === "" || r.pct >= +min) &&
-    (max === "" || r.pct <= +max) &&
-    (!q || (
-      r.fio + " " + r.num + " " + r.kind
-    ).toLowerCase().includes(q))
-  );
+ visible=records.filter(r=>
+  (!selected.size||selected.has(r.iso)) &&
+  (!district||r.district===district) &&
+  (!kind||r.kind===kind) &&
+  (min===""||r.pct>=+min) &&
+  (max===""||r.pct<=+max) &&
+  (!q||(r.fio+" "+r.num+" "+r.kind).toLowerCase().includes(q))
+ );
 
-  visible.sort((a,b) => {
-    const x = a[sortKey];
-    const y = b[sortKey];
+ visible.sort((a,b)=>{
+  const x=a[sortKey],y=b[sortKey];
+  const cmp=typeof x==="number"&&typeof y==="number"
+   ? x-y
+   : String(x).localeCompare(String(y),"ru",{numeric:true});
+  return (cmp||a.date-b.date)*sortDir;
+ });
 
-    const cmp =
-      typeof x === "number" && typeof y === "number"
-        ? x-y
-        : String(x).localeCompare(
-            String(y),"ru",{numeric:true}
-          );
+ const n=visible.length;
+ const p=visible.map(r=>r.pct);
+ const avg=n?Math.round(p.reduce((a,b)=>a+b,0)/n):0;
 
-    return (cmp || a.date - b.date) * sortDir;
-  });
+ $("kpis").innerHTML=[
+  ["Сдали тест",n],
+  ["Средний результат",avg+"%"],
+  ["Набрали 80% и выше",p.filter(x=>x>=80).length],
+  ["Ниже 60%",p.filter(x=>x<60).length],
+  ["Лучший / худший",n?
+   Math.max(...p)+"% / "+Math.min(...p)+"%" : "—"]
+ ].map(([a,b])=>
+  '<div class="kpi"><b>'+b+'</b><span>'+a+'</span></div>'
+ ).join("");
 
-  const n = visible.length;
+ const by={};
+ visible.forEach(r=>(by[r.district]??=[]).push(r.pct));
 
-  const avg = n
-    ? Math.round(
-        visible.reduce((sum,r) => sum + r.pct,0) / n
-      )
-    : 0;
+ bars("by-district",
+  Object.entries(by).map(([d,a])=>[
+   d,Math.round(a.reduce((s,x)=>s+x,0)/a.length),a.length
+  ]).sort((a,b)=>b[1]-a[1]),
+  100,x=>x[1]+"% · "+x[2]+" чел."
+ );
 
-  const percentages = visible.map(r => r.pct);
+ const hist=[
+  ["0–39%",0,39],["40–59%",40,59],
+  ["60–79%",60,79],["80–100%",80,100]
+ ].map(([name,from,to])=>[
+  name,p.filter(x=>x>=from&&x<=to).length
+ ]);
 
-  const kpis = [
-    ["Сдали тест",n],
-    ["Средний результат",avg + "%"],
-    [
-      "Набрали 80% и выше",
-      percentages.filter(x => x >= 80).length
-    ],
-    [
-      "Ниже 60%",
-      percentages.filter(x => x < 60).length
-    ],
-    [
-      "Лучший / худший",
-      n
-        ? Math.max(...percentages) + "% / " +
-          Math.min(...percentages) + "%"
-        : "—"
-    ]
-  ];
+ bars("hist",hist,Math.max(1,...hist.map(x=>x[1])),
+  x=>x[1]+" чел.");
 
-  $("kpis").innerHTML = kpis.map(([title,value]) =>
-    '<div class="kpi"><b>' + value +
-    '</b><span>' + title + '</span></div>'
-  ).join("");
+ const kinds=["УИК","ОИК"].map(k=>[
+  k,visible.filter(r=>r.kind===k).length
+ ]);
+ bars("by-kind",kinds,Math.max(1,...kinds.map(x=>x[1])),
+  x=>x[1]+" чел.");
 
-  const by = {};
-  visible.forEach(r => {
-    (by[r.district] ??= []).push(r.pct);
-  });
+ const wrong={};
+ visible.forEach(r=>{
+  r.wrong.split(/[,;]+/).map(x=>x.trim())
+   .filter(x=>/^\d+$/.test(x))
+   .forEach(x=>wrong[x]=(wrong[x]||0)+1);
+ });
 
-  bars(
-    "by-district",
-    Object.entries(by).map(([name,list]) => [
-      name,
-      Math.round(
-        list.reduce((sum,v) => sum+v,0) / list.length
-      ),
-      list.length
-    ]).sort((a,b) => b[1]-a[1]),
-    100,
-    item => item[1] + "% · " + item[2] + " чел."
-  );
+ $("wrong").innerHTML=Object.entries(wrong)
+  .sort((a,b)=>b[1]-a[1]).slice(0,10)
+  .map(([x,count])=>
+   "<li>Вопрос №"+esc(x)+" — ошибок: "+count+"</li>"
+  ).join("")||"<li>Нет данных</li>";
 
-  const histogram = [
-    ["0–39%",0,39],
-    ["40–59%",40,59],
-    ["60–79%",60,79],
-    ["80–100%",80,100]
-  ].map(([name,from,to]) => [
-    name,
-    percentages.filter(
-      p => p >= from && p <= to
-    ).length
-  ]);
+ $("count").textContent="("+n+")";
 
-  bars(
-    "hist",
-    histogram,
-    Math.max(1,...histogram.map(x => x[1])),
-    item => item[1] + " чел."
-  );
+ $("head").innerHTML=HEADERS.map(([k,label])=>
+  '<th data-k="'+k+'">'+label+
+  (sortKey===k?(sortDir<0?" ▼":" ▲"):"")+"</th>"
+ ).join("");
 
-  const kinds = ["УИК","ОИК"].map(k => [
-    k,
-    visible.filter(r => r.kind === k).length
-  ]);
+ $("head").querySelectorAll("th").forEach(th=>{
+  th.onclick=()=>{
+   const k=th.dataset.k;
+   if(k==="delete")return;
+   sortDir=sortKey===k?-sortDir:(k==="date"?-1:1);
+   sortKey=k;page=0;draw();
+  };
+ });
 
-  bars(
-    "by-kind",
-    kinds,
-    Math.max(1,...kinds.map(x => x[1])),
-    item => item[1] + " чел."
-  );
+ const pages=Math.max(1,Math.ceil(n/PAGESIZE));
+ page=Math.max(0,Math.min(page,pages-1));
 
-  const wrong = {};
+ $("rows").innerHTML=visible
+  .slice(page*PAGESIZE,(page+1)*PAGESIZE)
+  .map((r,i)=>
+   "<tr>"+
+   "<td>"+esc(r.ts)+"</td>"+
+   "<td>"+esc(r.district)+"</td>"+
+   "<td>"+esc(r.kind)+"</td>"+
+   "<td>"+esc(r.num)+"</td>"+
+   "<td>"+esc(r.fio)+"</td>"+
+   "<td>"+r.ok+"</td>"+
+   "<td>"+r.bad+"</td>"+
+   '<td><span class="pill '+
+   (r.pct>=80?"green":r.pct>=60?"yellow":"red")+
+   '">'+r.pct+"%</span></td>"+
+   "<td>"+esc(r.wrong||"—")+"</td>"+
+   '<td><button class="delete" data-i="'+
+   (page*PAGESIZE+i)+'">×</button></td>'+
+   "</tr>"
+  ).join("")||'<tr><td colspan="10">Нет результатов</td></tr>';
 
-  visible.forEach(r => {
-    r.wrong.split(/[,;]+/)
-      .map(x => x.trim())
-      .filter(x => /^\d+$/.test(x))
-      .forEach(x => {
-        wrong[x] = (wrong[x] || 0) + 1;
-      });
-  });
+ $("rows").querySelectorAll("button[data-i]").forEach(b=>{
+  b.onclick=()=>deleteRow(visible[+b.dataset.i]);
+ });
 
-  $("wrong").innerHTML = Object.entries(wrong)
-    .sort((a,b) => b[1]-a[1])
-    .slice(0,10)
-    .map(([number,count]) =>
-      "<li>Вопрос №" + esc(number) +
-      " — ошибок: " + count + "</li>"
-    ).join("") || "<li>Нет данных</li>";
-
-  $("count").textContent = "(" + n + ")";
-
-  $("head").innerHTML = HEADERS.map(([key,label]) =>
-    '<th data-k="' + key + '">' +
-    label +
-    (sortKey === key
-      ? (sortDir < 0 ? " ▼" : " ▲")
-      : "") +
-    "</th>"
-  ).join("");
-
-  $("head").querySelectorAll("th").forEach(th => {
-    th.onclick = () => {
-      const key = th.dataset.k;
-      if (key === "delete") return;
-
-      sortDir = sortKey === key
-        ? -sortDir
-        : key === "date" ? -1 : 1;
-
-      sortKey = key;
-      page = 0;
-      draw();
-    };
-  });
-
-  const pages = Math.max(
-    1,Math.ceil(n / PAGESIZE)
-  );
-  page = Math.max(0,Math.min(page,pages-1));
-
-  const currentRows = visible.slice(
-    page * PAGESIZE,
-    (page+1) * PAGESIZE
-  );
-
-  $("rows").innerHTML = currentRows.map((r,i) =>
-    "<tr>" +
-    "<td>" + esc(r.ts) + "</td>" +
-    "<td>" + esc(r.district) + "</td>" +
-    "<td>" + esc(r.kind) + "</td>" +
-    '<td class="num">' + esc(r.num) + "</td>" +
-    '<td class="fio">' + esc(r.fio) + "</td>" +
-    "<td>" + r.ok + "</td>" +
-    "<td>" + r.bad + "</td>" +
-    '<td><span class="pill ' +
-    (r.pct >= 80
-      ? "green"
-      : r.pct >= 60 ? "yellow" : "red") +
-    '">' + r.pct + "%</span></td>" +
-    '<td class="wrong">' +
-    esc(r.wrong || "—") + "</td>" +
-    '<td><button class="delete" data-i="' +
-    (page * PAGESIZE + i) +
-    '">×</button></td>' +
-    "</tr>"
-  ).join("") ||
-    '<tr><td colspan="10">Нет результатов</td></tr>';
-
-  $("rows").querySelectorAll("button[data-i]")
-    .forEach(btn => {
-      btn.onclick = () =>
-        deleteRow(visible[+btn.dataset.i]);
-    });
-
-  $("pages-label").textContent =
-    "Страница " + (page+1) + " из " + pages;
-
-  $("prev").disabled = page === 0;
-  $("next").disabled = page === pages-1;
+ $("pages-label").textContent="Страница "+(page+1)+" из "+pages;
+ $("prev").disabled=page===0;
+ $("next").disabled=page===pages-1;
 }
 
 async function deleteRow(r) {
-  if (!r || !confirm(
-    "Удалить результат " + r.fio +
-    " от " + r.ts + "?"
-  )) return;
+ if(!r||!confirm(
+  "Удалить результат "+r.fio+" от "+r.ts+"?"
+ ))return;
 
-  try {
-    const result = await jsonp({
-      action:"delete",
-      key:localStorage.getItem("ak") || "",
-      ts:r.ts,
-      fio:r.fio
-    });
-
-    if (!result?.ok) {
-      throw new Error(result?.error || "Ошибка удаления");
-    }
-
-    await load(localStorage.getItem("ak") || "");
-  } catch(e) {
-    alert(e.message);
-  }
+ try {
+  const a=await jsonp({
+   action:"delete",
+   key:localStorage.getItem("ak")||"",
+   ts:r.ts,fio:r.fio
+  });
+  if(!a?.ok)throw Error(a?.error||"Ошибка удаления");
+  await load(localStorage.getItem("ak")||"");
+ }catch(e){alert(e.message);}
 }
 
 async function enter() {
-  const key = $("key").value ||
-    localStorage.getItem("ak") || "";
-
-  if (!key) {
-    $("login-error").textContent = "Введите пароль";
-    return;
-  }
-
-  $("login-button").disabled = true;
-
-  try {
-    const success = await load(key);
-    if (!success) return;
-
-    localStorage.setItem("ak",key);
-
-    $("login").classList.add("hide");
-    $("app").classList.remove("hide");
-    $("logout").classList.remove("hide");
-    $("login-error").textContent = "";
-
-  } catch(e) {
-    $("login-error").textContent =
-      "Не удалось загрузить: " + e.message;
-
-    if (e.message === "forbidden") {
-      localStorage.removeItem("ak");
-    }
-  } finally {
-    $("login-button").disabled = false;
-  }
+ const key=$("key").value||localStorage.getItem("ak")||"";
+ if(!key){
+  $("login-error").textContent="Введите пароль";
+  return;
+ }
+ $("login-button").disabled=true;
+ try {
+  const success=await load(key);
+  if(!success)return;
+  localStorage.setItem("ak",key);
+  $("login").classList.add("hide");
+  $("app").classList.remove("hide");
+  $("logout").classList.remove("hide");
+  $("login-error").textContent="";
+ }catch(e){
+  $("login-error").textContent=
+   "Не удалось загрузить: "+e.message;
+  if(e.message==="forbidden")localStorage.removeItem("ak");
+ }finally{
+  $("login-button").disabled=false;
+ }
 }
 
-$("login-button").onclick = enter;
+$("login-button").onclick=enter;
+$("key").onkeydown=e=>{if(e.key==="Enter")enter();};
 
-$("key").onkeydown = e => {
-  if (e.key === "Enter") enter();
+$("logout").onclick=()=>{
+ localStorage.removeItem("ak");
+ $("key").value="";
+ $("app").classList.add("hide");
+ $("logout").classList.add("hide");
+ $("login").classList.remove("hide");
 };
 
-$("logout").onclick = () => {
-  localStorage.removeItem("ak");
-  $("key").value = "";
-  $("app").classList.add("hide");
-  $("logout").classList.add("hide");
-  $("login").classList.remove("hide");
-};
-
-["district","kind","min","max"].forEach(id => {
-  $(id).onchange = () => {
-    page = 0;
-    draw();
-  };
+["district","kind","min","max"].forEach(id=>{
+ $(id).onchange=()=>{page=0;draw();};
 });
-
-$("search").oninput = () => {
-  page = 0;
-  draw();
+$("search").oninput=()=>{page=0;draw();};
+$("date").onchange=addDate;
+$("add-date").onclick=addDate;
+$("all-dates").onclick=()=>{
+ selected.clear();$("date").value="";dates();page=0;draw();
 };
-
-$("date").onchange = addDate;
-$("add-date").onclick = addDate;
-
-$("all-dates").onclick = () => {
-  selected.clear();
-  $("date").value = "";
-  dates();
-  page = 0;
-  draw();
+$("reset").onclick=()=>{
+ ["district","kind","min","max","search","date"]
+ .forEach(id=>$(id).value="");
+ selected.clear();
+ sortKey="date";sortDir=-1;page=0;dates();draw();
 };
-
-$("reset").onclick = () => {
-  [
-    "district","kind","min","max","search","date"
-  ].forEach(id => {
-    $(id).value = "";
-  });
-
-  selected.clear();
-  sortKey = "date";
-  sortDir = -1;
-  page = 0;
-  dates();
-  draw();
+$("reload").onclick=async()=>{
+ try {
+  await load(localStorage.getItem("ak")||"");
+ }catch(e){alert("Ошибка обновления: "+e.message);}
 };
+$("prev").onclick=()=>{page--;draw();};
+$("next").onclick=()=>{page++;draw();};
 
-$("reload").onclick = async () => {
-  try {
-    await load(localStorage.getItem("ak") || "");
-  } catch(e) {
-    alert("Ошибка обновления: " + e.message);
-  }
-};
-
-$("prev").onclick = () => {
-  page--;
-  draw();
-};
-
-$("next").onclick = () => {
-  page++;
-  draw();
-};
-
-$("csv").onclick = () => {
-  const header = [
-    "Дата","Район / город","Тип","№",
-    "ФИО","Верно","Неверно","%",
-    "Неверные вопросы"
-  ];
-
-  const quote = value =>
-    '"' + String(value ?? "")
-      .replace(/"/g,'""') + '"';
-
-  const rows = [
-    header,
-    ...visible.map(r => [
-      r.ts,r.district,r.kind,r.num,r.fio,
-      r.ok,r.bad,r.pct,r.wrong
-    ])
-  ];
-
-  const blob = new Blob(
-    [
-      "\ufeff" +
-      rows.map(row =>
-        row.map(quote).join(";")
-      ).join("\r\n")
-    ],
-    {type:"text/csv;charset=utf-8"}
-  );
-
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "results.csv";
-  a.click();
-
-  setTimeout(() => {
-    URL.revokeObjectURL(a.href);
-  },1000);
+$("csv").onclick=()=>{
+ const cols=["Дата","Район / город","Тип","№","ФИО",
+  "Верно","Неверно","%","Неверные вопросы"];
+ const quote=x=>'"'+String(x??"").replace(/"/g,'""')+'"';
+ const rows=[cols,...visible.map(r=>[
+  r.ts,r.district,r.kind,r.num,r.fio,
+  r.ok,r.bad,r.pct,r.wrong
+ ])];
+ const blob=new Blob(
+  ["\ufeff"+rows.map(a=>a.map(quote).join(";")).join("\r\n")],
+  {type:"text/csv;charset=utf-8"}
+ );
+ const a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);
+ a.download="results.csv";
+ a.click();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
 
 dates();
-
-if (localStorage.getItem("ak")) {
-  enter();
-}
+if(localStorage.getItem("ak"))enter();
 </script>
 </body>
 </html>
