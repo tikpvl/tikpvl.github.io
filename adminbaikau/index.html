@@ -241,7 +241,7 @@
 </head>
 <body>
   <div class="page-tools">
-    <span class="app-version" aria-label="Версия панели 1.3">V1.3</span>
+    <span class="app-version" aria-label="Версия панели 1.4">V1.4</span>
     <button type="button" id="themeToggle" class="theme-toggle" aria-label="Переключить тему">🌙</button>
   </div>
 
@@ -1050,7 +1050,7 @@ async function callApi(action, payload) {
 
     // A person can have more than one visit at the same polling station.
     function renderEditHistory(item) {
-      const raw = item.edits;
+      const raw = item.editHistory?.length ? item.editHistory : item.edits;
       const edits = (Array.isArray(raw) ? raw : raw ? [raw] : [])
         .filter(value => value !== null && value !== undefined && value !== '');
       if (!edits.length) return '<span style="color:var(--text-muted)">—</span>';
