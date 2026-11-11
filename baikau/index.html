@@ -517,7 +517,7 @@
         </div>
         <div class="header-tools">
           <div class="header-status">
-            <span class="app-version" aria-label="Версия приложения 1.6">V1.6</span>
+            <span class="app-version" aria-label="Версия приложения 1.7">V1.7</span>
             <span id="networkIndicator" class="network-indicator" role="img" aria-label="Статус соединения">
               <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <defs>
@@ -727,6 +727,15 @@
       </div>
     </form>
   </div>
+
+  <dialog id="duplicateArrival" class="install-dialog" aria-labelledby="duplicateArrivalTitle">
+    <h2 id="duplicateArrivalTitle">Наблюдатель уже на участке</h2>
+    <p id="duplicateArrivalMessage"></p>
+    <form method="dialog" class="update-actions">
+      <button type="submit" value="no" class="install-btn" autofocus>Нет</button>
+      <button type="submit" value="yes" class="install-btn">Да</button>
+    </form>
+  </dialog>
 
   <dialog id="installInstructions" class="install-dialog" aria-labelledby="installInstructionsTitle">
     <h2 id="installInstructionsTitle">Как добавить приложение</h2>
@@ -1233,6 +1242,7 @@ async function callApi(action, payload) {
       let blocked = false;
       let nextDelay;
       try {
+        const sentNames = [...new Set(batch.map(event => shortObserverName(markObserverName(event))).filter(Boolean))];
         await callServer('write', {token, events:batch});
         confirmedRecords = replayEvents(batch, territoryFor(station), confirmedRecords);
         revision++;
@@ -1242,8 +1252,9 @@ async function callApi(action, payload) {
         recordSync();
         retryDelay = 2500;
         setQueueMessage(queueWaiting);
+        showToast('success', '✓', (sentNames.length ? sentNames.join(', ') + ': ' : '') +
+          (DEMO ? 'принято в деморежиме.' : 'принято сервером.'));
         if (!getOfflineQueue().length) {
-          showToast('success', '✓', DEMO ? 'Отметки сохранены в деморежиме' : 'Сервер подтвердил сохранение отметок');
           if (!knownRecords) refreshStation();
         } else {
           nextDelay = 500;
@@ -1263,16 +1274,41 @@ async function callApi(action, payload) {
         if (!blocked) scheduleSync(nextDelay);
       }
     }
+    function shortObserverName(name) {
+      const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return '';
+      return parts[0] + (parts.length > 1 ? ' ' + parts.slice(1).map(part => Array.from(part)[0] + '.').join('') : '');
+    }
+
+    function markObserverName(event, records = stationRecords()) {
+      return event.action === 'УШЕЛ' || event.action === 'DELETE'
+        ? records.find(item => item.id === event.id)?.observer || ''
+        : event.observer;
+    }
+
+    let duplicateArrivalPending = false;
+    async function confirmDuplicateArrival(name) {
+      const dialog = document.getElementById('duplicateArrival');
+      document.getElementById('duplicateArrivalMessage').textContent =
+        name + ' уже находится на участке. Точно добавить?';
+      dialog.returnValue = 'no';
+      return new Promise(resolve => {
+        dialog.addEventListener('close', () => resolve(dialog.returnValue === 'yes'), {once:true});
+        dialog.showModal();
+      });
+    }
+
     function queueMark(event) {
       if (!station || !token) return false;
       try {
+        const name = shortObserverName(markObserverName(event));
         revision++;
         lastQueuedAt = Math.max(Date.now(), lastQueuedAt + 1);
         const key = queueKey() + ':' + lastQueuedAt + ':' + event.uid;
         localStorage.setItem(key, JSON.stringify({...event, uik:station}));
         renderStation();
         scheduleSync();
-        showToast('warning', '⏳', networkIsOffline() ? queueOffline : 'Отметка в очереди на отправку.');
+        showToast('warning', '⏳', (name ? name + ': ' : '') + (networkIsOffline() ? queueOffline : 'В очереди на отправку.'));
         return true;
       } catch (_) {
         showToast('error', '✕', 'Не удалось добавить отметку в очередь.');
@@ -1856,7 +1892,21 @@ async function callApi(action, payload) {
         observer:finalObserver, organization:finalOrg, status:finalStatus, time:timeInput.value,
         note:noteInput.value.trim()
       };
-      if (!validMark(event) || !queueMark(event)) return;
+      if (!validMark(event)) return;
+      if (duplicateArrivalPending) return;
+      if (event.action === 'ПРИШЕЛ' && stationRecords().some(item =>
+          item.status === 'НА УЧАСТКЕ' && item.observer === event.observer)) {
+        const currentStation = station;
+        duplicateArrivalPending = true;
+        let accepted;
+        try {
+          accepted = await confirmDuplicateArrival(event.observer);
+        } finally {
+          duplicateArrivalPending = false;
+        }
+        if (!accepted || station !== currentStation) return;
+      }
+      if (!queueMark(event)) return;
       observerInput.value = '';
       noteInput.value = '';
       timeEdited = false;
