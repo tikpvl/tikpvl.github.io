@@ -238,10 +238,61 @@
     .th-filter input[type="time"] { min-width:92px; }
     [hidden] { display:none !important; }
   </style>
+<style>
+.support-chat { padding:0; border:1px solid var(--border-color,#475569); border-radius:16px; width:min(580px,calc(100vw - 20px)); max-width:580px; height:min(680px,calc(100dvh - 24px)); max-height:calc(100vh - 24px); background:var(--bg-card,#1e293b); color:var(--text-main,#f8fafc); margin:auto; box-shadow:0 20px 65px #0005; }
+.support-chat::backdrop { background:#0008; }
+.support-chat * {box-sizing:border-box}
+.support-layout {display:flex;flex-direction:column;height:100%;min-height:0}
+.support-head {padding:14px 16px;border-bottom:1px solid var(--border-color,#475569);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.support-head h2 {font-size:18px;margin:0}
+.support-chat button {font:inherit;cursor:pointer;border:1px solid var(--border-color,#475569);border-radius:8px;padding:8px 12px;background:var(--bg-main,#0f172a);color:inherit}
+.support-chat button:disabled {opacity:.5;cursor:wait}
+.support-notice {padding:10px 16px;font-size:12px;line-height:1.45;background:var(--bg-main,#0f172a);color:var(--text-muted,#94a3b8)}
+.support-body {flex:1;min-height:0;overflow:auto;padding:14px 16px}
+.support-room {display:block;width:100%;text-align:left;margin-bottom:8px;line-height:1.45}
+.support-room small {display:block;color:var(--text-muted,#94a3b8);font-size:12px}
+.support-bubble {border:1px solid var(--border-color,#475569);border-radius:12px;padding:10px 12px;margin:0 22px 12px 0;line-height:1.45}
+.support-bubble.mine {margin:0 0 12px 22px;border-color:var(--primary,#38bdf8)}
+.support-author {font-size:12px;color:var(--text-muted,#94a3b8);margin-bottom:6px}
+.support-text {white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+.support-bubble img {display:block;max-width:100%;max-height:260px;object-fit:contain;margin-top:8px;border-radius:6px}
+.support-compose {padding:12px 16px;border-top:1px solid var(--border-color,#475569)}
+.support-compose textarea {width:100%;height:76px;resize:vertical;padding:10px;border:1px solid var(--border-color,#475569);border-radius:8px;background:var(--bg-main,#0f172a);color:inherit;font:inherit;font-size:16px}
+.support-compose-actions {display:flex;gap:8px;justify-content:space-between;margin-top:8px;flex-wrap:wrap}
+.support-compose button[type=submit] {background:var(--primary,#38bdf8);color:var(--primary-text,#0f172a);font-weight:700}
+.support-status {font-size:12px;min-height:18px;margin-top:6px;color:var(--text-muted,#94a3b8)}
+.support-attachment {font-size:12px;margin:6px 0;display:flex;align-items:center;gap:8px}
+.support-empty {color:var(--text-muted,#94a3b8);font-size:14px;line-height:1.5}
+.support-count {background:#ef4444;color:#fff;font-size:12px;border-radius:20px;padding:1px 6px;margin-left:5px}
+.support-chat [hidden] {display:none!important}
+@media(max-width:400px){.support-head{padding:12px}.support-body,.support-compose{padding:12px}.support-bubble{margin-right:10px}.support-bubble.mine{margin-left:10px}}
+.support-bubble {border-width:2px}
+.support-bubble.mine {border-color:inherit}
+.support-bubble.role-uik {border-color:#16a34a}
+.support-bubble.role-tik {border-color:#38bdf8}
+.support-bubble.role-admin {border-color:#ef4444}
+.support-envelope {position:relative}
+.support-envelope svg {width:20px;height:20px}
+.support-envelope .support-count {position:absolute;right:-6px;top:-7px;margin:0;min-width:20px;height:20px;line-height:18px;text-align:center;border:1px solid var(--bg-card,#1e293b);font-size:11px;font-weight:700}
+.support-alert {position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:10020;width:min(420px,calc(100vw - 24px));padding:14px 16px;text-align:left;border:1px solid var(--border-color,#475569);border-left:4px solid #38bdf8;border-radius:12px;background:var(--bg-card,#1e293b);color:var(--text-main,#f8fafc);box-shadow:0 8px 30px #0004;font:inherit;font-size:14px;cursor:pointer}
+.support-alert[hidden] {display:none!important}
+.support-chat .support-image-button {padding:0;border:0;background:transparent;display:block;max-width:100%;cursor:zoom-in}
+.support-image-viewer {padding:0;margin:auto;border:1px solid var(--border-color,#475569);border-radius:12px;width:calc(100vw - 24px);max-width:1400px;height:calc(100dvh - 24px);max-height:calc(100vh - 24px);background:var(--bg-card,#1e293b);color:var(--text-main,#f8fafc)}
+.support-image-viewer::backdrop {background:#000b}
+.support-viewer-layout {display:flex;flex-direction:column;height:100%;min-height:0}
+.support-viewer-tools {display:flex;justify-content:flex-end;gap:24px;padding:14px 20px;border-bottom:1px solid var(--border-color,#475569)}
+.support-viewer-tools a,.support-viewer-tools button {font:inherit;font-size:16px;cursor:pointer;color:var(--text-main,#f8fafc);background:transparent;border:0;padding:5px;text-decoration:underline}
+.support-viewer-stage {flex:1;min-height:0;overflow:auto;background:#141923;padding:12px}
+.support-viewer-stage img {display:block;max-width:none;max-height:none;margin:auto}
+.header-buttons {grid-template-columns:repeat(3,40px)}
+.header-status {grid-template-columns:40px 1fr 40px}
+.header-status .network-indicator {grid-column:3}
+
+</style>
 </head>
 <body>
   <div class="page-tools">
-    <span class="app-version" aria-label="Версия панели 1.4">V1.4</span>
+    <span class="app-version" aria-label="Версия панели 1.7">V1.7</span>
     <button type="button" id="themeToggle" class="theme-toggle" aria-label="Переключить тему">🌙</button>
   </div>
 
@@ -278,6 +329,7 @@
       <span id="demoPanelBadge" style="font-size:.85rem;color:var(--text-dim)" hidden> · Деморежим</span></div>
       <div class="user-badge">
         <span id="userRoleText">Роль</span>
+        <button type="button" class="logout-btn" id="supportOpen">💬 Обращения</button>
         <button class="logout-btn" onclick="logout()">Выйти</button>
       </div>
     </div>
@@ -443,7 +495,6 @@
                 </select>
               </div>
             </th>
-            <th style="min-width: 170px;">Правки</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -1049,22 +1100,6 @@ async function callApi(action, payload) {
     }
 
     // A person can have more than one visit at the same polling station.
-    function renderEditHistory(item) {
-      const raw = item.editHistory?.length ? item.editHistory : item.edits;
-      const edits = (Array.isArray(raw) ? raw : raw ? [raw] : [])
-        .filter(value => value !== null && value !== undefined && value !== '');
-      if (!edits.length) return '<span style="color:var(--text-muted)">—</span>';
-      const times = edits.map(value => {
-        const date = new Date(value);
-        return Number.isNaN(date.getTime()) ? String(value) :
-          date.toLocaleString('ru-RU', {timeZone:'Asia/Almaty'});
-      });
-      return '<details><summary style="cursor:pointer;color:var(--orange)">✎ Изменена (' +
-        edits.length + ')</summary><ol style="padding-left:18px;white-space:normal">' +
-        times.map(value => '<li>' + escapeHtml(value) + '</li>').join('') +
-        '</ol></details>';
-    }
-
     function getUniqueRecords(records) {
       const people = new Map();
       for (const record of records) {
@@ -1232,7 +1267,7 @@ async function callApi(action, payload) {
       const uniqueObservers = people.length;
 
       if (dataArray.length === 0) {
-        html = `<tr><td colspan="11" style="text-align: center; padding: 50px 20px; font-size: 1.1rem; color: var(--text-dim); background: var(--bg-main);">🔍 По выбранным фильтрам ничего не найдено</td></tr>`;
+        html = `<tr><td colspan="10" style="text-align: center; padding: 50px 20px; font-size: 1.1rem; color: var(--text-dim); background: var(--bg-main);">🔍 По выбранным фильтрам ничего не найдено</td></tr>`;
       } else {
         const personKeyMap = new Map();
         let uniqueNumberCounter = 0;
@@ -1272,7 +1307,6 @@ async function callApi(action, payload) {
             <td>${escapeHtml(formatTime(item.leave))}</td>
             <td><span class="status-badge ${badgeClass}">${escapeHtml(item.status)}</span></td>
             <td style="font-size:0.8rem;">${noteDisplay}</td>
-            <td style="font-size:0.8rem;">${renderEditHistory(item)}</td>
           </tr>`;
         });
       }
@@ -1422,5 +1456,393 @@ async function callApi(action, payload) {
       }
     }
   </script>
+<dialog id="supportChat" class="support-chat" aria-labelledby="supportTitle">
+ <div class="support-layout">
+  <header class="support-head">
+   <button type="button" id="supportBack" hidden aria-label="К списку обращений">‹</button>
+   <h2 id="supportTitle">Обращения</h2>
+   <button type="button" id="supportClose" aria-label="Закрыть чат">✕</button>
+  </header>
+  <div class="support-notice"><strong>Тестовый режим.</strong> До подключения сервера переписка доступна только в этом браузере. Для проверки откройте оба сайта в соседних вкладках. Уведомления сейчас проверяются при открытом сайте.</div>
+  <button type="button" id="supportEnableNotifications" hidden>Включить уведомления об ответах</button>
+  <div id="supportBody" class="support-body"></div>
+  <form id="supportForm" class="support-compose" hidden>
+   <label for="supportText">Сообщение</label>
+   <textarea id="supportText" maxlength="2000" placeholder="Опишите вопрос…"></textarea>
+   <div id="supportAttachment" class="support-attachment" hidden><span id="supportAttachmentName"></span><button type="button" id="supportRemove">Убрать</button></div>
+   <input id="supportFile" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+   <div class="support-compose-actions">
+    <button type="button" id="supportAdd">📎 Добавить изображение</button>
+    <button type="submit" id="supportSend">Отправить</button>
+   </div>
+   <div id="supportStatus" class="support-status" role="status"></div>
+  </form>
+ </div>
+</dialog>
+<button type="button" id="supportReplyAlert" class="support-alert" hidden aria-live="polite"></button>
+<dialog id="supportImageViewer" class="support-image-viewer" aria-label="Просмотр изображения">
+ <div class="support-viewer-layout">
+  <div class="support-viewer-tools">
+   <a id="supportImageDownload" download>Скачать</a>
+   <button type="button" id="supportImageClose">Закрыть</button>
+  </div>
+  <div class="support-viewer-stage"><img id="supportImageFull" alt="Изображение из переписки в полном размере"></div>
+ </div>
+</dialog>
+
+<script>
+(() => {
+  const mode = 'panel';
+  const prefix = 'observers-support-preview-v1:';
+  const dialog = document.getElementById('supportChat');
+  const body = document.getElementById('supportBody');
+  const title = document.getElementById('supportTitle');
+  const back = document.getElementById('supportBack');
+  const form = document.getElementById('supportForm');
+  const text = document.getElementById('supportText');
+  const file = document.getElementById('supportFile');
+  const status = document.getElementById('supportStatus');
+  const badge = document.createElement('span');
+  badge.className = 'support-count';
+  badge.hidden = true;
+  const trigger = document.getElementById('supportOpen');
+  trigger.append(badge);
+  const envelope = mode === 'uik' ? document.getElementById('supportEnvelope') : null;
+  const envelopeBadge = envelope && badge.cloneNode(true);
+  if (envelope) envelope.append(envelopeBadge);
+  const imageViewer = document.getElementById('supportImageViewer');
+  const imageFull = document.getElementById('supportImageFull');
+  const imageDownload = document.getElementById('supportImageDownload');
+  const replyAlert = document.getElementById('supportReplyAlert');
+  const notificationButton = document.getElementById('supportEnableNotifications');
+  let notificationRegistration = null;
+  let replyTimer;
+  let openFromNotification = new URL(location.href).searchParams.has('support-chat');
+
+  function updateBadge(count) {
+    for (const counter of [badge,envelopeBadge].filter(Boolean)) {
+      counter.hidden = !count;
+      counter.textContent = count > 99 ? '99+' : String(count);
+    }
+    envelope?.setAttribute('aria-label', 'Сообщения' + (count ? ' · Непрочитанных: ' + count : ''));
+  }
+
+  function openImage(item) {
+    imageFull.src = item.image;
+    imageDownload.href = item.image;
+    const type = item.image.startsWith('data:image/png;') ? 'png' : item.image.startsWith('data:image/webp;') ? 'webp' : 'jpg';
+    imageDownload.download = 'uik-' + item.room + '-image.' + type;
+    imageViewer.showModal();
+  }
+  document.getElementById('supportImageClose').onclick = () => imageViewer.close();
+  imageViewer.addEventListener('close', () => {
+    imageFull.removeAttribute('src');
+    imageDownload.removeAttribute('href');
+  });
+
+  async function enableNotifications() {
+    if (mode !== 'uik') return;
+    if (!window.isSecureContext || !('Notification' in window) || !('serviceWorker' in navigator)) {
+      notificationButton.textContent = 'Системные уведомления недоступны в этом браузере';
+      notificationButton.disabled = true;
+      return;
+    }
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== 'granted') {
+        notificationButton.textContent = 'Уведомления запрещены в настройках браузера';
+        return;
+      }
+      const workerURL = new URL('support-notifications-sw.js', location.href);
+      const registration = await navigator.serviceWorker.register(workerURL.href, {
+        scope:new URL('support-notifications/', workerURL).pathname
+      });
+      if (!registration.active) await new Promise((resolve,reject) => {
+        const worker = registration.installing || registration.waiting;
+        const timer = setTimeout(() => reject(Error('Не удалось запустить уведомления')),10000);
+        const check = () => {
+          if (worker?.state === 'activated') {clearTimeout(timer);resolve();}
+          if (worker?.state === 'redundant') {clearTimeout(timer);reject(Error('Ошибка запуска уведомлений'));}
+        };
+        worker?.addEventListener('statechange',check);
+        check();
+      });
+      notificationRegistration = registration;
+      notificationButton.textContent = 'Уведомления об ответах включены';
+    } catch {
+      notificationButton.textContent = 'Не удалось включить. Проверьте файл уведомлений на сайте';
+    }
+  }
+  notificationButton.hidden = mode !== 'uik';
+  notificationButton.onclick = enableNotifications;
+
+  async function notifyReply(item) {
+    const s = session();
+    if (mode !== 'uik' || !allowed(s,item.room) || item.sender === s.id ||
+        wasRead(s,item)) return;
+    if (dialog.open && room === item.room && !document.hidden) return;
+    replyAlert.textContent = item.author + ': ' + (item.text || 'Прикреплено изображение');
+    replyAlert.hidden = false;
+    clearTimeout(replyTimer);
+    replyTimer = setTimeout(() => {replyAlert.hidden=true;},8000);
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try {
+      const workerURL = new URL('support-notifications-sw.js',location.href);
+      const registration = notificationRegistration ||
+        await navigator.serviceWorker?.getRegistration(new URL('support-notifications/',workerURL).href);
+      if (!registration?.active) return;
+      notificationRegistration = registration;
+      const target = new URL(location.pathname,location.origin);
+      target.searchParams.set('support-chat','1');
+      await registration.showNotification('Ответ для УИК № ' + item.room, {
+        body:item.author + ': ' + (item.text || 'Изображение').slice(0,160),
+        tag:'observers-support-' + item.room,
+        data:{url:target.href,room:item.room}
+      });
+    } catch {}
+  }
+  let room = '', sessionId = '', attachment = null, busy = false;
+  const drafts = new Map();
+
+  function session() {
+    if (mode === 'uik') return station && token ? {id:'uik:' + station, label:'УИК № ' + station, station} : null;
+    return panelRole && panelToken ? {
+      id:'tik:' + panelRole, label:panelRole === 'Штаб' ? 'Администратор области' : 'ТИК · ' + panelRole,
+      region:panelRole === 'Штаб', district:panelRole
+    } : null;
+  }
+  function district(uik) { return territoryFor(String(uik)); }
+  function allowed(s, uik) { return !!s && !!district(uik) && (s.station ? s.station === uik : s.region || s.district === district(uik)); }
+  function messages(s) {
+    const found = [];
+    try {
+      for (let i=0;i<localStorage.length;i++) {
+        const key = localStorage.key(i);
+        if (!key?.startsWith(prefix + 'msg:')) continue;
+        try {
+          const item = JSON.parse(localStorage.getItem(key));
+          if (allowed(s, item.room) && typeof item.id === 'string' && typeof item.author === 'string' &&
+              typeof item.sender === 'string' && typeof item.text === 'string' && Number.isFinite(item.at)) found.push(item);
+        } catch {}
+      }
+    } catch {}
+    return found.sort((a,b) => a.at - b.at || a.id.localeCompare(b.id));
+  }
+  function readKey(s,uik) { return prefix + 'read:' + s.id + ':' + uik; }
+  function readState(s,uik) {
+    try {
+      const value=JSON.parse(localStorage.getItem(readKey(s,uik)) || 'null');
+      if (typeof value === 'number') return {ids:[],before:value};
+      return {ids:Array.isArray(value?.ids)?value.ids:[],before:Number(value?.before)||0};
+    } catch {return {ids:[],before:0};}
+  }
+  function wasRead(s,item,seen=readState(s,item.room)) {
+    return seen.ids.includes(item.id) || item.at <= seen.before;
+  }
+  function unseen(s, rows) {
+    const states=new Map();
+    return rows.filter(item => {
+      if(!states.has(item.room)) states.set(item.room,readState(s,item.room));
+      return item.sender !== s.id && !wasRead(s,item,states.get(item.room));
+    }).length;
+  }
+  function markRead(s, rows) {
+    if (!rows.length) return;
+    const previous=readState(s,room);
+    try {
+      localStorage.setItem(readKey(s,room),JSON.stringify({
+        ids:[...new Set([...previous.ids,...rows.map(item=>item.id)])],before:previous.before
+      }));
+    } catch {}
+  }
+  function node(tag, value, className) {
+    const el = document.createElement(tag);
+    if (value !== undefined) el.textContent = value;
+    if (className) el.className = className;
+    return el;
+  }
+  function saveDraft() {
+    if (room && sessionId) drafts.set(sessionId + ':' + room, {text:text.value,attachment});
+  }
+  function switchRoom(next) {
+    saveDraft();
+    room = next;
+    const draft = drafts.get(sessionId + ':' + room);
+    text.value = draft?.text || '';
+    attachment = draft?.attachment || null;
+    showAttachment();
+    status.textContent = '';
+  }
+  function showAttachment() {
+    document.getElementById('supportAttachment').hidden = !attachment;
+    document.getElementById('supportAttachmentName').textContent = attachment ? 'Изображение готово к отправке' : '';
+  }
+  function render(forceBottom = false) {
+    const s = session();
+    if (!s || s.id !== sessionId) {
+      if (imageViewer.open) imageViewer.close();
+      if (dialog.open) dialog.close();
+      sessionId = s?.id || '';
+      room = '';
+      text.value = '';
+      attachment = null;
+      showAttachment();
+    }
+    const rows = messages(s);
+    const total = s ? unseen(s, rows) : 0;
+    updateBadge(total);
+    if (openFromNotification && mode === 'uik' && s) {
+      openFromNotification = false;
+      switchRoom(s.station);
+      if (!dialog.open) dialog.showModal();
+    }
+    if (!dialog.open || !s) return;
+    const atBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 80;
+    const position = body.scrollTop;
+    body.replaceChildren();
+    back.hidden = mode === 'uik' || !room;
+    form.hidden = !room;
+    if (!room) {
+      title.textContent = 'Обращения УИК';
+      const rooms = [...new Set(rows.map(item => item.room))].sort((a,b) => {
+        const last = uik => rows.filter(m=>m.room===uik).at(-1).at;
+        return last(b)-last(a);
+      });
+      if (!rooms.length) body.append(node('p','Пока нет обращений от участков вашей территории.','support-empty'));
+      for (const uik of rooms) {
+        const list = rows.filter(item=>item.room===uik);
+        const count = unseen(s,list);
+        const button = node('button', 'УИК № ' + uik + (count ? ' · новых: ' + count : ''), 'support-room');
+        button.type = 'button';
+        button.append(node('small',district(uik)));
+        button.append(node('small',list.at(-1).text || 'Изображение'));
+        button.onclick = () => {switchRoom(uik);render(true);};
+        body.append(button);
+      }
+      return;
+    }
+    if (!allowed(s,room)) {switchRoom('');render();return;}
+    title.textContent = 'УИК № ' + room + ' · ' + district(room);
+    const list = rows.filter(item=>item.room===room);
+    if (!list.length) body.append(node('p','Напишите сообщение. Его увидят ТИК вашей территории и администратор области после подключения сервера. Сейчас можно проверить переписку в соседней вкладке.','support-empty'));
+    for (const item of list) {
+      const senderRole = item.sender.startsWith('uik:') ? 'uik' :
+        item.sender === 'tik:Штаб' ? 'admin' : 'tik';
+      const bubble = node('article',undefined,'support-bubble role-' + senderRole + (item.sender===s.id?' mine':''));
+      bubble.append(node('div',item.author + ' · ' + new Date(item.at).toLocaleString('ru-RU'),'support-author'));
+      if (item.text) bubble.append(node('p',item.text,'support-text'));
+      if (typeof item.image === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(item.image)) {
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = 'Прикреплённое изображение';
+        img.loading = 'lazy';
+        const imageButton = node('button',undefined,'support-image-button');
+        imageButton.type = 'button';
+        imageButton.setAttribute('aria-label','Увеличить изображение');
+        imageButton.append(img);
+        imageButton.onclick = () => openImage(item);
+        bubble.append(imageButton);
+      }
+      body.append(bubble);
+    }
+    if (!document.hidden) markRead(s,list);
+    updateBadge(unseen(s,rows));
+    body.scrollTop = forceBottom || atBottom ? body.scrollHeight : position;
+  }
+  function openChat(e) {
+    e?.preventDefault();
+    replyAlert.hidden = true;
+    const s = session();
+    if (!s) return;
+    render();
+    if (mode === 'uik') switchRoom(s.station);
+    if (!dialog.open) dialog.showModal();
+    render(true);
+  }
+  trigger.addEventListener('click',openChat);
+  envelope?.addEventListener('click',openChat);
+  replyAlert.onclick = openChat;
+  if (mode === 'uik' && 'serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message',e => {
+      if (e.data?.type !== 'support-chat-open') return;
+      const s = session();
+      if (s?.station !== e.data.room) return;
+      openChat();
+    });
+  }
+  document.getElementById('supportClose').onclick = () => dialog.close();
+  dialog.addEventListener('close', saveDraft);
+  back.onclick = () => {switchRoom('');render();};
+  document.getElementById('supportAdd').onclick = () => file.click();
+  document.getElementById('supportRemove').onclick = () => {attachment=null;file.value='';showAttachment();};
+  file.onchange = async () => {
+    const source = file.files[0];
+    if (!source) return;
+    if (!['image/jpeg','image/png','image/webp'].includes(source.type) || source.size>12*1024*1024) {
+      status.textContent='Выберите JPG, PNG или WebP размером до 12 МБ.';
+      file.value='';
+      return;
+    }
+    const originalSession = session()?.id, originalRoom = room;
+    busy=true;
+    document.getElementById('supportSend').disabled=true;
+    document.getElementById('supportAdd').disabled=true;
+    status.textContent='Подготавливаем изображение…';
+    const url=URL.createObjectURL(source);
+    try {
+      const img = new Image();
+      img.src=url;
+      await img.decode();
+      if (img.width*img.height>40000000) throw Error('Слишком большое изображение');
+      const scale=Math.min(1,2560/Math.max(img.width,img.height));
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(img.width*scale));
+      canvas.height=Math.max(1,Math.round(img.height*scale));
+      const ctx=canvas.getContext('2d');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      const image=canvas.toDataURL('image/jpeg',.9);
+      if (image.length>2000000) throw Error('Изображение слишком большое. Выберите меньший файл.');
+      if(session()?.id!==originalSession || room!==originalRoom) return;
+      attachment=image;showAttachment();status.textContent='';
+    } catch(error) {status.textContent=error.message || 'Не удалось открыть изображение.';}
+    finally {
+      URL.revokeObjectURL(url);file.value='';busy=false;
+      document.getElementById('supportSend').disabled=false;
+      document.getElementById('supportAdd').disabled=false;
+    }
+  };
+  form.onsubmit = e => {
+    e.preventDefault();
+    const s=session();
+    if (busy || !allowed(s,room) || s.id!==sessionId) return;
+    const value=text.value.trim();
+    if (!value && !attachment) {status.textContent='Напишите сообщение или добавьте изображение.';return;}
+    const id=crypto.randomUUID();
+    const item={id,room,sender:s.id,author:s.label,text:value,image:attachment,at:Date.now()};
+    try {
+      localStorage.setItem(prefix+'msg:'+room+':'+id,JSON.stringify(item));
+    } catch {
+      status.textContent='Не удалось сохранить сообщение. В браузере недостаточно места или запрещено сохранение.';
+      return;
+    }
+    text.value='';attachment=null;showAttachment();saveDraft();status.textContent='Сообщение сохранено в тестовом чате.';
+    render(true);
+  };
+  window.addEventListener('storage',e=>{
+    if (!e.key?.startsWith(prefix)) return;
+    if (e.key.startsWith(prefix + 'msg:') && e.newValue) {
+      try { notifyReply(JSON.parse(e.newValue)).catch(()=>{}); } catch {}
+    }
+    render();
+  });
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)render();});
+  const sessionTarget=document.getElementById(mode==='uik'?'authModal':'dashboardView');
+  if(sessionTarget)new MutationObserver(()=>render()).observe(sessionTarget,{attributes:true,attributeFilter:['style','class']});
+  window.addEventListener('pagehide',saveDraft);
+  render();
+})();
+
+</script>
 </body>
 </html>
