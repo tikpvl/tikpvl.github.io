@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Проверка связи УИК</title>
+  <style>
+    :root{font-family:system-ui,Arial,sans-serif;color-scheme:light dark}
+    body{max-width:700px;margin:35px auto;padding:0 18px;line-height:1.5}
+    h1{font-size:1.45rem} .card{padding:18px;border:1px solid #7d8a99;border-radius:12px;margin:16px 0}
+    label{display:block;margin:14px 0 5px} input{box-sizing:border-box;width:100%;padding:10px;font:inherit}
+    button{font:inherit;padding:11px 16px;margin:12px 8px 0 0;cursor:pointer}
+    button:disabled{opacity:.5;cursor:wait} .ok{color:#16a34a}.bad{color:#dc2626}.muted{opacity:.76}
+    #log{white-space:pre-wrap;overflow-wrap:anywhere;min-height:90px}
+  </style>
+</head>
+<body>
+  <h1>Проверка доступа к УИК</h1>
+  <p>Эта страница находится <strong>внутри основного домена</strong> tikpvl.asia. Если ты видишь её с компьютера ЕШДИ без VPN, загрузка страницы работает.</p>
+  <div class="card"><strong class="ok">✓ Страница загружена</strong><div id="time"></div></div>
+  <div class="card">
+    <label for="api">Адрес API</label>
+    <input id="api" value="https://uik.tikpvl.asia/api" spellcheck="false">
+    <label for="uik">Номер УИК для теста</label>
+    <input id="uik" value="5" inputmode="numeric">
+    <button id="check">Проверить связь с сервером</button>
+    <button id="mark">Отправить и удалить тестовую отметку</button>
+    <p class="muted">Вторая кнопка создаёт запись «ТЕСТ СВЯЗИ» и удаляет её. Используй только после проверки связи. Если удаление не удастся, на экране появится ID записи.</p>
+  </div>
+  <div class="card" role="status" aria-live="polite"><strong>Результат</strong><div id="log">Пока проверена только загрузка страницы.</div></div>
+  <script>
+    'use strict';
+    const log=document.getElementById('log');
+    const buttons=[document.getElementById('check'),document.getElementById('mark')];
+    document.getElementById('time').textContent='Время на устройстве: '+new Date().toLocaleString('ru-RU');
+    let token='', scope='';
+    const line=(text,good)=>{const div=document.createElement('div');div.textContent=text;if(good!==undefined)div.className=good?'ok':'bad';log.append(div)};
+    const apiUrl=()=>{const url=new URL(document.getElementById('api').value.trim());if(url.protocol!=='https:'||url.pathname!=='/api')throw Error('Укажи HTTPS-адрес, который заканчивается на /api');return url.href};
+    async function call(action,payload){
+      const response=await fetch(apiUrl(),{method:'POST',mode:'cors',cache:'no-store',credentials:'omit',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action,payload}),signal:AbortSignal.timeout(12000)});
+      if(!response.ok)throw Error('HTTP '+response.status);
+      const data=await response.json();
+      if(!data.success)throw Error(data.message||data.code||'Сервер не подтвердил запрос');
+      return data;
+    }
+    async function login(){
+      const uik=document.getElementById('uik').value.trim();
+      if(!/^\d{1,3}$/.test(uik))throw Error('Введи номер УИК');
+      if(token&&scope===uik)return {token,uik};
+      const result=await call('loginUik',{uik});
+      token=result.token;scope=uik;
+      if(!token)throw Error('Сервер не выдал токен');
+      line('Вход УИК № '+uik+' подтверждён.',true);
+      return {token,uik};
+    }
+    async function run(kind){
+      buttons.forEach(b=>b.disabled=true);log.textContent='';
+      line('Страница на tikpvl.asia открылась; проверяем запрос к API…');
+      try{
+        const auth=await login();
+        const snap=await call('snapshot',{token:auth.token});
+        line('API ответил. Доступно записей на УИК: '+(snap.data?.length??'?')+'.',true);
+        if(kind==='check')return;
+        const id='nettest'+Date.now()+Math.floor(Math.random()*100000);
+        const hhmm=new Date().toTimeString().slice(0,5);
+        const event={uid:id+'a',id,action:'ПРИШЕЛ',observer:'ТЕСТ СВЯЗИ',organization:'ТЕСТ',status:'Наблюдатель',time:hhmm,arrive:hhmm,leave:'',note:'Проверка доступа к серверу'};
+        let attempted=false;
+        try{
+          attempted=true;
+          await call('write',{token:auth.token,events:[event]});
+          line('Тестовая отметка записана; ID: '+id,true);
+          const verify=await call('snapshot',{token:auth.token});
+          if(!verify.data?.some(row=>row.id===id))throw Error('Запись не найдена в снимке УИК');
+          line('Отметка прочитана обратно из базы.',true);
+        }finally{
+          if(attempted){
+            try{
+              await call('write',{token:auth.token,events:[{uid:id+'b',id,action:'DELETE'}]});
+              const verify=await call('snapshot',{token:auth.token});
+              if(verify.data?.some(row=>row.id===id))throw Error('Удаление не подтверждено');
+              line('Тестовая отметка удалена. Проверка завершена.',true);
+            }catch(error){line('Не удалось подтвердить удаление. ID: '+id+'. '+error.message,false)}
+          }
+        }
+      }catch(error){
+        line('Запрос к серверу не прошёл: '+(error.name==='TimeoutError'?'ожидание превысило 12 секунд':error.message)+'.',false);
+        line('Если страница видна, а здесь ошибка, размещение страницы внутри домена само по себе не решило доступ к API.');
+      }finally{buttons.forEach(b=>b.disabled=false)}
+    }
+    buttons[0].addEventListener('click',()=>run('check'));
+    buttons[1].addEventListener('click',()=>run('mark'));
+  </script>
+</body>
+</html>
